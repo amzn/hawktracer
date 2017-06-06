@@ -1,0 +1,4 @@
+0.1.0 (unstable) - 30.06.2017:
+ * implement prototype of tracing server
+ * implement client for receiving tracepoints
+ * implement simple tool for searching tracepoints in LUA and C++ files
