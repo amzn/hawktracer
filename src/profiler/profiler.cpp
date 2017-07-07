@@ -28,9 +28,13 @@ public:
 
     bool load_map(const std::string& map_file);
 
+    void enable_finding_nearest_label();
+
 private:
     std::map<hawktracer::Action::Label, MapInfo> _input_map;
     std::unordered_map<hawktracer::Action::Label, MapInfo> _cached_map;
+
+    bool _finding_nearest_label_enabled = false;
 
     static std::string category_to_string(Category category);
 };
@@ -53,17 +57,27 @@ bool TracepointMapper::load_map(const std::string& map_file)
     uint32_t category;
     while (file >> label >> category >> label_str)
     {
-        _input_map[label] = { label_str, category_to_string((Category)category) };
+        MapInfo info = { label_str, category_to_string((Category)category) };
+        if (_finding_nearest_label_enabled)
+        {
+            _input_map[label] = info;
+        }
+        else
+        {
+            _cached_map[label] = info;
+        }
     }
 
     return true;
 }
 
+void TracepointMapper::enable_finding_nearest_label()
+{
+    _finding_nearest_label_enabled = true;
+}
+
 TracepointMapper::MapInfo TracepointMapper::get_label_info(hawktracer::Action::Label label)
 {
-    // TODO: finding nearest address should be
-    // an optional feature
-
     auto cached_it = _cached_map.find(label);
 
     if (cached_it != _cached_map.end())
@@ -71,31 +85,32 @@ TracepointMapper::MapInfo TracepointMapper::get_label_info(hawktracer::Action::L
         return cached_it->second;
     }
 
-    auto it = _input_map.lower_bound(label);
-    bool found = false;
-    if (it->first == label)
+    if (_finding_nearest_label_enabled)
     {
-        found = true;
-    }
-    else if (it != _input_map.begin())
-    {
-        --it;
-        found = true;
+        auto it = _input_map.lower_bound(label);
+        bool found = false;
+        if (it->first == label)
+        {
+            found = true;
+        }
+        else if (it != _input_map.begin())
+        {
+            --it;
+            found = true;
+        }
+
+        if (found)
+        {
+            _cached_map[label] = it->second;
+            return it->second;
+        }
     }
 
-    if (found)
-    {
-        _cached_map[label] = it->second;
-        return it->second;
-    }
-    else
-    {
-        MapInfo info = { std::to_string(label), category_to_string(Unknown) };
-        _cached_map[label] = info;
+    MapInfo info = { std::to_string(label), category_to_string(Unknown) };
+    _cached_map[label] = info;
 
-        std::cerr << "Cannot find mapping for label " << label << std::endl;
-        return info;
-    }
+    std::cerr << "Cannot find mapping for label " << label << std::endl;
+    return info;
 }
 
 std::string TracepointMapper::category_to_string(Category category)
@@ -373,6 +388,7 @@ int main(int argc, char **argv)
     parser.add_option("-port", "profiling port", false, true);
     parser.add_option("-format", "output format (csv or chrome-tracing)", false, true);
     parser.add_option("-map", "path to a file with mapping definitions", false, false);
+    parser.add_option("-n", "maps labels to the first label in map that is not greater than actual label", true, false);
 
     try
     {
@@ -383,6 +399,11 @@ int main(int argc, char **argv)
         std::cerr << ex.what();
         parser.print_help();
         return 1;
+    }
+
+    if (parser.option_specified("-n"))
+    {
+        mapper.enable_finding_nearest_label();
     }
 
     if (!parser.option_specified("-map"))
