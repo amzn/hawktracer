@@ -1,3 +1,8 @@
+0.2.0 (unstable) - 7.07.2017:
+ * add tool for generate function address map from binary file
+ * add feature for finding closest label (if label is not specified in map)
+ * implement simple command line parser for profiler
+
 0.1.0 (unstable) - 30.06.2017:
  * implement prototype of tracing server
  * implement client for receiving tracepoints
