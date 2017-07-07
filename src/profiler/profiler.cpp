@@ -236,6 +236,125 @@ void ChromeTracing::finalize()
     }
 }
 
+class CommandLineParser
+{
+public:
+    struct OptionInfo
+    {
+        std::string help;
+        bool is_flag;
+        bool is_mandatory;
+    };
+
+    CommandLineParser(const std::string& example_usage);
+
+    void parse(char** argv, int argc, bool throw_on_invalid_argument);
+
+    void add_option(const std::string& identifier, const std::string& help, bool is_flag, bool is_mandatory);
+
+    bool option_specified(const std::string& option) const;
+    std::string get_value(const std::string& option) const;
+
+    void print_help() const;
+
+private:
+    void _validate_mandatory_fields();
+
+    std::string _app_name;
+    std::string _example_usage;
+    std::unordered_map<std::string, OptionInfo> _options;
+    std::unordered_map<std::string, std::string> _values;
+};
+
+CommandLineParser::CommandLineParser(const std::string& example_usage) :
+    _example_usage(example_usage)
+{
+}
+
+void CommandLineParser::add_option(const std::string& option, const std::string& help, bool is_flag, bool is_mandatory)
+{
+    _options[option] = { help, is_flag, is_mandatory };
+}
+
+bool CommandLineParser::option_specified(const std::string& option) const
+{
+    return _values.find(option) != _values.end();
+}
+
+std::string CommandLineParser::get_value(const std::string& option) const
+{
+    return _values.at(option);
+}
+
+void CommandLineParser::print_help() const
+{
+    std::cerr << "Usage: " << _app_name << " [OPTIONS]..." << std::endl;
+    std::cerr << "Example: " << _app_name << " " << _example_usage << std::endl;
+    std::cerr << " OPTIONS:" << std::endl;
+
+    for (const auto& option : _options)
+    {
+        std::cerr << " " << option.first << " ";
+        if (!option.second.is_flag)
+        {
+            std::cerr << "VALUE ";
+        }
+        std::cerr << "- ";
+        if (option.second.is_mandatory)
+        {
+            std::cerr << "[MANDATORY] ";
+        }
+        std::cerr << option.second.help << std::endl;
+    }
+}
+
+void CommandLineParser::parse(char **argv, int argc, bool throw_on_invalid_argument)
+{
+    _app_name = argv[0];
+
+    for (int i = 1; i < argc; i++)
+    {
+        auto option_it = _options.find(argv[i]);
+        if (option_it == _options.end())
+        {
+            if (throw_on_invalid_argument)
+            {
+                throw std::runtime_error("Invalid option: " + std::string(argv[i]));
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        if (option_it->second.is_flag)
+        {
+            _values.emplace(argv[i], "");
+            continue;
+        }
+
+        if (++i == argc)
+        {
+            throw std::runtime_error("Option " + std::string(argv[i-1]) + " requires argument!");
+        }
+
+        _values.emplace(argv[i-1], argv[i]);
+    }
+
+    _validate_mandatory_fields();
+}
+
+void CommandLineParser::_validate_mandatory_fields()
+{
+    for (const auto& option : _options)
+    {
+        if (option.second.is_mandatory && _values.find(option.first) == _values.end())
+        {
+            throw std::runtime_error("Option " + option.first + " is mandatory but has not been specified in the command line!");
+        }
+    }
+}
+
 ChromeTracing chrome_tracing;
 BufferHandler handler;
 
@@ -248,40 +367,52 @@ void signal_callback_handler(int signum)
 
 int main(int argc, char **argv)
 {
-    if (argc != 5 && argc != 4)
+    CommandLineParser parser("-ip 127.0.0.1 -port 8765 -format chrome-tracing -map my-map");
+
+    parser.add_option("-ip", "IP address of the porfiled device", false, true);
+    parser.add_option("-port", "profiling port", false, true);
+    parser.add_option("-format", "output format (csv or chrome-tracing)", false, true);
+    parser.add_option("-map", "path to a file with mapping definitions", false, false);
+
+    try
     {
-        std::cerr << "usage: " << argv[0] << " ip port chrome-tracing|csv [map_file]" << std::endl;
+        parser.parse(argv, argc, true);
+    }
+    catch (const std::runtime_error& ex)
+    {
+        std::cerr << ex.what();
+        parser.print_help();
         return 1;
     }
 
-    if (argc < 5)
+    if (!parser.option_specified("-map"))
     {
         std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
     }
-    else if (!mapper.load_map(argv[4]))
+    else if (!mapper.load_map(parser.get_value("-map")))
     {
-        std::cerr << "unable to load map file " << argv[4] << std::endl;
+        std::cerr << "unable to load map file " << parser.get_value("-map") << std::endl;
         std::cerr << "map file won't be used" << std::endl;
     }
 
-    if (strcmp(argv[3], "chrome-tracing") == 0)
+    if (parser.get_value("-format") == "chrome-tracing")
     {
         handler.add_action_handler(&ChromeTracing::action_handler, &chrome_tracing);
     }
-    else if (strcmp(argv[3], "csv") == 0)
+    else if (parser.get_value("-format") == "csv")
     {
         handler.add_action_handler(csv_action_handler, nullptr);
     }
     else
     {
-        std::cerr << "invalid mode " << argv[3] << std::endl;
+        std::cerr << "invalid mode " << parser.get_value("-format") << std::endl;
         return 1;
     }
 
     signal(SIGINT, signal_callback_handler);
 
     hawktracer::TCPClient client;
-    client.start(argv[1], atoi(argv[2]));
+    client.start(parser.get_value("-ip"), std::stoi(parser.get_value("-port")));
 
     client.handle_responses(&BufferHandler::process_buffer, &handler);
 
