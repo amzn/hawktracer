@@ -23,12 +23,12 @@ public:
         std::string category;
     };
 
-    TracepointMapper::MapInfo get_label_info(uint32_t label);
+    TracepointMapper::MapInfo get_label_info(hawktracer::Action::Label label);
 
     bool load_map(const std::string& map_file);
 
 private:
-    std::unordered_map<uint32_t, MapInfo> _map;
+    std::unordered_map<hawktracer::Action::Label, MapInfo> _map;
 
     static std::string category_to_string(Category category);
 };
@@ -46,18 +46,18 @@ bool TracepointMapper::load_map(const std::string& map_file)
         return false;
     }
 
-    std::string label;
-    uint32_t number;
+    std::string label_str;
+    hawktracer::Action::Label label;
     uint32_t category;
-    while (file >> number >> category >> label)
+    while (file >> label >> category >> label_str)
     {
-        _map[number] = { label, category_to_string((Category)category) };
+        _map[label] = { label_str, category_to_string((Category)category) };
     }
 
     return true;
 }
 
-TracepointMapper::MapInfo TracepointMapper::get_label_info(uint32_t label)
+TracepointMapper::MapInfo TracepointMapper::get_label_info(hawktracer::Action::Label label)
 {
     auto it = _map.find(label);
     if (it == _map.end())
