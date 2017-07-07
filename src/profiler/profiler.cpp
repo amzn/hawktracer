@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstring>
 #include <iostream>
+#include <map>
 
 class TracepointMapper
 {
@@ -28,7 +29,8 @@ public:
     bool load_map(const std::string& map_file);
 
 private:
-    std::unordered_map<hawktracer::Action::Label, MapInfo> _map;
+    std::map<hawktracer::Action::Label, MapInfo> _input_map;
+    std::unordered_map<hawktracer::Action::Label, MapInfo> _cached_map;
 
     static std::string category_to_string(Category category);
 };
@@ -51,7 +53,7 @@ bool TracepointMapper::load_map(const std::string& map_file)
     uint32_t category;
     while (file >> label >> category >> label_str)
     {
-        _map[label] = { label_str, category_to_string((Category)category) };
+        _input_map[label] = { label_str, category_to_string((Category)category) };
     }
 
     return true;
@@ -59,14 +61,41 @@ bool TracepointMapper::load_map(const std::string& map_file)
 
 TracepointMapper::MapInfo TracepointMapper::get_label_info(hawktracer::Action::Label label)
 {
-    auto it = _map.find(label);
-    if (it == _map.end())
+    // TODO: finding nearest address should be
+    // an optional feature
+
+    auto cached_it = _cached_map.find(label);
+
+    if (cached_it != _cached_map.end())
     {
-        std::cerr << "Cannot find mapping for label " << label << std::endl;
-        return { std::to_string(label), category_to_string(Unknown) };
+        return cached_it->second;
     }
 
-    return it->second;
+    auto it = _input_map.lower_bound(label);
+    bool found = false;
+    if (it->first == label)
+    {
+        found = true;
+    }
+    else if (it != _input_map.begin())
+    {
+        --it;
+        found = true;
+    }
+
+    if (found)
+    {
+        _cached_map[label] = it->second;
+        return it->second;
+    }
+    else
+    {
+        MapInfo info = { std::to_string(label), category_to_string(Unknown) };
+        _cached_map[label] = info;
+
+        std::cerr << "Cannot find mapping for label " << label << std::endl;
+        return info;
+    }
 }
 
 std::string TracepointMapper::category_to_string(Category category)
@@ -232,7 +261,7 @@ int main(int argc, char **argv)
     else if (!mapper.load_map(argv[4]))
     {
         std::cerr << "unable to load map file " << argv[4] << std::endl;
-	std::cerr << "map file won't be used" << std::endl;
+        std::cerr << "map file won't be used" << std::endl;
     }
 
     if (strcmp(argv[3], "chrome-tracing") == 0)
