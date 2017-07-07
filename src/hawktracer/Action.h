@@ -12,7 +12,7 @@ namespace hawktracer
 struct Action
 {
     using Id = uint32_t;
-    using Label = uint32_t;
+    using Label = uintptr_t;
 
     NanoTime_t startTime = 0;
     NanoTime_t stopTime = 0;
