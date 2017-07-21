@@ -21,6 +21,7 @@ function generate_cpp_header {
 
     echo "#ifndef HAWKTRACER_ACTIONLABELS_H_" >> $out_file
     echo "#define HAWKTRACER_ACTIONLABELS_H_" >> $out_file
+    echo "" >> $out_file
 
     value=1
     for label in "${!labels_array}"
@@ -30,25 +31,6 @@ function generate_cpp_header {
 	((value+=1))
     done
     
-    echo "" >> $out_file
-    echo "#include <cinttypes>" >> $out_file
-    echo "namespace hawktracer" >> $out_file
-    echo "{" >> $out_file
-    echo "inline const char* action_label_to_string(uint32_t label)" >> $out_file
-    echo "{" >> $out_file
-    echo -e "\tswitch (label)" >> $out_file
-    echo -e "\t{" >> $out_file
-    value=1
-    for label in "${!labels_array}"
-    do
-	echo -e "\tcase $value: return \"$label\";" >> $out_file
- 	((value+=1))
-    done
-    echo -e "\t}" >> $out_file
-    echo -e "\treturn \"\";" >> $out_file
-    echo "}" >> $out_file
-    echo "" >> $out_file
-    echo "} // namespace hawktracer" >> $out_file
     echo "" >> $out_file
     echo "#endif // HAWKTRACER_ACTIONLABELS_H_" >> $out_file
     echo "" >> $out_file
