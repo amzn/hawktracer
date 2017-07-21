@@ -1,6 +1,12 @@
 #ifndef HAWKTRACER_ACTION_H_
 #define HAWKTRACER_ACTION_H_
 
+#if ACTION_LABEL_SIZE == 32
+#define HAWKTRACER_ACTION_LABEL_T uint32_t
+#elif ACTION_LABEL_SIZE == 64
+#define HAWKTRACER_ACTION_LABEL_T uint64_t
+#endif
+
 #include <hawktracer/HRClock.h>
 
 #include <cstddef>
@@ -12,7 +18,7 @@ namespace hawktracer
 struct Action
 {
     using Id = uint32_t;
-    using Label = uintptr_t;
+    using Label = HAWKTRACER_ACTION_LABEL_T;
 
     NanoTime_t startTime = 0;
     NanoTime_t stopTime = 0;

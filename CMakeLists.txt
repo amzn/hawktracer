@@ -9,6 +9,14 @@ option(ENABLE_UNITTESTS "Build unit tests" ON)
 option(WITH_GCOV "Build with code coverage calculation" OFF)
 option(DISABLE_CLIENT "Disable hawktracer profiling client" OFF)
 
+set(ACTION_LABEL_SIZE "64" CACHE STRING "Size (in bits) of the action label field")
+
+if((NOT "${ACTION_LABEL_SIZE}" STREQUAL "32") AND (NOT "${ACTION_LABEL_SIZE}" STREQUAL "64"))
+    message(FATAL_ERROR "Action label size ${ACTION_LABEL_SIZE} not supported (only following sizes: 32 and 64 are supported")
+else()
+    add_definitions(-DACTION_LABEL_SIZE=${ACTION_LABEL_SIZE})
+endif()
+
 if(WITH_GCOV)
     add_definitions(-fprofile-arcs -ftest-coverage)
     link_libraries(gcov)
