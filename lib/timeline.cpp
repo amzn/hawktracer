@@ -1,0 +1,162 @@
+#include <hawktracer/timeline.h>
+#include <hawktracer/alloc.h>
+#include <hawktracer/mutex.h>
+#include <hawktracer/monotonic_clock.h>
+
+#include "internal/timeline_listener.hpp"
+#include "internal/timeline_registry.h"
+
+#include <cstring>
+#include <cassert>
+
+HT_Timeline*
+ht_timeline_create(const char* klass_id, ...)
+{
+    HT_TimelineKlass* klass = ht_timeline_registry_find_class(klass_id);
+
+    if (klass == nullptr)
+    {
+        // TODO error
+        return nullptr;
+    }
+
+    HT_Timeline* timeline = (HT_Timeline*)ht_alloc(klass->type_size);
+    timeline->klass = klass;
+
+    va_list args;
+    va_start(args, klass_id);
+
+    klass->init(timeline, args);
+
+    va_end(args);
+
+    return timeline;
+}
+
+void ht_timeline_destroy(HT_Timeline* timeline)
+{
+    timeline->klass->deinit(timeline);
+
+    ht_free(timeline);
+}
+
+void
+ht_timeline_init(HT_Timeline* timeline, va_list args)
+{
+    size_t buffer_capacity = 1024;
+    const char* label = va_arg(args, const char*);;
+
+    while (label != nullptr)
+    {
+        if (strncmp("buffer-capacity", label, 15) == 0)
+        {
+            buffer_capacity = va_arg(args, size_t);
+        }
+        else
+        {
+            va_arg(args, void*);
+        }
+        label = va_arg(args, const char*);
+    }
+
+    timeline->buffer_usage = 0;
+    timeline->buffer_capacity = buffer_capacity;
+    timeline->buffer = (uint8_t*)ht_alloc(buffer_capacity);
+    timeline->id_provider = ht_event_id_provider_get_default();
+
+    timeline->listeners = (timeline->klass->listeners == NULL) ?
+                ht_timeline_listener_container_create() : timeline->klass->listeners;
+
+    timeline->locking_policy = (timeline->klass->thread_safe == HT_TRUE) ?
+                ht_mutex_create() : NULL;
+}
+
+void
+ht_timeline_deinit(HT_Timeline* timeline)
+{
+    assert(timeline);
+
+    ht_free(timeline->buffer);
+
+    if (timeline->klass->listeners == NULL)
+    {
+        ht_timeline_listener_container_destroy(timeline->listeners);
+    }
+
+    if (timeline->locking_policy)
+    {
+        ht_mutex_destroy(timeline->locking_policy);
+    }
+}
+
+
+static inline void
+_ht_timeline_notify_listeners(HT_Timeline* timeline)
+{
+    for (const auto& listener : timeline->listeners->listeners)
+    {
+        listener.first(timeline->buffer, timeline->buffer_usage, listener.second);
+    }
+}
+
+void
+ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event)
+{
+    event->timestamp = ht_monotonic_clock_get_timestamp();
+    event->id = ht_event_id_provider_next(timeline->id_provider);
+}
+
+void
+ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
+{
+    HT_EventKlass* klass = HT_EVENT_GET_CLASS(event);
+
+    assert(timeline);
+    assert(event);
+
+    if (timeline->locking_policy != NULL)
+    {
+        ht_mutex_lock(timeline->locking_policy);
+    }
+
+    if (timeline->buffer_capacity < timeline->buffer_usage + klass->size)
+    {
+        _ht_timeline_notify_listeners(timeline);
+        timeline->buffer_usage = 0;
+    }
+
+#define HT_COPY_EVENT(EventStruct) \
+    memcpy(timeline->buffer + timeline->buffer_usage, event, sizeof(EventStruct))
+
+    switch (klass->size)
+    {
+    case sizeof(HT_Event):
+        HT_COPY_EVENT(HT_Event);
+        break;
+    default:
+        memcpy(timeline->buffer + timeline->buffer_usage, event, klass->size);
+    }
+
+    timeline->buffer_usage += klass->size;
+
+    if (timeline->locking_policy != NULL)
+    {
+        ht_mutex_unlock(timeline->locking_policy);
+    }
+}
+
+void
+ht_timeline_flush(HT_Timeline* timeline)
+{
+    _ht_timeline_notify_listeners(timeline);
+}
+
+void
+ht_timeline_register_listener(
+        HT_Timeline* timeline,
+        HT_TimelineListenerCallback callback,
+        void* user_data)
+{
+    ht_timeline_listener_container_register_listener(
+                timeline->listeners, callback, user_data);
+}
