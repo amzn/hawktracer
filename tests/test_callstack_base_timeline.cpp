@@ -14,6 +14,7 @@ protected:
 
     void TearDown() override
     {
+        ht_timeline_unregister_all_listeners(HT_TIMELINE(_timeline));
         ht_timeline_destroy(HT_TIMELINE(_timeline));
     }
 
@@ -57,6 +58,41 @@ TEST_F(TestCallstackBaseTimeline, Base)
     ASSERT_EQ(4, info.values.size());
     for (size_t i = 0; i < info.values.size(); i++)
     {
-       ASSERT_EQ(3 - i, info.values[i].info);
+        ASSERT_EQ(3 - i, info.values[i].info);
     }
+}
+
+TEST_F(TestCallstackBaseTimeline, MixedEventPublishing)
+{
+    // Arrange
+    NotifyInfo<TestCallstackEvent> info;
+
+    ht_timeline_register_listener(HT_TIMELINE(_timeline), test_listener<TestCallstackEvent>, &info);
+
+    auto start_event = [this] (int info) {
+        HT_DECL_EVENT(TestCallstackEvent, event);
+        event.info = info;
+        ht_callstack_base_timeline_start(_timeline, (HT_CallstackBaseEvent*)&event);
+    };
+
+    // Act
+    start_event(1);
+    start_event(2);
+    ht_callstack_base_timeline_stop(_timeline);
+    start_event(3);
+    start_event(4);
+    ht_callstack_base_timeline_stop(_timeline);
+    ht_callstack_base_timeline_stop(_timeline);
+    ht_callstack_base_timeline_stop(_timeline);
+
+    ht_timeline_flush(HT_TIMELINE(_timeline));
+
+    // Assert
+    ASSERT_EQ(4 * sizeof(TestCallstackEvent), info.notified_events);
+    ASSERT_EQ(2, info.notify_count);
+    ASSERT_EQ(4, info.values.size());
+    ASSERT_EQ(2, info.values[0].info);
+    ASSERT_EQ(4, info.values[1].info);
+    ASSERT_EQ(3, info.values[2].info);
+    ASSERT_EQ(1, info.values[3].info);
 }

@@ -7,6 +7,7 @@ set(HAWKTRACER_LIB_HEADERS
 set(HAWKTRACER_LIB_SOURCES
     alloc.c
     callstack_base_timeline.cpp
+    callstack_timeline.c
     event_id_provider.cpp
     events.c
     init.c
