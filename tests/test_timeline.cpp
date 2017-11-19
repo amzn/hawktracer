@@ -15,11 +15,14 @@ protected:
 
     void TearDown() override
     {
+        ht_timeline_unregister_all_listeners(_timeline);
         ht_timeline_destroy(_timeline);
     }
 
     HT_Timeline* _timeline = nullptr;
 };
+
+// TODO test different types of events
 
 TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
 {

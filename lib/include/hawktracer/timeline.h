@@ -31,6 +31,7 @@ void ht_timeline_register_listener(
         HT_Timeline* timeline,
         HT_TimelineListenerCallback callback,
         void* user_data);
+void ht_timeline_unregister_all_listeners(HT_Timeline* timeline);
 
 HT_Timeline* ht_timeline_create(const char* klass_id, ...);
 

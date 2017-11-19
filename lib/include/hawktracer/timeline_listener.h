@@ -24,6 +24,9 @@ void ht_timeline_listener_container_register_listener(
         HT_TimelineListenerCallback callback,
         void* user_data);
 
+void ht_timeline_listener_container_unregister_all_listeners(
+        HT_TimelineListenerContainer* container);
+
 HT_DECLS_END
 
 #endif /* HAWKTRACER_TIMELINE_LISTENER_H */

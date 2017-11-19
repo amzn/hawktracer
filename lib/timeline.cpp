@@ -160,3 +160,10 @@ ht_timeline_register_listener(
     ht_timeline_listener_container_register_listener(
                 timeline->listeners, callback, user_data);
 }
+
+void
+ht_timeline_unregister_all_listeners(HT_Timeline* timeline)
+{
+    ht_timeline_listener_container_unregister_all_listeners(
+                timeline->listeners);
+}

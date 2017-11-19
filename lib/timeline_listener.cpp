@@ -31,3 +31,10 @@ ht_timeline_listener_container_register_listener(
 {
     container->listeners.push_back(std::make_pair(callback, user_data));
 }
+
+void
+ht_timeline_listener_container_unregister_all_listeners(
+        HT_TimelineListenerContainer* container)
+{
+    container->listeners.clear();
+}
