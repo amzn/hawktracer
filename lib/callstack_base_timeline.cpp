@@ -1,7 +1,9 @@
 #include "hawktracer/callstack_base_timeline.h"
 
 #include "hawktracer/alloc.h"
+#include "hawktracer/monotonic_clock.h"
 
+#include <pthread.h> /* TODO: WTF */
 #include <cstring>
 #include <stack>
 #include <cassert>
@@ -42,6 +44,7 @@ ht_callstack_base_timeline_deinit(HT_Timeline* timeline)
 void
 ht_callstack_base_timeline_start(HT_CallstackBaseTimeline* timeline, HT_CallstackBaseEvent* event)
 {
+    ht_timeline_init_event(HT_TIMELINE(timeline), HT_EVENT(event));
     memcpy(timeline->stack->data + timeline->stack->pos, event, event->base.klass->size);
     timeline->stack->sizes_stack.push(event->base.klass->size);
     timeline->stack->pos += event->base.klass->size;
@@ -54,5 +57,9 @@ ht_callstack_base_timeline_stop(HT_CallstackBaseTimeline* timeline)
     timeline->stack->sizes_stack.pop();
     timeline->stack->pos -= size;
 
-    ht_timeline_push_event((HT_Timeline*)timeline, (HT_Event*)(timeline->stack->data + timeline->stack->pos));
+    HT_CallstackBaseEvent* event = (HT_CallstackBaseEvent*)(timeline->stack->data + timeline->stack->pos);
+    event->duration = ht_monotonic_clock_get_timestamp() - HT_EVENT(event)->timestamp;
+    event->thread_id = pthread_self(); /* TODO: WTF */
+
+    ht_timeline_push_event((HT_Timeline*)timeline, HT_EVENT(event));
 }
