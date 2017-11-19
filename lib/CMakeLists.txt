@@ -13,6 +13,7 @@ set(HAWKTRACER_LIB_SOURCES
     init.c
     monotonic_clock.cpp
     mutex.cpp
+    thread.cpp
     timeline.cpp
     timeline_listener.cpp
     timeline_registry.cpp)

@@ -30,6 +30,8 @@ struct TestCallstackEvent
 
 HT_DEFINE_EVENT_KLASS(TestCallstackEvent, 31337);
 
+/* TODO: add test with threading */
+
 TEST_F(TestCallstackBaseTimeline, Base)
 {
     // Arrange

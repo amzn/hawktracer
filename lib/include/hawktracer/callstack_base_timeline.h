@@ -21,7 +21,7 @@ typedef struct
     HT_Event base;
 
     HT_DurationNs duration;
-    uint32_t thread_id;
+    HT_ThreadId thread_id;
 } HT_CallstackBaseEvent;
 
 HT_DECLARE_EVENT_KLASS(HT_CallstackBaseEvent);

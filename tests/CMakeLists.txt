@@ -1,3 +1,5 @@
+find_package(Threads)
+
 include_directories(../lib/include)
 
 add_executable(hawktracer_tests
@@ -5,8 +7,9 @@ add_executable(hawktracer_tests
     test_alloc.cpp
     test_common.cpp
     test_event_id_provider.cpp
+    test_thread.cpp
     test_timeline.cpp
     test_callstack_base_timeline.cpp
     test_callstack_timeline.cpp)
 
-target_link_libraries(hawktracer_tests gtest hawktracer)
+target_link_libraries(hawktracer_tests gtest hawktracer  ${CMAKE_THREAD_LIBS_INIT})

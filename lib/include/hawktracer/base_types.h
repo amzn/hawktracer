@@ -13,6 +13,7 @@ typedef uint64_t HT_EventId;
 typedef uint64_t HT_DurationNs;
 typedef int HT_Boolean;
 typedef uint8_t* TEventPtr;
+typedef uint32_t HT_ThreadId;
 
 #define HT_TRUE 1
 #define HT_FALSE 0
