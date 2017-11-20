@@ -38,7 +38,7 @@ TEST_F(TestAlloc, SettingCustomAllocatorShouldChangeAlloc)
 
     // Assert
     ASSERT_EQ(nullptr, info.ptr);
-    ASSERT_EQ(10, info.size);
+    ASSERT_EQ(10u, info.size);
 }
 
 TEST_F(TestAlloc, SettingCustomAllocatorShouldChangeFree)
@@ -52,7 +52,7 @@ TEST_F(TestAlloc, SettingCustomAllocatorShouldChangeFree)
 
     // Assert
     ASSERT_EQ(&info, info.ptr);
-    ASSERT_EQ(0, info.size);
+    ASSERT_EQ(0u, info.size);
 }
 
 TEST_F(TestAlloc, SettingCustomAllocatorShouldChangeRealloc)
@@ -66,7 +66,7 @@ TEST_F(TestAlloc, SettingCustomAllocatorShouldChangeRealloc)
 
     // Assert
     ASSERT_EQ(&info, info.ptr);
-    ASSERT_EQ(20, info.size);
+    ASSERT_EQ(20u, info.size);
 }
 
 TEST_F(TestAlloc, ResettingCustomAllocatorShouldNotFail)

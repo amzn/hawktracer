@@ -8,9 +8,9 @@ TEST(EventIdProviderTest, BaseTest)
     HT_EventIdProvider* provider = ht_event_id_provider_create();
 
     // Act & Assert
-    ASSERT_EQ(0, ht_event_id_provider_next(provider));
-    ASSERT_EQ(1, ht_event_id_provider_next(provider));
-    ASSERT_EQ(2, ht_event_id_provider_next(provider));
+    ASSERT_EQ(0u, ht_event_id_provider_next(provider));
+    ASSERT_EQ(1u, ht_event_id_provider_next(provider));
+    ASSERT_EQ(2u, ht_event_id_provider_next(provider));
 
     ht_event_id_provider_destroy(provider);
 }

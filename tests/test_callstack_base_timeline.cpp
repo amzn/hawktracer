@@ -57,10 +57,10 @@ TEST_F(TestCallstackBaseTimeline, Base)
     // Assert
     ASSERT_EQ(4 * sizeof(TestCallstackEvent), info.notified_events);
     ASSERT_EQ(2, info.notify_count);
-    ASSERT_EQ(4, info.values.size());
+    ASSERT_EQ(4u, info.values.size());
     for (size_t i = 0; i < info.values.size(); i++)
     {
-        ASSERT_EQ(3 - i, info.values[i].info);
+        ASSERT_EQ(3 - static_cast<int>(i), info.values[i].info);
     }
 }
 
@@ -92,7 +92,7 @@ TEST_F(TestCallstackBaseTimeline, MixedEventPublishing)
     // Assert
     ASSERT_EQ(4 * sizeof(TestCallstackEvent), info.notified_events);
     ASSERT_EQ(2, info.notify_count);
-    ASSERT_EQ(4, info.values.size());
+    ASSERT_EQ(4u, info.values.size());
     ASSERT_EQ(2, info.values[0].info);
     ASSERT_EQ(4, info.values[1].info);
     ASSERT_EQ(3, info.values[2].info);

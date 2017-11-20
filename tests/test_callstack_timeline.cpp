@@ -7,7 +7,7 @@
 struct MixedNotifyInfo
 {
     int notify_count = 0;
-    int notified_events = 0;
+    size_t notified_events = 0;
     std::vector<HT_CallstackIntEvent> int_values;
     std::vector<HT_CallstackStringEvent> string_values;
 };
@@ -81,7 +81,7 @@ TEST_F(TestCallstackTimeline, LabelStringLongerThanMaxShouldBeTruncated)
     // Assert
     ASSERT_EQ(4 * sizeof(HT_CallstackStringEvent), info.notified_events);
     ASSERT_EQ(2, info.notify_count);
-    ASSERT_EQ(4, info.values.size());
+    ASSERT_EQ(4u, info.values.size());
     for (size_t i = 0; i < info.values.size(); i++)
     {
         std::string expected = std::to_string(3 - i) + postfix.substr(0, HT_CALLSTACK_LABEL_MAX_LEN - 1);
@@ -116,7 +116,7 @@ TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
     // Assert
     ASSERT_EQ(4 * sizeof(HT_CallstackIntEvent), info.notified_events);
     ASSERT_EQ(2, info.notify_count);
-    ASSERT_EQ(4, info.values.size());
+    ASSERT_EQ(4u, info.values.size());
     for (size_t i = 0; i < info.values.size(); i++)
     {
         ASSERT_EQ(3 - i, info.values[i].label);
@@ -149,10 +149,10 @@ TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
     // Assert
     ASSERT_EQ(2 * (sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent)), info.notified_events);
     ASSERT_EQ(2, info.notify_count);
-    ASSERT_EQ(2, info.int_values.size());
-    ASSERT_EQ(2, info.string_values.size());
-    ASSERT_EQ(2, info.int_values[0].label);
-    ASSERT_EQ(1, info.int_values[1].label);
+    ASSERT_EQ(2u, info.int_values.size());
+    ASSERT_EQ(2u, info.string_values.size());
+    ASSERT_EQ(2u, info.int_values[0].label);
+    ASSERT_EQ(1u, info.int_values[1].label);
     ASSERT_STREQ(label2, info.string_values[0].label);
     ASSERT_STREQ(label1, info.string_values[1].label);
 }

@@ -9,7 +9,7 @@ template<typename T>
 struct NotifyInfo
 {
     int notify_count = 0;
-    int notified_events = 0;
+    size_t notified_events = 0;
     std::vector<T> values;
 };
 

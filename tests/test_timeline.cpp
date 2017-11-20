@@ -29,7 +29,7 @@ TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
     // Arrange
     NotifyInfo<HT_Event> info;
 
-        ht_timeline_register_listener(_timeline, test_listener<HT_Event>, &info);
+    ht_timeline_register_listener(_timeline, test_listener<HT_Event>, &info);
 
     // Act
     for (int i = 0; i < 10; i++)
