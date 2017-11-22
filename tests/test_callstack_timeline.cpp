@@ -51,7 +51,7 @@ protected:
 TEST_F(TestCallstackTimeline, LabelStringLongerThanMaxShouldBeTruncated)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("callstack", "buffer-capacity", sizeof(HT_CallstackStringEvent) * 3, nullptr);
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackStringEvent) * 3, nullptr);
     NotifyInfo<HT_CallstackStringEvent> info;
     std::string postfix = "Very very very long stirng which exceeds max label length."
                           "Lorem ipsum dolor sit amet, mel no timeam electram instructior,"
@@ -93,7 +93,7 @@ TEST_F(TestCallstackTimeline, LabelStringLongerThanMaxShouldBeTruncated)
 TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("callstack", "buffer-capacity", sizeof(HT_CallstackIntEvent) * 3, nullptr);
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackIntEvent) * 3, nullptr);
     NotifyInfo<HT_CallstackIntEvent> info;
 
     ht_timeline_register_listener(HT_TIMELINE(_timeline), test_listener<HT_CallstackIntEvent>, &info);
@@ -126,7 +126,7 @@ TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("callstack", "buffer-capacity", sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
     MixedNotifyInfo info;
 
     ht_timeline_register_listener(HT_TIMELINE(_timeline), mixed_test_listener, &info);

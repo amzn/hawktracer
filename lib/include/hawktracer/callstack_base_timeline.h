@@ -5,7 +5,7 @@
 
 HT_DECLS_BEGIN
 
-#define HT_CALLSTACK_BASE_TIMELINE(timeline) ((HT_CallstackTimeline*)timeline)
+#define HT_CALLSTACK_BASE_TIMELINE(timeline) ((HT_CallstackBaseTimeline*)timeline)
 
 typedef struct _HT_Stack HT_Stack;
 

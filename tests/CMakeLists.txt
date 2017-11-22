@@ -34,6 +34,7 @@ add_executable(hawktracer_tests
     test_thread.cpp
     test_timeline.cpp
     test_callstack_base_timeline.cpp
+    test_global_callstack_timeline.cpp
     test_callstack_timeline.cpp)
 
 target_link_libraries(hawktracer_tests ${GTEST_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})

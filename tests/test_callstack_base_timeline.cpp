@@ -9,7 +9,7 @@ class TestCallstackBaseTimeline : public ::testing::Test
 protected:
     void SetUp() override
     {
-        _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("callstack", "buffer-capacity", sizeof(HT_CallstackBaseEvent) * 3, nullptr);
+        _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackBaseEvent) * 3, nullptr);
     }
 
     void TearDown() override
