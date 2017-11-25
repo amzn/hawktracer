@@ -1,10 +1,10 @@
-#include "internal/timeline_registry.h"
-
 #include "hawktracer/alloc.h"
-#include "internal/timeline_klass.hpp"
+#include "internal/timeline_klass.h"
 #include "internal/bag.h"
 
-#include <cassert>
+#include "internal/timeline_registry.h"
+
+#include <assert.h>
 
 static HT_Bag timeline_klass_register;
 
@@ -28,23 +28,23 @@ ht_timeline_registry_init(void)
     ht_bag_init(&timeline_klass_register, 8);
 }
 
-_HT_TimelineKlass*
+HT_TimelineKlass*
 ht_timeline_registry_find_class(const char* klass_id)
 {
-    assert(klass_id != nullptr);
+    assert(klass_id != NULL);
 
-    uint32_t id = djb2_hash(klass_id);
+   uint32_t id = djb2_hash(klass_id);
 
     for (size_t i = 0; i < timeline_klass_register.size; i++)
     {
-        _HT_TimelineKlass* klass = (_HT_TimelineKlass*)timeline_klass_register.data[i];
-        if (klass->id == id)
+        HT_TimelineKlass* klass = (HT_TimelineKlass*)timeline_klass_register.data[i];
+        if (ht_timeline_klass_get_id(klass) == id)
         {
             return klass;
         }
     }
 
-    return nullptr;
+    return NULL;
 }
 
 void ht_timeline_registry_register(
@@ -60,30 +60,10 @@ void ht_timeline_registry_register(
         return;
     }
 
-    _HT_TimelineKlass* klass = HT_CREATE_TYPE(_HT_TimelineKlass);
-
-    klass->listeners = shared_listeners == HT_TRUE ? ht_timeline_listener_container_create() : NULL;
-    klass->type_size = type_size;
-    klass->init = init;
-    klass->deinit = deinit;
-    klass->refcount = 1;
-    klass->id = djb2_hash(klass_id);
+    void* klass = ht_timeline_klass_create(djb2_hash(klass_id), type_size,
+                                          shared_listeners, init, deinit);
 
     ht_bag_add(&timeline_klass_register, klass);
-}
-
-void
-ht_timeline_klass_unref(_HT_TimelineKlass* klass)
-{
-    if (--klass->refcount == 0)
-    {
-        if (klass->listeners)
-        {
-            ht_timeline_listener_container_destroy(klass->listeners);
-        }
-
-        ht_free(klass);
-    }
 }
 
 void
@@ -91,7 +71,7 @@ ht_timeline_registry_unregister_all(void)
 {
     for (size_t i = 0; i < timeline_klass_register.size; i++)
     {
-        _HT_TimelineKlass* klass = (_HT_TimelineKlass*)timeline_klass_register.data[i];
+        HT_TimelineKlass* klass = (HT_TimelineKlass*)timeline_klass_register.data[i];
         ht_timeline_klass_unref(klass);
     }
 

@@ -1,15 +1,16 @@
-#include "internal/timeline_listener.hpp"
+#include "hawktracer/timeline_listener.h"
 
 #include "hawktracer/alloc.h"
 
-#include <cassert>
+#include <assert.h>
 
 HT_TimelineListenerContainer*
 ht_timeline_listener_container_create(void)
 {
     HT_TimelineListenerContainer* container = HT_CREATE_TYPE(HT_TimelineListenerContainer);
 
-    new (&container->listeners) _HT_TimelineListenerContainer::Vector();
+    ht_bag_init(&container->callbacks, 16);
+    ht_bag_init(&container->user_datas, 16);
 
     return container;
 }
@@ -19,7 +20,9 @@ ht_timeline_listener_container_destroy(HT_TimelineListenerContainer* container)
 {
     assert(container);
 
-    container->listeners.~vector();
+    ht_bag_deinit(&container->callbacks);
+    ht_bag_deinit(&container->user_datas);
+
     ht_free(container);
 }
 
@@ -29,12 +32,16 @@ ht_timeline_listener_container_register_listener(
         HT_TimelineListenerCallback callback,
         void* user_data)
 {
-    container->listeners.push_back(std::make_pair(callback, user_data));
+    /* weird cast because of ISO C forbids passing argument 2 of
+       ‘ht_bag_add’ between function pointer and ‘void *’ */
+    ht_bag_add(&container->callbacks, *(void **)&callback);
+    ht_bag_add(&container->user_datas, user_data);
 }
 
 void
 ht_timeline_listener_container_unregister_all_listeners(
         HT_TimelineListenerContainer* container)
 {
-    container->listeners.clear();
+    ht_bag_clear(&container->callbacks);
+    ht_bag_clear(&container->user_datas);
 }

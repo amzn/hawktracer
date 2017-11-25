@@ -52,6 +52,13 @@ ht_bag_add(HT_Bag* bag, void* data)
 }
 
 void
+ht_bag_clear(HT_Bag* bag)
+{
+    _ht_bag_resize(bag, bag->min_capacity);
+    bag->size = 0;
+}
+
+void
 ht_bag_deinit(HT_Bag* bag)
 {
     ht_free(bag->data);

@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_INTERNAL_MUTEX_H
 #define HAWKTRACER_INTERNAL_MUTEX_H
 
-#include <hawktracer/macros.h>
+#include "hawktracer/macros.h"
 
 HT_DECLS_BEGIN
 

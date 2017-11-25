@@ -12,7 +12,7 @@
 HT_Timeline*
 ht_timeline_create(const char* klass_id, ...)
 {
-    _HT_TimelineKlass* klass = ht_timeline_registry_find_class(klass_id);
+    HT_TimelineKlass* klass = ht_timeline_registry_find_class(klass_id);
 
     if (klass == nullptr)
     {

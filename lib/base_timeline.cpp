@@ -23,7 +23,7 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
         }
         else if (strncmp("thread-safe", label, 11) == 0)
         {
-            buffer_capacity = va_arg(args, HT_Boolean);
+            thread_safe = va_arg(args, HT_Boolean);
         }
         else
         {

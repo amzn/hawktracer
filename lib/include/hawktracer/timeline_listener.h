@@ -3,16 +3,23 @@
 
 #include <hawktracer/macros.h>
 #include <hawktracer/base_types.h>
+#include <internal/bag.h> /* TODO!!! */
 
 #include <stddef.h>
 
 HT_DECLS_BEGIN
 
+typedef struct
+{
+    /* TODO single struct with pair? */
+    HT_Bag callbacks;
+    HT_Bag user_datas;
+} HT_TimelineListenerContainer;
+
 typedef void(*HT_TimelineListenerCallback)(
         TEventPtr events, size_t event_count, void* user_data);
 
-typedef struct _HT_TimelineListenerContainer HT_TimelineListenerContainer;
-
+/* TODO: init instead? */
 HT_TimelineListenerContainer*
 ht_timeline_listener_container_create(void);
 

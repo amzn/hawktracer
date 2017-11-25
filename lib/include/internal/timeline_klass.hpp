@@ -1,6 +1,7 @@
 #ifndef HAWKTRACER_INTERNAL_TIMELINE_KLASS_HPP
 #define HAWKTRACER_INTERNAL_TIMELINE_KLASS_HPP
 
+#include "internal/timeline_klass.h"
 #include <atomic>
 
 struct _HT_TimelineKlass
@@ -12,7 +13,5 @@ struct _HT_TimelineKlass
     std::atomic_int_fast32_t refcount;
     uint32_t id;
 };
-
-void ht_timeline_klass_unref(_HT_TimelineKlass* klass);
 
 #endif /* HAWKTRACER_INTERNAL_TIMELINE_KLASS_HPP */

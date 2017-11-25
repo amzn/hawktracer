@@ -18,8 +18,9 @@ set(HAWKTRACER_LIB_SOURCES
     mutex.cpp
     thread.cpp
     timeline.cpp
-    timeline_listener.cpp
-    timeline_registry.cpp)
+    timeline_klass.cpp
+    timeline_listener.c
+    timeline_registry.c)
 
 include_directories(include)
 
