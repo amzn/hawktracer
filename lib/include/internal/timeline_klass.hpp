@@ -10,6 +10,7 @@ struct _HT_TimelineKlass
     void (*init)(HT_BaseTimeline*, va_list);
     void (*deinit)(HT_BaseTimeline*);
     std::atomic_int_fast32_t refcount;
+    uint32_t id;
     HT_Boolean thread_safe;
 };
 

@@ -10,6 +10,8 @@ ht_init(int argc, char** argv)
     HT_UNUSED(argc);
     HT_UNUSED(argv);
 
+    ht_timeline_registry_init();
+
     ht_timeline_registry_register(
                 "simple_ts", sizeof(HT_Timeline), HT_TRUE, HT_FALSE,
                 ht_base_timeline_init, ht_base_timeline_deinit);

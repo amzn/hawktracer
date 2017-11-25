@@ -2,11 +2,11 @@
 
 #include "hawktracer/alloc.h"
 #include "internal/timeline_klass.hpp"
+#include "internal/bag.h"
 
-#include <unordered_map>
 #include <cassert>
 
-std::unordered_map<uint32_t, _HT_TimelineKlass*> timeline_klass_register; // todo quark
+static HT_Bag timeline_klass_register;
 
 static uint32_t
 djb2_hash(const char *str)
@@ -22,14 +22,29 @@ djb2_hash(const char *str)
     return hash;
 }
 
+void
+ht_timeline_registry_init(void)
+{
+    ht_bag_init(&timeline_klass_register, 8);
+}
+
 _HT_TimelineKlass*
 ht_timeline_registry_find_class(const char* klass_id)
 {
     assert(klass_id != nullptr);
 
-    auto it = timeline_klass_register.find(djb2_hash(klass_id));
+    uint32_t id = djb2_hash(klass_id);
 
-    return it == timeline_klass_register.end() ? nullptr : it->second;
+    for (size_t i = 0; i < timeline_klass_register.size; i++)
+    {
+        _HT_TimelineKlass* klass = (_HT_TimelineKlass*)timeline_klass_register.data[i];
+        if (klass->id == id)
+        {
+            return klass;
+        }
+    }
+
+    return nullptr;
 }
 
 void ht_timeline_registry_register(
@@ -54,8 +69,9 @@ void ht_timeline_registry_register(
     klass->init = init;
     klass->deinit = deinit;
     klass->refcount = 1;
+    klass->id = djb2_hash(klass_id);
 
-    timeline_klass_register[djb2_hash(klass_id)] = klass;
+    ht_bag_add(&timeline_klass_register, klass);
 }
 
 void
@@ -75,10 +91,11 @@ ht_timeline_klass_unref(_HT_TimelineKlass* klass)
 void
 ht_timeline_registry_unregister_all(void)
 {
-    for (const auto& klass_pair : timeline_klass_register)
+    for (size_t i = 0; i < timeline_klass_register.size; i++)
     {
-        ht_timeline_klass_unref(klass_pair.second);
+        _HT_TimelineKlass* klass = (_HT_TimelineKlass*)timeline_klass_register.data[i];
+        ht_timeline_klass_unref(klass);
     }
 
-    timeline_klass_register.clear();
+    ht_bag_deinit(&timeline_klass_register);
 }
