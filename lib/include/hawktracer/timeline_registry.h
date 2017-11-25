@@ -1,8 +1,7 @@
 #ifndef HAWKTRACER_TIMELINE_REGISTRY_H
 #define HAWKTRACER_TIMELINE_REGISTRY_H
 
-#include <hawktracer/macros.h>
-#include <hawktracer/base_types.h>
+#include <hawktracer/timeline.h>
 
 HT_DECLS_BEGIN
 

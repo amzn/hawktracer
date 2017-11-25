@@ -1,5 +1,6 @@
-#include <hawktracer/mutex.h>
-#include <hawktracer/alloc.h>
+#include "internal/mutex.h"
+
+#include "hawktracer/alloc.h"
 
 #include <mutex>
 #include <cassert>

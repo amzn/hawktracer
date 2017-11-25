@@ -1,11 +1,12 @@
 #include "internal/timeline_registry.h"
 
 #include "hawktracer/alloc.h"
+#include "internal/timeline_klass.hpp"
 
 #include <unordered_map>
 #include <cassert>
 
-std::unordered_map<uint32_t, HT_TimelineKlass*> timeline_klass_register; // todo quark
+std::unordered_map<uint32_t, _HT_TimelineKlass*> timeline_klass_register; // todo quark
 
 static uint32_t
 djb2_hash(const char *str)
@@ -21,7 +22,7 @@ djb2_hash(const char *str)
     return hash;
 }
 
-HT_TimelineKlass*
+_HT_TimelineKlass*
 ht_timeline_registry_find_class(const char* klass_id)
 {
     assert(klass_id != nullptr);
@@ -45,7 +46,7 @@ void ht_timeline_registry_register(
         return;
     }
 
-    HT_TimelineKlass* klass = HT_CREATE_TYPE(HT_TimelineKlass);
+    _HT_TimelineKlass* klass = HT_CREATE_TYPE(_HT_TimelineKlass);
 
     klass->thread_safe = thread_safe;
     klass->listeners = shared_listeners == HT_TRUE ? ht_timeline_listener_container_create() : NULL;
@@ -61,7 +62,7 @@ ht_timeline_registry_unregister_all(void)
 {
     while (!timeline_klass_register.empty())
     {
-        HT_TimelineKlass* klass = timeline_klass_register.begin()->second;
+        _HT_TimelineKlass* klass = timeline_klass_register.begin()->second;
 
         if (klass->listeners)
         {

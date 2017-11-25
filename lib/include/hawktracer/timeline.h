@@ -5,7 +5,6 @@
 #include <hawktracer/events.h>
 #include <hawktracer/timeline_listener.h>
 #include <hawktracer/event_id_provider.h>
-#include <hawktracer/mutex.h>
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -14,17 +13,15 @@ HT_DECLS_BEGIN
 
 #define HT_TIMELINE(timeline) ((HT_Timeline*)timeline)
 
-typedef struct _HT_TimelineKlass HT_TimelineKlass;
-
 typedef struct
 {
     size_t buffer_capacity;
     size_t buffer_usage;
     uint8_t* buffer;
-    HT_Mutex* locking_policy;
     HT_EventIdProvider* id_provider;
     HT_TimelineListenerContainer* listeners;
-    HT_TimelineKlass* klass;
+    struct _HT_Mutex* locking_policy;
+    struct _HT_TimelineKlass* klass;
 } HT_Timeline;
 
 void ht_timeline_register_listener(

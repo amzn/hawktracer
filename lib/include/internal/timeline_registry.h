@@ -10,18 +10,7 @@
 
 HT_DECLS_BEGIN
 
-typedef struct _HT_TimelineConstructParams _HT_TimelineConstructParams;
-
-struct _HT_TimelineKlass
-{
-    size_t type_size;
-    HT_TimelineListenerContainer* listeners;
-    void (*init)(HT_Timeline*, va_list);
-    void (*deinit)(HT_Timeline*);
-    HT_Boolean thread_safe;
-};
-
-HT_TimelineKlass* ht_timeline_registry_find_class(const char* klass_id);
+struct _HT_TimelineKlass* ht_timeline_registry_find_class(const char* klass_id);
 
 void ht_timeline_registry_unregister_all(void);
 
