@@ -11,7 +11,6 @@ struct _HT_TimelineKlass
     void (*deinit)(HT_BaseTimeline*);
     std::atomic_int_fast32_t refcount;
     uint32_t id;
-    HT_Boolean thread_safe;
 };
 
 void ht_timeline_klass_unref(_HT_TimelineKlass* klass);

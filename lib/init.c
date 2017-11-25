@@ -13,11 +13,11 @@ ht_init(int argc, char** argv)
     ht_timeline_registry_init();
 
     ht_timeline_registry_register(
-                "simple_ts", sizeof(HT_Timeline), HT_TRUE, HT_FALSE,
+                "simple_ts", sizeof(HT_Timeline), HT_FALSE,
                 ht_base_timeline_init, ht_base_timeline_deinit);
 
     ht_timeline_registry_register(
-                "HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_FALSE, HT_TRUE,
+                "HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
                 ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
 }
 

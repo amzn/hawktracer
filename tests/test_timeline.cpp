@@ -5,6 +5,8 @@
 
 #include <gtest/gtest.h>
 
+#include <thread>
+
 class TestTimeline : public ::testing::Test
 {
 protected:
@@ -89,4 +91,50 @@ TEST_F(TestTimeline, InitEventShouldSetMonotonicTimestamp)
 
     // Assert
     ASSERT_LT(ts, event.timestamp);
+}
+
+TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
+{
+    // Arrange
+    const size_t event_count = 20000;
+    HT_Timeline* timeline = ht_timeline_create("simple_ts",
+                                   "buffer-capacity", sizeof(HT_Event) * 3,
+                                   "thread-safe", HT_TRUE, nullptr);
+    NotifyInfo<HT_Event> info;
+    ht_timeline_register_listener(timeline, test_listener<HT_Event>, &info);
+
+    // Act
+    std::thread th = std::thread([timeline] {
+        for (size_t i = event_count / 2; i < event_count; i++)
+        {
+            HT_DECL_EVENT(HT_Event, event);
+            event.timestamp = i;
+            ht_timeline_push_event(timeline, &event);
+        }
+    });
+
+    for (size_t i = 0; i < event_count / 2; i++)
+    {
+        HT_DECL_EVENT(HT_Event, event);
+        event.timestamp = i;
+        ht_timeline_push_event(timeline, &event);
+    }
+
+    th.join();
+
+    ht_timeline_flush(timeline);
+
+    // Assert
+    std::vector<int> all_values(event_count, 1);
+    size_t sum = 0;
+    for (const auto& event : info.values)
+    {
+        ASSERT_GT(event_count, event.timestamp);
+        sum += all_values[event.timestamp];
+        all_values[event.timestamp] = 0;
+    }
+
+    ASSERT_EQ(event_count, sum);
+
+    ht_timeline_destroy(timeline);
 }

@@ -50,7 +50,6 @@ ht_timeline_registry_find_class(const char* klass_id)
 void ht_timeline_registry_register(
         const char* klass_id,
         size_t type_size,
-        HT_Boolean thread_safe,
         HT_Boolean shared_listeners,
         void (*init)(HT_Timeline*, va_list),
         void (*deinit)(HT_Timeline*))
@@ -63,7 +62,6 @@ void ht_timeline_registry_register(
 
     _HT_TimelineKlass* klass = HT_CREATE_TYPE(_HT_TimelineKlass);
 
-    klass->thread_safe = thread_safe;
     klass->listeners = shared_listeners == HT_TRUE ? ht_timeline_listener_container_create() : NULL;
     klass->type_size = type_size;
     klass->init = init;

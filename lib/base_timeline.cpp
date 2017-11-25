@@ -11,6 +11,8 @@ void
 ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 {
     size_t buffer_capacity = 1024;
+    HT_Boolean thread_safe = HT_TRUE;
+
     const char* label = va_arg(args, const char*);;
 
     while (label != nullptr)
@@ -18,6 +20,10 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
         if (strncmp("buffer-capacity", label, 15) == 0)
         {
             buffer_capacity = va_arg(args, size_t);
+        }
+        else if (strncmp("thread-safe", label, 11) == 0)
+        {
+            buffer_capacity = va_arg(args, HT_Boolean);
         }
         else
         {
@@ -34,8 +40,7 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
     timeline->listeners = (timeline->klass->listeners == NULL) ?
                 ht_timeline_listener_container_create() : timeline->klass->listeners;
 
-    timeline->locking_policy = (timeline->klass->thread_safe == HT_TRUE) ?
-                ht_mutex_create() : NULL;
+    timeline->locking_policy = thread_safe ? ht_mutex_create() : NULL;
 }
 
 void

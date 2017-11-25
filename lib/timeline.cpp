@@ -2,7 +2,6 @@
 #include <hawktracer/alloc.h>
 #include <hawktracer/monotonic_clock.h>
 
-#include "internal/timeline_listener.hpp"
 #include "internal/timeline_registry.h"
 #include "internal/timeline_klass.hpp"
 #include "internal/mutex.h"
@@ -49,9 +48,10 @@ void ht_timeline_destroy(HT_Timeline* timeline)
 static inline void
 _ht_timeline_notify_listeners(HT_Timeline* timeline)
 {
-    for (const auto& listener : timeline->listeners->listeners)
+    for (size_t i = 0; i < timeline->listeners->user_datas.size; i++)
     {
-        listener.first(timeline->buffer, timeline->buffer_usage, listener.second);
+        ((HT_TimelineListenerCallback)timeline->listeners->callbacks.data[i])
+                (timeline->buffer, timeline->buffer_usage, timeline->listeners->user_datas.data[i]);
     }
 }
 
