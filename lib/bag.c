@@ -1,8 +1,8 @@
 #include "internal/bag.h"
 
 #include "hawktracer/alloc.h"
-/*  TODO inline */
-static void
+
+static inline void
 _ht_bag_resize(HT_Bag* bag, size_t new_capacity)
 {
     bag->capacity = new_capacity;
