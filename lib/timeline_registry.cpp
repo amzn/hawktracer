@@ -53,24 +53,32 @@ void ht_timeline_registry_register(
     klass->type_size = type_size;
     klass->init = init;
     klass->deinit = deinit;
+    klass->refcount = 1;
 
     timeline_klass_register[djb2_hash(klass_id)] = klass;
 }
 
 void
-ht_timeline_registry_unregister_all(void)
+ht_timeline_klass_unref(_HT_TimelineKlass* klass)
 {
-    while (!timeline_klass_register.empty())
+    if (--klass->refcount == 0)
     {
-        _HT_TimelineKlass* klass = timeline_klass_register.begin()->second;
-
         if (klass->listeners)
         {
             ht_timeline_listener_container_destroy(klass->listeners);
         }
 
         ht_free(klass);
-
-        timeline_klass_register.erase(timeline_klass_register.begin());
     }
+}
+
+void
+ht_timeline_registry_unregister_all(void)
+{
+    for (const auto& klass_pair : timeline_klass_register)
+    {
+        ht_timeline_klass_unref(klass_pair.second);
+    }
+
+    timeline_klass_register.clear();
 }

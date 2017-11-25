@@ -23,4 +23,7 @@ TEST(TestGlobalCallstackTimeline, SimpleTest)
     ASSERT_EQ(2 * sizeof(HT_CallstackIntEvent), info.notified_events);
     ASSERT_EQ(1, info.notify_count);
     ASSERT_EQ(2u, info.values.size());
+
+
+    ht_timeline_unregister_all_listeners(HT_TIMELINE(timeline));
 }

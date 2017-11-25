@@ -21,6 +21,8 @@ ht_timeline_create(const char* klass_id, ...)
         return nullptr;
     }
 
+    ++klass->refcount;
+
     HT_Timeline* timeline = (HT_Timeline*)ht_alloc(klass->type_size);
     timeline->klass = klass;
 
@@ -36,9 +38,12 @@ ht_timeline_create(const char* klass_id, ...)
 
 void ht_timeline_destroy(HT_Timeline* timeline)
 {
-    timeline->klass->deinit(timeline);
+    _HT_TimelineKlass* klass = timeline->klass;
 
+    klass->deinit(timeline);
     ht_free(timeline);
+
+    ht_timeline_klass_unref(klass);
 }
 
 static inline void
