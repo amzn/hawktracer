@@ -1,5 +1,4 @@
 #include "hawktracer/global_callstack_timeline.h"
-
 struct GlobalCallstackTimeline
 {
     GlobalCallstackTimeline()

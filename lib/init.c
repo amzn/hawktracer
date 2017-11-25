@@ -1,10 +1,7 @@
 #include "hawktracer/init.h"
-
-#include "internal/timeline_registry.h"
-
-#include "hawktracer/timeline.h"
+#include "hawktracer/base_timeline.h"
 #include "hawktracer/callstack_base_timeline.h"
-#include "hawktracer/alloc.h"
+#include "internal/timeline_registry.h"
 
 void
 ht_init(int argc, char** argv)
@@ -15,7 +12,7 @@ ht_init(int argc, char** argv)
 
     ht_timeline_registry_register(
                 "simple_ts", sizeof(HT_Timeline), HT_TRUE, HT_FALSE,
-                ht_timeline_init, ht_timeline_deinit);
+                ht_base_timeline_init, ht_base_timeline_deinit);
 
     ht_timeline_registry_register(
                 "HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_FALSE, HT_TRUE,

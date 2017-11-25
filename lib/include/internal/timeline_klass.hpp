@@ -5,8 +5,8 @@ struct _HT_TimelineKlass
 {
     size_t type_size;
     HT_TimelineListenerContainer* listeners;
-    void (*init)(HT_Timeline*, va_list);
-    void (*deinit)(HT_Timeline*);
+    void (*init)(HT_BaseTimeline*, va_list);
+    void (*deinit)(HT_BaseTimeline*);
     HT_Boolean thread_safe;
 };
 

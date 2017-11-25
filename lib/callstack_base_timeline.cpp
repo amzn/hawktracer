@@ -1,9 +1,10 @@
 #include "hawktracer/callstack_base_timeline.h"
+#include "hawktracer/alloc.h"
+#include "hawktracer/monotonic_clock.h"
 
 #include "internal/thread.h"
 
-#include "hawktracer/alloc.h"
-#include "hawktracer/monotonic_clock.h"
+#include "hawktracer/timeline.h"
 
 #include <cstring>
 #include <stack>
@@ -20,9 +21,9 @@ struct _HT_Stack
 };
 
 void
-ht_callstack_base_timeline_init(HT_Timeline* timeline, va_list args)
+ht_callstack_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 {
-    ht_timeline_init(timeline, args);
+    ht_base_timeline_init(timeline, args);
     HT_CallstackBaseTimeline* callstack_timeline = (HT_CallstackBaseTimeline*)timeline;
     callstack_timeline->stack = HT_CREATE_TYPE(HT_Stack);
     new(callstack_timeline->stack) _HT_Stack();
@@ -31,7 +32,7 @@ ht_callstack_base_timeline_init(HT_Timeline* timeline, va_list args)
 }
 
 void
-ht_callstack_base_timeline_deinit(HT_Timeline* timeline)
+ht_callstack_base_timeline_deinit(HT_BaseTimeline* timeline)
 {
     assert(timeline);
 
@@ -39,13 +40,13 @@ ht_callstack_base_timeline_deinit(HT_Timeline* timeline)
     ((HT_CallstackBaseTimeline*)timeline)->stack->~_HT_Stack();
     ht_free(((HT_CallstackBaseTimeline*)timeline)->stack);
 
-    ht_timeline_deinit(timeline);
+    ht_base_timeline_deinit(timeline);
 }
 
 void
 ht_callstack_base_timeline_start(HT_CallstackBaseTimeline* timeline, HT_CallstackBaseEvent* event)
 {
-    ht_timeline_init_event(HT_TIMELINE(timeline), HT_EVENT(event));
+    ht_timeline_init_event(HT_BASE_TIMELINE(timeline), HT_EVENT(event));
     memcpy(timeline->stack->data + timeline->stack->pos, event, event->base.klass->size);
     timeline->stack->sizes_stack.push(event->base.klass->size);
     timeline->stack->pos += event->base.klass->size;
