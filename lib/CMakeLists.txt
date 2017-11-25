@@ -6,6 +6,7 @@ set(HAWKTRACER_LIB_HEADERS
 
 set(HAWKTRACER_LIB_SOURCES
     alloc.c
+    bag.c
     base_timeline.cpp
     callstack_base_timeline.cpp
     callstack_timeline.c

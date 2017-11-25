@@ -29,6 +29,7 @@ include_directories(../lib/include "${GTEST_INCLUDE_DIRS}")
 add_executable(hawktracer_tests
     main.cpp
     test_alloc.cpp
+    test_bag.cpp
     test_common.cpp
     test_event_id_provider.cpp
     test_thread.cpp
