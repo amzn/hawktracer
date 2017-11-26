@@ -14,7 +14,10 @@ typedef struct
 {
     HT_BaseTimeline base;
 
-    HT_Stack* stack;
+    /* Stack */
+    HT_Bag sizes_stack;
+    uint8_t* data;
+    size_t pos;
 } HT_CallstackBaseTimeline;
 
 typedef struct

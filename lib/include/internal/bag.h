@@ -23,6 +23,8 @@ void ht_bag_deinit(HT_Bag* bag);
 
 void ht_bag_remove(HT_Bag* bag, void* data);
 
+void ht_bag_remove_nth(HT_Bag* bag, size_t n);
+
 void ht_bag_add(HT_Bag* bag, void* data);
 
 void ht_bag_clear(HT_Bag* bag);

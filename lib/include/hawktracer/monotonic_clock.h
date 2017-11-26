@@ -6,7 +6,7 @@
 
 HT_DECLS_BEGIN
 
-HT_TimestampNs ht_monotonic_clock_get_timestamp();
+HT_TimestampNs ht_monotonic_clock_get_timestamp(void);
 
 HT_DECLS_END
 

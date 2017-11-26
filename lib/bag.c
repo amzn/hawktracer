@@ -26,17 +26,23 @@ ht_bag_remove(HT_Bag* bag, void* data)
     {
         if (bag->data[i] == data)
         {
-            bag->size--;
-            if (bag->size > 0)
-            {
-                bag->data[i] = bag->data[bag->size];
-            }
-
-            if (bag->capacity > bag->min_capacity && bag->size < bag->capacity / 4)
-            {
-                _ht_bag_resize(bag, bag->capacity / 2);
-            }
+            ht_bag_remove_nth(bag, i);
         }
+    }
+}
+
+void
+ht_bag_remove_nth(HT_Bag* bag, size_t n)
+{
+    bag->size--;
+    if (bag->size > 0)
+    {
+        bag->data[n] = bag->data[bag->size];
+    }
+
+    if (bag->capacity > bag->min_capacity && bag->size < bag->capacity / 4)
+    {
+        _ht_bag_resize(bag, bag->capacity / 2);
     }
 }
 

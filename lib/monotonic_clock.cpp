@@ -3,7 +3,7 @@
 #include <chrono>
 
 HT_TimestampNs
-ht_monotonic_clock_get_timestamp()
+ht_monotonic_clock_get_timestamp(void)
 {
     auto timestamp = std::chrono::steady_clock::now().time_since_epoch().count();
 
