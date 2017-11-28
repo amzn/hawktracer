@@ -1,5 +1,4 @@
-#include "internal/bag.h"
-
+#include "hawktracer/bag.h"
 #include "hawktracer/alloc.h"
 
 static inline void

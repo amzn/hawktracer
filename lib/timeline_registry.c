@@ -1,7 +1,6 @@
 #include "hawktracer/alloc.h"
+#include "hawktracer//bag.h"
 #include "internal/timeline_klass.h"
-#include "internal/bag.h"
-
 #include "internal/timeline_registry.h"
 
 #include <assert.h>

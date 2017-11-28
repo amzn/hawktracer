@@ -3,7 +3,7 @@
 
 #include <hawktracer/macros.h>
 #include <hawktracer/base_types.h>
-#include <internal/bag.h> /* TODO!!! */
+#include <hawktracer/bag.h>
 
 #include <stddef.h>
 

@@ -1,7 +1,7 @@
-#ifndef HAWKTRACER_INTERNAL_BAG_H
-#define HAWKTRACER_INTERNAL_BAG_H
+#ifndef HAWKTRACER_BAG_H
+#define HAWKTRACER_BAG_H
 
-#include "hawktracer/macros.h"
+#include <hawktracer/macros.h>
 
 #include <stddef.h>
 
@@ -29,6 +29,8 @@ void ht_bag_add(HT_Bag* bag, void* data);
 
 void ht_bag_clear(HT_Bag* bag);
 
+#define ht_bag_last(bag) bag.data[bag.size - 1]
+
 HT_DECLS_END
 
-#endif /* HAWKTRACER_INTERNAL_BAG_H */
+#endif /* HAWKTRACER_BAG_H */

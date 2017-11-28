@@ -34,7 +34,7 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 
     timeline->buffer_usage = 0;
     timeline->buffer_capacity = buffer_capacity;
-    timeline->buffer = (uint8_t*)ht_alloc(buffer_capacity);
+    timeline->buffer = (HT_Byte*)ht_alloc(buffer_capacity);
     timeline->id_provider = ht_event_id_provider_get_default();
 
     timeline->listeners = (timeline->klass->listeners == NULL) ?

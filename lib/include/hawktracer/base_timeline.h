@@ -1,7 +1,6 @@
 #ifndef HAWKTRACER_BASE_TIMELINE_H
 #define HAWKTRACER_BASE_TIMELINE_H
 
-#include <hawktracer/macros.h>
 #include <hawktracer/timeline_listener.h>
 #include <hawktracer/event_id_provider.h>
 
@@ -13,7 +12,7 @@ typedef struct
 {
     size_t buffer_capacity;
     size_t buffer_usage;
-    uint8_t* buffer;
+    HT_Byte* buffer;
     HT_EventIdProvider* id_provider;
     HT_TimelineListenerContainer* listeners;
     struct _HT_Mutex* locking_policy;

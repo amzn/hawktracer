@@ -3,21 +3,17 @@
 
 #include <hawktracer/timeline.h>
 #include <hawktracer/events.h>
+#include <hawktracer/stack.h>
 
 HT_DECLS_BEGIN
 
 #define HT_CALLSTACK_BASE_TIMELINE(timeline) ((HT_CallstackBaseTimeline*)timeline)
 
-typedef struct _HT_Stack HT_Stack;
-
 typedef struct
 {
     HT_BaseTimeline base;
 
-    /* Stack */
-    HT_Bag sizes_stack;
-    uint8_t* data;
-    size_t pos;
+    HT_Stack stack;
 } HT_CallstackBaseTimeline;
 
 typedef struct

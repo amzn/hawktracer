@@ -1,4 +1,4 @@
-#include <internal/bag.h>
+#include <hawktracer/bag.h>
 
 #include <gtest/gtest.h>
 
