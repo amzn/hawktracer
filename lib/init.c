@@ -12,6 +12,7 @@ ht_init(int argc, char** argv)
 
     ht_timeline_registry_init();
 
+    /* TODO: should we take some action if register() fails? */
     ht_timeline_registry_register(
                 "simple_ts", sizeof(HT_Timeline), HT_FALSE,
                 ht_base_timeline_init, ht_base_timeline_deinit);

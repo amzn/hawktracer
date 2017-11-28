@@ -46,7 +46,7 @@ ht_timeline_registry_find_class(const char* klass_id)
     return NULL;
 }
 
-void ht_timeline_registry_register(
+HT_Boolean ht_timeline_registry_register(
         const char* klass_id,
         size_t type_size,
         HT_Boolean shared_listeners,
@@ -56,13 +56,15 @@ void ht_timeline_registry_register(
     if (ht_timeline_registry_find_class(klass_id) != NULL)
     {
         // TODO error
-        return;
+        return HT_FALSE;
     }
 
     void* klass = ht_timeline_klass_create(djb2_hash(klass_id), type_size,
                                           shared_listeners, init, deinit);
 
     ht_bag_add(&timeline_klass_register, klass);
+
+    return HT_TRUE;
 }
 
 void

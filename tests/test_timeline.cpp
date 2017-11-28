@@ -45,6 +45,15 @@ TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
     ASSERT_EQ(3, info.notify_count);
 }
 
+TEST_F(TestTimeline, ShouldNotCreateTimelineIfTypeNotRegistered)
+{
+    // Arrange & Act
+    HT_Timeline* timeline = ht_timeline_create("invalid-type-name-which-definitely-does-not-exist", nullptr);
+
+    // Assert
+    ASSERT_EQ(nullptr, timeline);
+}
+
 TEST_F(TestTimeline, FlushEventsShouldNotifyListener)
 {
     // Arrange

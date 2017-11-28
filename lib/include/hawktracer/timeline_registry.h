@@ -5,7 +5,7 @@
 
 HT_DECLS_BEGIN
 
-void ht_timeline_registry_register(const char* klass_id,
+HT_Boolean ht_timeline_registry_register(const char* klass_id,
         size_t type_size,
         HT_Boolean shared_listeners,
         void (*init)(HT_Timeline*, va_list),
