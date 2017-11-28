@@ -2,7 +2,6 @@
 #define HAWKTRACER_CALLSTACK_BASE_TIMELINE_H
 
 #include <hawktracer/timeline.h>
-#include <hawktracer/events.h>
 #include <hawktracer/stack.h>
 
 HT_DECLS_BEGIN

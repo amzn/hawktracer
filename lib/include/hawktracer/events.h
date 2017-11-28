@@ -1,7 +1,6 @@
 #ifndef HAWKTRACER_EVENTS_H
 #define HAWKTRACER_EVENTS_H
 
-#include <hawktracer/macros.h>
 #include <hawktracer/base_types.h>
 
 #include <stddef.h>

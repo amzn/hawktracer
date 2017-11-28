@@ -2,7 +2,6 @@
 #define HAWKTRACER_MONOTONIC_CLOCK_H
 
 #include <hawktracer/base_types.h>
-#include <hawktracer/macros.h>
 
 HT_DECLS_BEGIN
 

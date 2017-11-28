@@ -20,7 +20,7 @@ void mixed_test_listener(TEventPtr events, size_t event_count, void* user_data)
     TEventPtr end = events + event_count;
     while (events < end)
     {
-        switch (HT_EVENT(events)->klass->type)
+        switch (HT_EVENT_GET_CLASS(events)->type)
         {
         case 3: /* TODO don't use numbers */
             i->int_values.push_back(*((HT_CallstackIntEvent*)events));
@@ -32,7 +32,7 @@ void mixed_test_listener(TEventPtr events, size_t event_count, void* user_data)
             ASSERT_FALSE("Unexpected event type");
         }
 
-        events += ((HT_Event*)events)->klass->size;
+        events += HT_EVENT_GET_CLASS(events)->size;
     }
 }
 

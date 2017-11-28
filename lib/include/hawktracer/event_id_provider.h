@@ -1,7 +1,6 @@
 #ifndef HAWKTRACER_EVENT_ID_PROVIDER_H
 #define HAWKTRACER_EVENT_ID_PROVIDER_H
 
-#include <hawktracer/macros.h>
 #include <hawktracer/base_types.h>
 
 HT_DECLS_BEGIN

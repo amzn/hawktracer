@@ -23,7 +23,7 @@ void test_listener(TEventPtr events, size_t event_count, void* user_data)
     while (events < end)
     {
         i->values.push_back(*((T*)events));
-        events += ((HT_Event*)events)->klass->size;
+        events += HT_EVENT_GET_CLASS(events)->size;
     }
 }
 

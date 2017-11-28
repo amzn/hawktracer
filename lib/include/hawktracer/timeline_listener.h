@@ -1,7 +1,6 @@
 #ifndef HAWKTRACER_TIMELINE_LISTENER_H
 #define HAWKTRACER_TIMELINE_LISTENER_H
 
-#include <hawktracer/macros.h>
 #include <hawktracer/base_types.h>
 #include <hawktracer/bag.h>
 
