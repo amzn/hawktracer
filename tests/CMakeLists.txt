@@ -30,12 +30,13 @@ add_executable(hawktracer_tests
     main.cpp
     test_alloc.cpp
     test_bag.cpp
+    test_callstack_base_timeline.cpp
+    test_callstack_timeline.cpp
     test_common.cpp
     test_event_id_provider.cpp
-    test_thread.cpp
-    test_timeline.cpp
-    test_callstack_base_timeline.cpp
     test_global_callstack_timeline.cpp
-    test_callstack_timeline.cpp)
+    test_stack.cpp
+    test_thread.cpp
+    test_timeline.cpp)
 
 target_link_libraries(hawktracer_tests ${GTEST_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
