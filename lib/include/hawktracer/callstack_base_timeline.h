@@ -15,16 +15,6 @@ typedef struct
     HT_Stack stack;
 } HT_CallstackBaseTimeline;
 
-typedef struct
-{
-    HT_Event base;
-
-    HT_DurationNs duration;
-    HT_ThreadId thread_id;
-} HT_CallstackBaseEvent;
-
-HT_DECLARE_EVENT_KLASS(HT_CallstackBaseEvent);
-
 void ht_callstack_base_timeline_init(HT_BaseTimeline* timeline, va_list args);
 
 void ht_callstack_base_timeline_deinit(HT_BaseTimeline* timeline);

@@ -7,8 +7,6 @@
 
 #include <assert.h>
 
-HT_DEFINE_EVENT_KLASS(HT_CallstackBaseEvent, 2);
-
 void
 ht_callstack_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 {
@@ -31,7 +29,7 @@ void
 ht_callstack_base_timeline_start(HT_CallstackBaseTimeline* timeline, HT_CallstackBaseEvent* event)
 {
     ht_timeline_init_event(HT_BASE_TIMELINE(timeline), HT_EVENT(event));
-    ht_stack_push(&timeline->stack, event, event->base.klass->size);
+    ht_stack_push(&timeline->stack, event, event->base.klass->event_size);
 }
 
 void

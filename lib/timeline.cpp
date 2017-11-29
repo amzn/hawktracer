@@ -75,7 +75,7 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
         ht_mutex_lock(timeline->locking_policy);
     }
 
-    if (timeline->buffer_capacity < timeline->buffer_usage + klass->size)
+    if (timeline->buffer_capacity < timeline->buffer_usage + klass->event_size)
     {
         _ht_timeline_notify_listeners(timeline);
         timeline->buffer_usage = 0;
@@ -84,16 +84,16 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 #define HT_COPY_EVENT(EventStruct) \
     memcpy(timeline->buffer + timeline->buffer_usage, event, sizeof(EventStruct))
 
-    switch (klass->size)
+    switch (klass->event_size)
     {
     case sizeof(HT_Event):
         HT_COPY_EVENT(HT_Event);
         break;
     default:
-        memcpy(timeline->buffer + timeline->buffer_usage, event, klass->size);
+        memcpy(timeline->buffer + timeline->buffer_usage, event, klass->event_size);
     }
 
-    timeline->buffer_usage += klass->size;
+    timeline->buffer_usage += klass->event_size;
 
     if (timeline->locking_policy != NULL)
     {

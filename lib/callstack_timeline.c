@@ -2,9 +2,6 @@
 
 #include <string.h>
 
-HT_DEFINE_EVENT_KLASS(HT_CallstackIntEvent, 3); /* TODO don't use numbers */
-HT_DEFINE_EVENT_KLASS(HT_CallstackStringEvent, 4);
-
 void
 ht_callstack_timeline_int_start(HT_CallstackBaseTimeline* timeline, HT_CallstackEventLabel label)
 {

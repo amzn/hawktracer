@@ -22,17 +22,17 @@ void mixed_test_listener(TEventPtr events, size_t event_count, void* user_data)
     {
         switch (HT_EVENT_GET_CLASS(events)->type)
         {
-        case 3: /* TODO don't use numbers */
+        case HT_EVENT_TYPE_CALLSTACK_INT:
             i->int_values.push_back(*((HT_CallstackIntEvent*)events));
             break;
-        case 4: /* TODO don't use numbers */
+        case HT_EVENT_TYPE_CALLSTACK_STRING:
             i->string_values.push_back(*((HT_CallstackStringEvent*)events));
             break;
         default:
             ASSERT_FALSE("Unexpected event type");
         }
 
-        events += HT_EVENT_GET_CLASS(events)->size;
+        events += HT_EVENT_GET_CLASS(events)->event_size;
     }
 }
 
