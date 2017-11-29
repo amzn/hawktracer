@@ -20,6 +20,10 @@ ht_init(int argc, char** argv)
     ht_timeline_registry_register(
                 "HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
                 ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
+
+    ht_timeline_registry_register(
+                "HT_GlobalCallstackTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
+                ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
 }
 
 void ht_deinit(void)
