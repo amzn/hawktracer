@@ -32,18 +32,8 @@ typedef struct
 } HT_Event;
 HT_DECLARE_EVENT_KLASS(HT_Event);
 
-typedef struct
-{
-    HT_Event base;
-
-    HT_DurationNs duration;
-} HT_DurationEvent;
-HT_DECLARE_EVENT_KLASS(HT_DurationEvent);
-
 #define HT_DECL_EVENT(EventStruct, event) \
     EventStruct event; HT_EVENT(&event)->klass = &instance_klass_##EventStruct;
-
-void _ht_event_init(HT_EventType* type);
 
 HT_DECLS_END
 
