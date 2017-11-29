@@ -3,7 +3,6 @@ struct GlobalCallstackTimeline
 {
     GlobalCallstackTimeline()
     {
-        // Todo should we init here?
         c_timeline = HT_CALLSTACK_BASE_TIMELINE(ht_timeline_create("HT_GlobalCallstackTimeline", "buffer-size", 1024, nullptr)); // TODO buffer-size from command line
     }
 

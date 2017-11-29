@@ -55,7 +55,6 @@ HT_Boolean ht_timeline_registry_register(
 {
     if (ht_timeline_registry_find_class(klass_id) != NULL)
     {
-        // TODO error
         return HT_FALSE;
     }
 

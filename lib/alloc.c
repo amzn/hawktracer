@@ -13,7 +13,6 @@ void ht_allocator_set(realloc_function func, void* user_data)
 
 void* ht_alloc(size_t size)
 {
-    /* TODO: check whether if (fnc == NULL) is faster than defining default allocator */
     return (realloc_fnc_ == NULL) ? malloc(size) : realloc_fnc_(NULL, size, user_data_);
 }
 
