@@ -77,8 +77,7 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 
     if (timeline->buffer_capacity < timeline->buffer_usage + klass->event_size)
     {
-        _ht_timeline_notify_listeners(timeline);
-        timeline->buffer_usage = 0;
+        ht_timeline_flush(timeline);
     }
 
 #define HT_COPY_EVENT(EventStruct) \
@@ -105,6 +104,7 @@ void
 ht_timeline_flush(HT_Timeline* timeline)
 {
     _ht_timeline_notify_listeners(timeline);
+    timeline->buffer_usage = 0;
 }
 
 void

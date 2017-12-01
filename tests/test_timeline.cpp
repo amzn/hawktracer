@@ -45,6 +45,22 @@ TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
     ASSERT_EQ(3, info.notify_count);
 }
 
+TEST_F(TestTimeline, FlushTimelineShouldResetBufferUsage)
+{
+    // Arrange
+    for (int i = 0; i < 10; i++)
+    {
+        HT_DECL_EVENT(HT_Event, event);
+        ht_timeline_push_event(_timeline, &event);
+    }
+
+    // Act
+    ht_timeline_flush(_timeline);
+
+    // Assert
+    ASSERT_EQ(0u, _timeline->buffer_usage);
+}
+
 TEST_F(TestTimeline, ShouldNotCreateTimelineIfTypeNotRegistered)
 {
     // Arrange & Act
