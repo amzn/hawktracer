@@ -28,7 +28,7 @@ struct TestCallstackEvent
     int info;
 };
 
-HT_DEFINE_EVENT_KLASS(TestCallstackEvent, 31337);
+HT_DEFINE_EVENT_KLASS_DETAILED(TestCallstackEvent, 31337, nullptr);
 
 /* TODO: add test with threading */
 
