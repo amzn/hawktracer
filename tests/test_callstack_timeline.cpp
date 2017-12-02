@@ -2,40 +2,6 @@
 
 #include "test_common.h"
 
-#include <gtest/gtest.h>
-
-struct MixedNotifyInfo
-{
-    int notify_count = 0;
-    size_t notified_events = 0;
-    std::vector<HT_CallstackIntEvent> int_values;
-    std::vector<HT_CallstackStringEvent> string_values;
-};
-
-void mixed_test_listener(TEventPtr events, size_t event_count, void* user_data)
-{
-    MixedNotifyInfo* i = static_cast<MixedNotifyInfo*>(user_data);
-    i->notified_events += event_count;
-    i->notify_count++;
-    TEventPtr end = events + event_count;
-    while (events < end)
-    {
-        switch (HT_EVENT_GET_CLASS(events)->type)
-        {
-        case HT_EVENT_TYPE_CALLSTACK_INT:
-            i->int_values.push_back(*((HT_CallstackIntEvent*)events));
-            break;
-        case HT_EVENT_TYPE_CALLSTACK_STRING:
-            i->string_values.push_back(*((HT_CallstackStringEvent*)events));
-            break;
-        default:
-            ASSERT_FALSE("Unexpected event type");
-        }
-
-        events += HT_EVENT_GET_CLASS(events)->event_size;
-    }
-}
-
 class TestCallstackTimeline : public ::testing::Test
 {
 protected:
@@ -155,4 +121,32 @@ TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
     ASSERT_EQ(1u, info.int_values[1].label);
     ASSERT_STREQ(label2, info.string_values[0].label);
     ASSERT_STREQ(label1, info.string_values[1].label);
+}
+
+TEST_F(TestCallstackTimeline, TestScopedTracepoint)
+{
+    // Arrange
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
+    const HT_CallstackEventLabel int_label = 31337;
+    const char* string_label = "31337_string";
+    MixedNotifyInfo info;
+
+    ht_timeline_register_listener(HT_TIMELINE(_timeline), mixed_test_listener, &info);
+
+    // Act
+    {
+        HT_TP_SCOPED_INT(_timeline, int_label);
+        {
+            HT_TP_SCOPED_STRING(_timeline, string_label);
+        }
+    }
+
+    ht_timeline_flush(HT_TIMELINE(_timeline));
+
+    // Assert
+    ASSERT_EQ(sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), info.notified_events);
+    ASSERT_EQ(1u, info.int_values.size());
+    ASSERT_EQ(1u, info.string_values.size());
+    ASSERT_EQ(int_label, info.int_values[0].label);
+    ASSERT_STREQ(string_label, info.string_values[0].label);
 }

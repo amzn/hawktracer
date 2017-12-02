@@ -11,8 +11,7 @@ void
 ht_callstack_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 {
     ht_base_timeline_init(timeline, args);
-    HT_CallstackBaseTimeline* callstack_timeline = (HT_CallstackBaseTimeline*)timeline;
-    ht_stack_init(&callstack_timeline->stack, 1024, 32);
+    ht_stack_init(&HT_CALLSTACK_BASE_TIMELINE(timeline)->stack, 1024, 32);
 }
 
 void

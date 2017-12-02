@@ -3,6 +3,8 @@
 
 #include <hawktracer/events.h>
 
+#include <gtest/gtest.h>
+
 #include <vector>
 
 template<typename T>
@@ -11,6 +13,14 @@ struct NotifyInfo
     int notify_count = 0;
     size_t notified_events = 0;
     std::vector<T> values;
+};
+
+struct MixedNotifyInfo
+{
+    int notify_count = 0;
+    size_t notified_events = 0;
+    std::vector<HT_CallstackIntEvent> int_values;
+    std::vector<HT_CallstackStringEvent> string_values;
 };
 
 template<typename T>
@@ -26,5 +36,7 @@ void test_listener(TEventPtr events, size_t event_count, void* user_data)
         events += HT_EVENT_GET_CLASS(events)->event_size;
     }
 }
+
+void mixed_test_listener(TEventPtr events, size_t event_count, void* user_data);
 
 #endif /* HAWKTRACER_TESTS_TEST_COMMON_H */

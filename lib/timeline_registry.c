@@ -30,11 +30,14 @@ ht_timeline_registry_init(void)
 HT_TimelineKlass*
 ht_timeline_registry_find_class(const char* klass_id)
 {
+    uint32_t id;
+    size_t i;
+
     assert(klass_id != NULL);
 
-   uint32_t id = djb2_hash(klass_id);
+    id = djb2_hash(klass_id);
 
-    for (size_t i = 0; i < timeline_klass_register.size; i++)
+    for (i = 0; i < timeline_klass_register.size; i++)
     {
         HT_TimelineKlass* klass = (HT_TimelineKlass*)timeline_klass_register.data[i];
         if (ht_timeline_klass_get_id(klass) == id)
@@ -53,12 +56,14 @@ HT_Boolean ht_timeline_registry_register(
         void (*init)(HT_Timeline*, va_list),
         void (*deinit)(HT_Timeline*))
 {
+    void* klass;
+
     if (ht_timeline_registry_find_class(klass_id) != NULL)
     {
         return HT_FALSE;
     }
 
-    void* klass = ht_timeline_klass_create(djb2_hash(klass_id), type_size,
+    klass = ht_timeline_klass_create(djb2_hash(klass_id), type_size,
                                           shared_listeners, init, deinit);
 
     ht_bag_add(&timeline_klass_register, klass);
@@ -69,7 +74,9 @@ HT_Boolean ht_timeline_registry_register(
 void
 ht_timeline_registry_unregister_all(void)
 {
-    for (size_t i = 0; i < timeline_klass_register.size; i++)
+    size_t i;
+
+    for (i = 0; i < timeline_klass_register.size; i++)
     {
         HT_TimelineKlass* klass = (HT_TimelineKlass*)timeline_klass_register.data[i];
         ht_timeline_klass_unref(klass);
