@@ -258,6 +258,7 @@ public:
     struct OptionInfo
     {
         std::string help;
+        std::string default_value;
         bool is_flag;
         bool is_mandatory;
     };
@@ -266,7 +267,7 @@ public:
 
     void parse(char** argv, int argc, bool throw_on_invalid_argument);
 
-    void add_option(const std::string& identifier, const std::string& help, bool is_flag, bool is_mandatory);
+    void add_option(const std::string& identifier, const std::string& help, bool is_flag, bool is_mandatory, std::string default_value = "");
 
     bool option_specified(const std::string& option) const;
     std::string get_value(const std::string& option) const;
@@ -287,9 +288,13 @@ CommandLineParser::CommandLineParser(const std::string& example_usage) :
 {
 }
 
-void CommandLineParser::add_option(const std::string& option, const std::string& help, bool is_flag, bool is_mandatory)
+void CommandLineParser::add_option(const std::string& option, const std::string& help, bool is_flag, bool is_mandatory, std::string default_value)
 {
-    _options[option] = { help, is_flag, is_mandatory };
+    _options[option] = { help, default_value, is_flag, is_mandatory };
+    if (!default_value.empty() && !is_flag)
+    {
+        _values[option] = default_value;
+    }
 }
 
 bool CommandLineParser::option_specified(const std::string& option) const
@@ -319,6 +324,10 @@ void CommandLineParser::print_help() const
         if (option.second.is_mandatory)
         {
             std::cerr << "[MANDATORY] ";
+        }
+        if (!option.second.default_value.empty())
+        {
+            std::cerr << "[Default: " << option.second.default_value << "] ";
         }
         std::cerr << option.second.help << std::endl;
     }
@@ -386,8 +395,8 @@ int main(int argc, char **argv)
     CommandLineParser parser("-ip 127.0.0.1 -port 8765 -format chrome-tracing -map my-map");
 
     parser.add_option("-ip", "IP address of the porfiled device", false, true);
-    parser.add_option("-port", "profiling port", false, true);
-    parser.add_option("-format", "output format (csv or chrome-tracing)", false, true);
+    parser.add_option("-port", "profiling port", false, false, "8765");
+    parser.add_option("-format", "output format (csv or chrome-tracing)", false, false, "chrome-tracing");
     parser.add_option("-map", "comma-separated paths to files with mapping definitions", false, false);
     parser.add_option("-n", "maps labels to the first label in map that is not greater than actual label", true, false);
 
@@ -397,7 +406,7 @@ int main(int argc, char **argv)
     }
     catch (const std::runtime_error& ex)
     {
-        std::cerr << ex.what();
+        std::cerr << ex.what() << std::endl;
         parser.print_help();
         return 1;
     }
