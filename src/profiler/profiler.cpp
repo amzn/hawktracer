@@ -58,6 +58,7 @@ bool TracepointMapper::load_map(const std::string& map_file)
     while (file >> label >> category >> label_str)
     {
         MapInfo info = { label_str, category_to_string((Category)category) };
+
         if (_finding_nearest_label_enabled)
         {
             _input_map[label] = info;
@@ -387,7 +388,7 @@ int main(int argc, char **argv)
     parser.add_option("-ip", "IP address of the porfiled device", false, true);
     parser.add_option("-port", "profiling port", false, true);
     parser.add_option("-format", "output format (csv or chrome-tracing)", false, true);
-    parser.add_option("-map", "path to a file with mapping definitions", false, false);
+    parser.add_option("-map", "comma-separated paths to files with mapping definitions", false, false);
     parser.add_option("-n", "maps labels to the first label in map that is not greater than actual label", true, false);
 
     try
@@ -410,10 +411,24 @@ int main(int argc, char **argv)
     {
         std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
     }
-    else if (!mapper.load_map(parser.get_value("-map")))
+    else
     {
-        std::cerr << "unable to load map file " << parser.get_value("-map") << std::endl;
-        std::cerr << "map file won't be used" << std::endl;
+        std::string maps = parser.get_value("-map");
+        size_t start = 0;
+        size_t len;
+        do
+        {
+            size_t pos = maps.find(',', start);
+            len = pos == std::string::npos ? pos : pos - start;
+            std::string path = maps.substr(start, len);
+            start += len + 1;
+
+            if (!mapper.load_map(path))
+            {
+                std::cerr << "unable to load map file " << path << std::endl;
+                std::cerr << "map file won't be used" << std::endl;
+            }
+        } while (len != std::string::npos);
     }
 
     if (parser.get_value("-format") == "chrome-tracing")
