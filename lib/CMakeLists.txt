@@ -4,6 +4,9 @@ set(HAWKTRACER_LIB_HEADERS
     include/hawktracer/macros.h
     include/hawktracer/monotonic_clock.h)
 
+set(HAWKTRACER_LISTENERS_SOURCES
+    listeners/file_dump_listener.c)
+
 set(HAWKTRACER_LIB_SOURCES
     alloc.c
     bag.c
@@ -25,4 +28,4 @@ set(HAWKTRACER_LIB_SOURCES
 
 include_directories(include)
 
-add_library(hawktracer ${HAWKTRACER_LIB_SOURCES})
+add_library(hawktracer ${HAWKTRACER_LIB_SOURCES} ${HAWKTRACER_LISTENERS_SOURCES})
