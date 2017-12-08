@@ -1,4 +1,5 @@
 #include <hawktracer/callstack_base_timeline.h>
+#include <hawktracer/registry.h> /* TODO cyclic include dependency */
 
 #include "test_common.h"
 

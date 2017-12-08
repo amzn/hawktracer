@@ -19,12 +19,12 @@ set(HAWKTRACER_LIB_SOURCES
     init.c
     monotonic_clock.cpp
     mutex.cpp
+    registry.c
     stack.c
     thread.cpp
     timeline.cpp
     timeline_klass.cpp
-    timeline_listener.c
-    timeline_registry.c)
+    timeline_listener.c)
 
 include_directories(include)
 

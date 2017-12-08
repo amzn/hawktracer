@@ -1,4 +1,5 @@
 #include "hawktracer/events.h"
+#include "hawktracer/registry.h"
 
 #include <string.h>
 

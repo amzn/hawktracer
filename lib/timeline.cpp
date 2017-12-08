@@ -2,7 +2,7 @@
 #include <hawktracer/alloc.h>
 #include <hawktracer/monotonic_clock.h>
 
-#include "internal/timeline_registry.h"
+#include "internal/registry.h"
 #include "internal/timeline_klass.hpp"
 #include "internal/mutex.h"
 
@@ -12,7 +12,7 @@
 HT_Timeline*
 ht_timeline_create(const char* klass_id, ...)
 {
-    HT_TimelineKlass* klass = ht_timeline_registry_find_class(klass_id);
+    HT_TimelineKlass* klass = ht_registry_find_timeline_class(klass_id);
 
     if (klass == nullptr)
     {

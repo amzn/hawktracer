@@ -34,6 +34,7 @@
         HT_DECL_EVENT(TYPE_NAME, val); \
         ht_##TYPE_NAME##_get_instance_klass()->type_info = mkcreflect_get_##TYPE_NAME##_type_info(); \
         ht_##TYPE_NAME##_get_instance_klass()->compressed_size = SERIALIZED_SIZEOF; \
+        ht_registry_register_event_klass(ht_##TYPE_NAME##_get_instance_klass()); \
     }
 
 #define HT_DECL_EVENT(EventStruct, event) \

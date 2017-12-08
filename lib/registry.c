@@ -1,11 +1,12 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/bag.h"
 #include "internal/timeline_klass.h"
-#include "internal/timeline_registry.h"
+#include "internal/registry.h"
 
 #include <assert.h>
 
 static HT_Bag timeline_klass_register;
+static HT_Bag event_klass_register;
 
 static uint32_t
 djb2_hash(const char *str)
@@ -22,13 +23,14 @@ djb2_hash(const char *str)
 }
 
 void
-ht_timeline_registry_init(void)
+ht_registry_init(void)
 {
     ht_bag_init(&timeline_klass_register, 8);
+    ht_bag_init(&event_klass_register, 8);
 }
 
 HT_TimelineKlass*
-ht_timeline_registry_find_class(const char* klass_id)
+ht_registry_find_timeline_class(const char* klass_id)
 {
     uint32_t id;
     size_t i;
@@ -49,7 +51,7 @@ ht_timeline_registry_find_class(const char* klass_id)
     return NULL;
 }
 
-HT_Boolean ht_timeline_registry_register(
+HT_Boolean ht_registry_register_timeline(
         const char* klass_id,
         size_t type_size,
         HT_Boolean shared_listeners,
@@ -58,7 +60,7 @@ HT_Boolean ht_timeline_registry_register(
 {
     void* klass;
 
-    if (ht_timeline_registry_find_class(klass_id) != NULL)
+    if (ht_registry_find_timeline_class(klass_id) != NULL)
     {
         return HT_FALSE;
     }
@@ -71,8 +73,25 @@ HT_Boolean ht_timeline_registry_register(
     return HT_TRUE;
 }
 
+HT_Boolean
+ht_registry_register_event_klass(HT_EventKlass* event_klass)
+{
+    for (size_t i = 0; i < event_klass_register.size; i++)
+    {
+        HT_EventKlass* klass = (HT_EventKlass*)event_klass_register.data[i];
+        if (klass->type == event_klass->type)
+        {
+            return HT_FALSE;
+        }
+    }
+
+    ht_bag_add(&event_klass_register, event_klass);
+
+    return HT_TRUE;
+}
+
 void
-ht_timeline_registry_unregister_all(void)
+htregistry_unregister_all_timelines(void)
 {
     size_t i;
 
@@ -83,4 +102,10 @@ ht_timeline_registry_unregister_all(void)
     }
 
     ht_bag_deinit(&timeline_klass_register);
+}
+
+void
+htregistry_unregister_all_event_klasses(void)
+{
+    ht_bag_deinit(&event_klass_register);
 }
