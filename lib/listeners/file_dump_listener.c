@@ -40,15 +40,16 @@ ht_file_dump_listener_callback(TEventPtr events, size_t event_count, void* user_
 {
     HT_FileDumpListener* listener = (HT_FileDumpListener*)user_data;
 
-    for (size_t i = 0; i < event_count; i++)
+    for (size_t i = 0; i < event_count;)
     {
         HT_Event* event = HT_EVENT(events);
 
-        if (HT_EVENT_GET_CLASS(event)->type_info->size + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
+        if (HT_EVENT_GET_CLASS(event)->type_info->packed_size + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
         {
             _ht_file_dump_listener_flush(listener);
         }
 
-        listener->buffer_usage += HT_EVENT_GET_CLASS(event)->serialize(event, listener->buffer);
+        listener->buffer_usage += HT_EVENT_GET_CLASS(event)->serialize(event, listener->buffer + listener->buffer_usage);
+        i += HT_EVENT_GET_CLASS(event)->type_info->size;
     }
 }

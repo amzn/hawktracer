@@ -24,6 +24,8 @@ TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
 
     HT_DECL_EVENT(HT_Event, event);
+    event.id = 1;
+    event.timestamp = 1;
     ht_timeline_push_event(timeline, &event);
 
     // Act
@@ -50,6 +52,8 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
     for (size_t i = 0; i < HT_FILE_DUMP_LISTENER_BUFFER_SIZE; i++)
     {
         HT_DECL_EVENT(HT_Event, event);
+        event.id = 1;
+        event.timestamp = 1;
         ht_timeline_push_event(timeline, &event);
 
         ht_timeline_flush(timeline);
