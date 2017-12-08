@@ -76,16 +76,13 @@ HT_Boolean ht_registry_register_timeline(
 HT_Boolean
 ht_registry_register_event_klass(HT_EventKlass* event_klass)
 {
-    for (size_t i = 0; i < event_klass_register.size; i++)
+    if (event_klass->type > 0)
     {
-        HT_EventKlass* klass = (HT_EventKlass*)event_klass_register.data[i];
-        if (klass->type == event_klass->type)
-        {
-            return HT_FALSE;
-        }
+        return HT_FALSE;
     }
 
     ht_bag_add(&event_klass_register, event_klass);
+    event_klass->type = event_klass_register.size;
 
     return HT_TRUE;
 }

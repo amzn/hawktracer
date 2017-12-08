@@ -15,17 +15,17 @@
     mkcreflect_get_##TYPE_NAME##_type_info()->packed_size - sizeof(val.base) + \
         HT_EVENT_GET_CLASS(&val)->compressed_size;
 
-#define HT_DEFINE_EVENT_KLASS(TYPE_NAME, EVENT_TYPE) \
-    HT_DEFINE_EVENT_KLASS_DETAILED(TYPE_NAME, EVENT_TYPE, HT_DEFAULT_SERIALIZED_SIZEOF_(TYPE_NAME))
+#define HT_DEFINE_EVENT_KLASS(TYPE_NAME) \
+    HT_DEFINE_EVENT_KLASS_DETAILED(TYPE_NAME, HT_DEFAULT_SERIALIZED_SIZEOF_(TYPE_NAME))
 
-#define HT_DEFINE_EVENT_KLASS_DETAILED(TYPE_NAME, EVENT_TYPE, SERIALIZED_SIZEOF) \
+#define HT_DEFINE_EVENT_KLASS_DETAILED(TYPE_NAME, SERIALIZED_SIZEOF) \
     HT_EventKlass* ht_##TYPE_NAME##_get_event_klass_instance(void) \
     { \
         static HT_EventKlass klass_instance = { \
             NULL, \
             ht_##TYPE_NAME##_serialize, \
             0, \
-            EVENT_TYPE \
+            0 \
         }; \
         return &klass_instance; \
     } \
