@@ -4,8 +4,8 @@
  * <marcin.kolny@gmail.com> wrote this file. As long as you retain this notice
  * you can do whatever you want with this stuff. If we meet some day, and you
  * think this stuff is worth it, you can buy me a beer in return. Marcin Kolny
+ * http://github.com/loganek/mkcreflect
  * ----------------------------------------------------------------------------
- * https://github.com/loganek/mkcreflect
  */
 #ifndef MKCREFLECT_H_
 #define MKCREFLECT_H_
@@ -42,6 +42,7 @@ typedef struct
     const char* name;
     size_t fields_count;
     size_t size;
+    size_t packed_size;
     MKCREFLECT_FieldInfo* fields;
 } MKCREFLECT_TypeInfo;
 
@@ -91,6 +92,9 @@ typedef struct
 
 #define MKCREFLECT_DECLARE_FIELD(X, USER_DATA) MKCREFLECT_DECLARE_FIELD_ X
 
+#define MKCREFLECT_SIZEOF_(IGNORE, C_TYPE, ...) +sizeof(C_TYPE)
+#define MKCREFLECT_SIZEOF(X, USER_DATA) MKCREFLECT_SIZEOF_ X
+
 #define MKCREFLECT_SUM(...) +1
 
 #define MKCREFLECT_IS_TYPE_SIGNED_(C_TYPE) (C_TYPE)-1 < (C_TYPE)1
@@ -139,6 +143,7 @@ typedef struct
             #TYPE_NAME, \
             MKCREFLECT_FOREACH(MKCREFLECT_SUM, 0, __VA_ARGS__), \
             sizeof(TYPE_NAME), \
+            MKCREFLECT_FOREACH(MKCREFLECT_SIZEOF, 0, __VA_ARGS__), \
             fields_info \
         }; \
         return &type_info; \

@@ -4,10 +4,14 @@
 
 #include <gtest/gtest.h>
 
-HT_DECLARE_EVENT_KLASS_BASE(TestCallstackEvent,
-                            (STRUCT, HT_CallstackBaseEvent, base),
+HT_DECLARE_EVENT_KLASS(TestCallstackEvent, HT_CallstackBaseEvent,
                             (INTEGER, int, info))
-HT_DEFINE_EVENT_KLASS_DETAILED(TestCallstackEvent, 31337, NULL)
+HT_DEFINE_EVENT_KLASS(TestCallstackEvent, 31337)
+
+size_t ht_TestCallstackEvent_serialize(HT_Event*, HT_Byte*)
+{
+    return 0;
+}
 
 class TestCallstackBaseTimeline : public ::testing::Test
 {

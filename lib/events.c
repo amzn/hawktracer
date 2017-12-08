@@ -51,7 +51,7 @@ ht_HT_CallstackStringEvent_serialize(HT_Event* event, HT_Byte* buffer)
     return offset;
 }
 
-HT_DEFINE_EVENT_KLASS(HT_Event, HT_EVENT_TYPE_BASE)
+HT_DEFINE_EVENT_KLASS_DETAILED(HT_Event, HT_EVENT_TYPE_BASE, mkcreflect_get_HT_Event_type_info()->packed_size)
 HT_DEFINE_EVENT_KLASS(HT_CallstackBaseEvent, HT_EVENT_TYPE_CALLSTACK_BASE)
 HT_DEFINE_EVENT_KLASS(HT_CallstackIntEvent, HT_EVENT_TYPE_CALLSTACK_INT)
 HT_DEFINE_EVENT_KLASS(HT_CallstackStringEvent, HT_EVENT_TYPE_CALLSTACK_STRING)
