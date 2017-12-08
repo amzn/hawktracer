@@ -12,10 +12,10 @@ ht_init(int argc, char** argv)
 
     ht_registry_init();
 
-    ht_HT_Event_register_event();
-    ht_HT_CallstackBaseEvent_register_event();
-    ht_HT_CallstackIntEvent_register_event();
-    ht_HT_CallstackStringEvent_register_event();
+    ht_HT_Event_register_event_klass();
+    ht_HT_CallstackBaseEvent_register_event_klass();
+    ht_HT_CallstackIntEvent_register_event_klass();
+    ht_HT_CallstackStringEvent_register_event_klass();
 
     /* TODO: should we take some action if register() fails? */
     ht_registry_register_timeline(

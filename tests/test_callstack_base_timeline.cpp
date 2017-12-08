@@ -19,7 +19,7 @@ class TestCallstackBaseTimeline : public ::testing::Test
 protected:
     static void SetUpTestCase()
     {
-        ht_TestCallstackEvent_register_event();
+        ht_TestCallstackEvent_register_event_klass();
     }
 
     void SetUp() override

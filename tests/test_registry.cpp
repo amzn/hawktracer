@@ -28,8 +28,8 @@ size_t ht_RegistryTestEvent_serialize(HT_Event*, HT_Byte*)
 TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldSilentlyFail)
 {
     // Arrange
-    ht_RegistryTestEvent_register_event();
+    ht_RegistryTestEvent_register_event_klass();
 
     // Act & Assert
-    ASSERT_FALSE(ht_registry_register_event_klass(ht_RegistryTestEvent_get_instance_klass()));
+    ASSERT_FALSE(ht_registry_register_event_klass(ht_RegistryTestEvent_get_event_klass_instance()));
 }
