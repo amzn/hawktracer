@@ -4,9 +4,19 @@
 
 #include <gtest/gtest.h>
 
+HT_DECLARE_EVENT_KLASS_BASE(TestCallstackEvent,
+                            (STRUCT, HT_CallstackBaseEvent, base),
+                            (INTEGER, int, info))
+HT_DEFINE_EVENT_KLASS_DETAILED(TestCallstackEvent, 31337, NULL)
+
 class TestCallstackBaseTimeline : public ::testing::Test
 {
 protected:
+    static void SetUpTestCase()
+    {
+        ht_TestCallstackEvent_register_event();
+    }
+
     void SetUp() override
     {
         _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackBaseEvent) * 3, nullptr);
@@ -20,15 +30,6 @@ protected:
 
     HT_CallstackBaseTimeline* _timeline = nullptr;
 };
-
-struct TestCallstackEvent
-{
-    HT_CallstackBaseEvent base;
-
-    int info;
-};
-
-HT_DEFINE_EVENT_KLASS_DETAILED(TestCallstackEvent, 31337, nullptr);
 
 /* TODO: add test with threading */
 

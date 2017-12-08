@@ -24,6 +24,11 @@ ht_init(int argc, char** argv)
     ht_timeline_registry_register(
                 "HT_GlobalCallstackTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
                 ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
+
+    ht_HT_Event_register_event();
+    ht_HT_CallstackBaseEvent_register_event();
+    ht_HT_CallstackIntEvent_register_event();
+    ht_HT_CallstackStringEvent_register_event();
 }
 
 void ht_deinit(void)
