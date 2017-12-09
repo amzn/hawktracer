@@ -37,6 +37,8 @@ ht_timeline_create(const char* klass_id, ...)
 
 void ht_timeline_destroy(HT_Timeline* timeline)
 {
+    ht_timeline_flush(timeline);
+
     _HT_TimelineKlass* klass = timeline->klass;
 
     klass->deinit(timeline);

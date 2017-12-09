@@ -17,8 +17,11 @@ protected:
 
     void TearDown() override
     {
-        ht_timeline_unregister_all_listeners(_timeline);
-        ht_timeline_destroy(_timeline);
+        if (_timeline)
+        {
+            ht_timeline_unregister_all_listeners(_timeline);
+            ht_timeline_destroy(_timeline);
+        }
     }
 
     HT_Timeline* _timeline = nullptr;
@@ -82,6 +85,25 @@ TEST_F(TestTimeline, FlushEventsShouldNotifyListener)
 
     // Act
     ht_timeline_flush(_timeline);
+
+    // Assert
+    ASSERT_EQ(1 * sizeof(HT_Event), info.notified_events);
+    ASSERT_EQ(1, info.notify_count);
+}
+
+TEST_F(TestTimeline, TimelineShouldBeFlushedBeforeDestroyed)
+{
+    // Arrange
+    NotifyInfo<HT_Event> info;
+
+    ht_timeline_register_listener(_timeline, test_listener<HT_Event>, &info);
+
+    HT_DECL_EVENT(HT_Event, event);
+    ht_timeline_push_event(_timeline, &event);
+
+    // Act
+    ht_timeline_destroy(_timeline);
+    _timeline = nullptr;
 
     // Assert
     ASSERT_EQ(1 * sizeof(HT_Event), info.notified_events);
