@@ -13,6 +13,8 @@ ht_init(int argc, char** argv)
     ht_registry_init();
 
     ht_HT_Event_register_event_klass();
+    ht_HT_EventKlassInfoEvent_register_event_klass();
+    ht_HT_EventKlassFieldInfoEvent_register_event_klass();
     ht_HT_CallstackBaseEvent_register_event_klass();
     ht_HT_CallstackIntEvent_register_event_klass();
     ht_HT_CallstackStringEvent_register_event_klass();

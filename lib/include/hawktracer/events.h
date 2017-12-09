@@ -18,7 +18,7 @@ MKCREFLECT_DEFINE_STRUCT(HT_Event,
 HT_EventKlass* ht_HT_Event_get_event_klass_instance(void);
 void ht_HT_Event_register_event_klass(void);
 size_t ht_HT_Event_serialize(HT_Event* event, HT_Byte* buffer);
-#define HT_EVENT(event) ((HT_Event*)event)
+#define HT_EVENT(event) ((HT_Event*)(event))
 
 struct _HT_EventKlass
 {
@@ -28,6 +28,17 @@ struct _HT_EventKlass
     HT_EventType type;
 };
 #define HT_EVENT_GET_CLASS(event) (((HT_Event*)event)->klass)
+
+HT_DECLARE_EVENT_KLASS(HT_EventKlassInfoEvent, HT_Event,
+                       (INTEGER, HT_EventType, event_type),
+                       (STRING, char, event_klass_name, 20),
+                       (INTEGER, int8_t, field_count))
+HT_DECLARE_EVENT_KLASS(HT_EventKlassFieldInfoEvent, HT_Event,
+                       (INTEGER, HT_EventType, event_type),
+                       (STRING, char, field_type, 20),
+                       (STRING, char, field_name, 20),
+                       (INTEGER, uint64_t, size),
+                       (INTEGER, uint8_t, data_type))
 
 HT_DECLARE_EVENT_KLASS(HT_CallstackBaseEvent, HT_Event,
                        (INTEGER, HT_DurationNs, duration),
