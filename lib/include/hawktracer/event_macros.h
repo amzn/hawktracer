@@ -9,11 +9,15 @@
                              MKCREFLECT_EXPAND_VA_(__VA_ARGS__)) \
     HT_EventKlass* ht_##TYPE_NAME##_get_event_klass_instance(void); \
     size_t ht_##TYPE_NAME##_serialize(HT_Event* event, HT_Byte* buffer); \
-    void ht_##TYPE_NAME##_register_event_klass(void);
+    void ht_##TYPE_NAME##_register_event_klass(void); \
+    inline static size_t ht_##TYPE_NAME##_get_serialized_size(void) \
+    { \
+        return mkcreflect_get_##TYPE_NAME##_type_info()->packed_size - \
+        sizeof(BASE_TYPE) + mkcreflect_get_##BASE_TYPE##_type_info()->packed_size; \
+    }
 
 #define HT_DEFAULT_SERIALIZED_SIZEOF_(TYPE_NAME) \
-    mkcreflect_get_##TYPE_NAME##_type_info()->packed_size - sizeof(val.base) + \
-        HT_EVENT_GET_CLASS(&val)->compressed_size;
+    ht_##TYPE_NAME##_get_serialized_size()
 
 #define HT_DEFINE_EVENT_KLASS(TYPE_NAME) \
     HT_DEFINE_EVENT_KLASS_DETAILED(TYPE_NAME, HT_DEFAULT_SERIALIZED_SIZEOF_(TYPE_NAME))
