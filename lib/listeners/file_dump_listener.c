@@ -42,7 +42,7 @@ ht_file_dump_listener_callback(TEventPtr events, size_t event_count, void* user_
 
     for (size_t i = 0; i < event_count;)
     {
-        HT_Event* event = HT_EVENT(events);
+        HT_Event* event = HT_EVENT(events + i);
 
         if (HT_EVENT_GET_CLASS(event)->type_info->packed_size + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
         {

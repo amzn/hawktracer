@@ -38,6 +38,41 @@ TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
     ht_file_dump_listener_deinit(&listener);
 }
 
+TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
+{
+    // Arrange
+    HT_FileDumpListener listener;
+    HT_Timeline* timeline = HT_TIMELINE(ht_global_callstack_timeline_get());
+
+    ht_file_dump_listener_init(&listener, test_file);
+    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
+
+    HT_DECL_EVENT(HT_Event, event);
+    event.id = 32;
+    event.timestamp = 9983;
+
+    // Act
+    ht_timeline_push_event(timeline, &event);
+    ht_timeline_flush(timeline);
+    ht_timeline_unregister_all_listeners(timeline);
+    ht_file_dump_listener_deinit(&listener);
+
+    // Assert
+    FILE* fp = fopen(test_file, "rb");
+    ASSERT_NE(nullptr, fp);
+    char buff[64];
+    fread(buff, sizeof(char), 64, fp);
+    size_t offset = 0;
+#define ASSERT_FROM_BUFFER(event_value) \
+    ASSERT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
+    ASSERT_FROM_BUFFER(event.klass->type);
+    ASSERT_FROM_BUFFER(event.timestamp);
+    ASSERT_FROM_BUFFER(event.id);
+#undef ASSERT_FROM_BUFFER
+
+    fclose(fp);
+}
+
 TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 {
     // Arrange
