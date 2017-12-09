@@ -3,7 +3,7 @@ struct GlobalCallstackTimeline
 {
     GlobalCallstackTimeline()
     {
-        c_timeline = HT_CALLSTACK_BASE_TIMELINE(ht_timeline_create("HT_GlobalCallstackTimeline", "buffer-size", 1024, nullptr)); // TODO buffer-size from command line
+        c_timeline = HT_CALLSTACK_BASE_TIMELINE(ht_timeline_create("HT_GlobalCallstackTimeline", "buffer-size", 1024, "thread-safe", HT_FALSE, nullptr)); // TODO buffer-size from command line
     }
 
     ~GlobalCallstackTimeline()
