@@ -31,12 +31,12 @@ struct _HT_EventKlass
 
 HT_DECLARE_EVENT_KLASS(HT_EventKlassInfoEvent, HT_Event,
                        (INTEGER, HT_EventType, event_type),
-                       (STRING, char, event_klass_name, 20),
+                       (STRING, char, event_klass_name, 40),
                        (INTEGER, int8_t, field_count))
 HT_DECLARE_EVENT_KLASS(HT_EventKlassFieldInfoEvent, HT_Event,
                        (INTEGER, HT_EventType, event_type),
-                       (STRING, char, field_type, 20),
-                       (STRING, char, field_name, 20),
+                       (STRING, char, field_type, 40),
+                       (STRING, char, field_name, 40),
                        (INTEGER, uint64_t, size),
                        (INTEGER, uint8_t, data_type))
 
