@@ -4,8 +4,7 @@
 
 #define HT_DEFINE_TEST_EVENT_KLASS(TYPE_NAME) \
     HT_DECLARE_EVENT_KLASS(TYPE_NAME, HT_Event, (INTEGER, int, field)) \
-    HT_DEFINE_EVENT_KLASS(TYPE_NAME) \
-    size_t ht_##TYPE_NAME##_serialize(HT_Event*, HT_Byte*) { return 0; }
+    HT_DEFINE_EVENT_KLASS(TYPE_NAME)
 
 
 TEST(TestRegistry, RegisterNewClassShouldPass)

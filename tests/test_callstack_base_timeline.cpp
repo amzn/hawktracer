@@ -9,11 +9,6 @@ HT_DECLARE_EVENT_KLASS(TestCallstackEvent, HT_CallstackBaseEvent,
                             (INTEGER, int, info))
 HT_DEFINE_EVENT_KLASS(TestCallstackEvent)
 
-size_t ht_TestCallstackEvent_serialize(HT_Event*, HT_Byte*)
-{
-    return 0;
-}
-
 class TestCallstackBaseTimeline : public ::testing::Test
 {
 protected:
