@@ -6,6 +6,13 @@
 #define _HT_EVENT_COPY_FIELD(buffer, offset, field) \
     memcpy(buffer + offset, (char*)&field, sizeof(field)), offset += sizeof(field)
 
+#define _HT_EVENT_COPY_STRING_FIELD(buffer, offset, field) \
+    do {\
+        size_t len = (field) ? strlen(field) : 0; /* TODO should not copy if zero */ \
+        memcpy(buffer + offset, field, len + 1); \
+        offset += len; \
+    } while (0)
+
 inline size_t
 ht_HT_Event_serialize(HT_Event* event, HT_Byte* buffer)
 {
@@ -47,7 +54,7 @@ ht_HT_CallstackStringEvent_serialize(HT_Event* event, HT_Byte* buffer)
     size_t offset = ht_HT_CallstackBaseEvent_serialize(event, buffer);
     HT_CallstackStringEvent* c_event = (HT_CallstackStringEvent*)event;
 
-    _HT_EVENT_COPY_FIELD(buffer, offset, c_event->label);
+    _HT_EVENT_COPY_STRING_FIELD(buffer, offset, c_event->label);
 
     return offset;
 }
@@ -59,8 +66,8 @@ ht_HT_EventKlassFieldInfoEvent_serialize(HT_Event* event, HT_Byte* buffer)
     HT_EventKlassFieldInfoEvent* c_event = (HT_EventKlassFieldInfoEvent*)event;
 
     _HT_EVENT_COPY_FIELD(buffer, offset, c_event->event_type);
-    _HT_EVENT_COPY_FIELD(buffer, offset, c_event->field_type);
-    _HT_EVENT_COPY_FIELD(buffer, offset, c_event->field_name);
+    _HT_EVENT_COPY_STRING_FIELD(buffer, offset, c_event->field_type);
+    _HT_EVENT_COPY_STRING_FIELD(buffer, offset, c_event->field_name);
     _HT_EVENT_COPY_FIELD(buffer, offset, c_event->size);
     _HT_EVENT_COPY_FIELD(buffer, offset, c_event->data_type);
 
@@ -80,7 +87,7 @@ ht_HT_EventKlassInfoEvent_serialize(HT_Event* event, HT_Byte* buffer)
     return offset;
 }
 
-HT_DEFINE_EVENT_KLASS_DETAILED(HT_Event, mkcreflect_get_HT_Event_type_info()->packed_size)
+HT_DEFINE_EVENT_KLASS_DETAILED(HT_Event)
 HT_DEFINE_EVENT_KLASS(HT_EventKlassInfoEvent)
 HT_DEFINE_EVENT_KLASS(HT_EventKlassFieldInfoEvent)
 HT_DEFINE_EVENT_KLASS(HT_CallstackBaseEvent)

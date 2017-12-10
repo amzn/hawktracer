@@ -43,8 +43,7 @@ TEST(TestEvent, CallstackStringEventSerialize)
     HT_EVENT(&event)->id = 132;
     HT_CALLSTACK_BASE_EVENT(&event)->duration = 332;
     HT_CALLSTACK_BASE_EVENT(&event)->thread_id = 8;
-    strncpy(event.label, "hello_world", HT_CALLSTACK_LABEL_MAX_LEN);
-    event.label[HT_CALLSTACK_LABEL_MAX_LEN] = 0;
+    event.label = "hello_world";
 
     // Act
     HT_EVENT_SERIALIZE(&event, buffer);

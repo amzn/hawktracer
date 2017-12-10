@@ -14,48 +14,6 @@ protected:
     HT_CallstackBaseTimeline* _timeline = nullptr;
 };
 
-TEST_F(TestCallstackTimeline, LabelStringLongerThanMaxShouldBeTruncated)
-{
-    // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackStringEvent) * 3, nullptr);
-    NotifyInfo<HT_CallstackStringEvent> info;
-    std::string postfix = "Very very very long stirng which exceeds max label length."
-                          "Lorem ipsum dolor sit amet, mel no timeam electram instructior,"
-                          "pri omnis quodsi audiam cu. Eos fuisset iracundia ex. Illud verear"
-                          "indoctum no mei, mea singulis adolescens et. Dicam audire iudicabit"
-                          "ut est, duo ei graecis adipisci dissentiet. Modus oratio ea nec,"
-                          "nam ne facete repudiandae.";
-
-    ht_timeline_register_listener(HT_TIMELINE(_timeline), test_listener<HT_CallstackStringEvent>, &info);
-
-    // Act
-    for (int i = 0; i < 4; i++)
-    {
-        HT_DECL_EVENT(HT_CallstackStringEvent, event);
-        std::string label = std::to_string(i) + postfix;
-
-        ht_callstack_timeline_string_start(_timeline, label.c_str());
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        ht_callstack_base_timeline_stop(_timeline);
-    }
-
-    ht_timeline_flush(HT_TIMELINE(_timeline));
-
-    // Assert
-    ASSERT_EQ(4 * sizeof(HT_CallstackStringEvent), info.notified_events);
-    ASSERT_EQ(2, info.notify_count);
-    ASSERT_EQ(4u, info.values.size());
-    for (size_t i = 0; i < info.values.size(); i++)
-    {
-        std::string expected = std::to_string(3 - i) + postfix.substr(0, HT_CALLSTACK_LABEL_MAX_LEN - 1);
-        ASSERT_EQ(HT_CALLSTACK_LABEL_MAX_LEN, strlen(info.values[i].label));
-        ASSERT_STREQ(expected.c_str(), info.values[i].label);
-    }
-}
-
 TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 {
     // Arrange

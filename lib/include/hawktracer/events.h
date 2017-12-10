@@ -18,25 +18,26 @@ MKCREFLECT_DEFINE_STRUCT(HT_Event,
 HT_EventKlass* ht_HT_Event_get_event_klass_instance(void);
 void ht_HT_Event_register_event_klass(void);
 size_t ht_HT_Event_serialize(HT_Event* event, HT_Byte* buffer);
+static inline size_t ht_HT_Event_get_size(HT_Event* event) { return sizeof(event->timestamp) + sizeof(event->id); }
 #define HT_EVENT(event) ((HT_Event*)(event))
 
 struct _HT_EventKlass
 {
     MKCREFLECT_TypeInfo* type_info;
     size_t (*serialize)(HT_Event* event, HT_Byte* buffer);
-    size_t compressed_size;
+    size_t (*get_size)(HT_Event* event);
     HT_EventType type;
 };
 #define HT_EVENT_GET_CLASS(event) (((HT_Event*)event)->klass)
 
 HT_DECLARE_EVENT_KLASS(HT_EventKlassInfoEvent, HT_Event,
                        (INTEGER, HT_EventType, event_type),
-                       (STRING, char, event_klass_name, 40),
+                       (STRING, const char*, event_klass_name),
                        (INTEGER, int8_t, field_count))
 HT_DECLARE_EVENT_KLASS(HT_EventKlassFieldInfoEvent, HT_Event,
                        (INTEGER, HT_EventType, event_type),
-                       (STRING, char, field_type, 40),
-                       (STRING, char, field_name, 40),
+                       (STRING, const char*, field_type),
+                       (STRING, const char*, field_name),
                        (INTEGER, uint64_t, size),
                        (INTEGER, uint8_t, data_type))
 
@@ -49,9 +50,8 @@ typedef uint64_t HT_CallstackEventLabel;
 HT_DECLARE_EVENT_KLASS(HT_CallstackIntEvent, HT_CallstackBaseEvent,
                        (INTEGER, HT_CallstackEventLabel, label))
 
-#define HT_CALLSTACK_LABEL_MAX_LEN 31u
 HT_DECLARE_EVENT_KLASS(HT_CallstackStringEvent, HT_CallstackBaseEvent,
-                       (STRING, char, label, HT_CALLSTACK_LABEL_MAX_LEN + 1))
+                       (STRING, const char*, label))
 
 HT_DECLS_END
 

@@ -1,6 +1,5 @@
 #include <hawktracer/timeline.h>
 #include <hawktracer/alloc.h>
-#include <hawktracer/monotonic_clock.h>
 
 #include "internal/registry.h"
 #include "internal/timeline_klass.hpp"
@@ -77,24 +76,15 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
         ht_mutex_lock(timeline->locking_policy);
     }
 
-    if (timeline->buffer_capacity < timeline->buffer_usage + klass->type_info->size)
+    size_t size = klass->get_size(event);
+    if (timeline->buffer_capacity < timeline->buffer_usage + size)
     {
         ht_timeline_flush(timeline);
     }
 
-#define HT_COPY_EVENT(EventStruct) \
-    memcpy(timeline->buffer + timeline->buffer_usage, event, sizeof(EventStruct))
+    event->klass->serialize(event, timeline->buffer + timeline->buffer_usage);
 
-    switch (klass->type_info->size)
-    {
-    case sizeof(HT_Event):
-        HT_COPY_EVENT(HT_Event);
-        break;
-    default:
-        memcpy(timeline->buffer + timeline->buffer_usage, event, klass->type_info->size);
-    }
-
-    timeline->buffer_usage += klass->type_info->size;
+    timeline->buffer_usage += size;
 
     if (timeline->locking_policy != NULL)
     {

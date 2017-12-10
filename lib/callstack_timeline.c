@@ -15,8 +15,7 @@ void
 ht_callstack_timeline_string_start(HT_CallstackBaseTimeline* timeline, const char* label)
 {
     HT_DECL_EVENT(HT_CallstackStringEvent, event);
-    strncpy(event.label, label, HT_CALLSTACK_LABEL_MAX_LEN);
-    event.label[HT_CALLSTACK_LABEL_MAX_LEN] = 0;
+    event.label = label;
 
     ht_callstack_base_timeline_start(timeline, (HT_CallstackBaseEvent*)&event);
 }
