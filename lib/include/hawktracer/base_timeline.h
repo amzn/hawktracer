@@ -17,6 +17,7 @@ typedef struct
     HT_TimelineListenerContainer* listeners;
     struct _HT_Mutex* locking_policy;
     struct _HT_TimelineKlass* klass;
+    HT_Boolean serialize_events;
 } HT_BaseTimeline;
 
 #define HT_BASE_TIMELINE(timeline) ((HT_BaseTimeline*)timeline)

@@ -52,7 +52,7 @@ _ht_timeline_notify_listeners(HT_Timeline* timeline)
     for (size_t i = 0; i < timeline->listeners->user_datas.size; i++)
     {
         ((HT_TimelineListenerCallback)timeline->listeners->callbacks.data[i])
-                (timeline->buffer, timeline->buffer_usage, timeline->listeners->user_datas.data[i]);
+                (timeline->buffer, timeline->buffer_usage, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
     }
 }
 
@@ -76,15 +76,28 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
         ht_mutex_lock(timeline->locking_policy);
     }
 
-    size_t size = klass->get_size(event);
-    if (timeline->buffer_capacity < timeline->buffer_usage + size)
+    if (timeline->serialize_events)
     {
-        ht_timeline_flush(timeline);
+        size_t size = klass->get_size(event);
+        if (timeline->buffer_capacity < timeline->buffer_usage + size)
+        {
+            ht_timeline_flush(timeline);
+        }
+
+        event->klass->serialize(event, timeline->buffer + timeline->buffer_usage);
+
+        timeline->buffer_usage += size;
     }
+    else
+    {
+        if (timeline->buffer_capacity < timeline->buffer_usage + klass->type_info->size)
+        {
+            ht_timeline_flush(timeline);
+        }
 
-    event->klass->serialize(event, timeline->buffer + timeline->buffer_usage);
-
-    timeline->buffer_usage += size;
+        memcpy(timeline->buffer + timeline->buffer_usage, event, klass->type_info->size);
+        timeline->buffer_usage += klass->type_info->size;
+    }
 
     if (timeline->locking_policy != NULL)
     {

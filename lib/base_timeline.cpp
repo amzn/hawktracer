@@ -12,6 +12,7 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 {
     size_t buffer_capacity = 1024;
     HT_Boolean thread_safe = HT_TRUE;
+    HT_Boolean serialize_events = HT_FALSE;
 
     const char* label = va_arg(args, const char*);;
 
@@ -25,6 +26,10 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
         {
             thread_safe = va_arg(args, HT_Boolean);
         }
+        else if (strncmp("serialize-events", label, 16) == 0)
+        {
+            serialize_events = va_arg(args, HT_Boolean);
+        }
         else
         {
             va_arg(args, void*);
@@ -36,6 +41,7 @@ ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
     timeline->buffer_capacity = buffer_capacity;
     timeline->buffer = (HT_Byte*)ht_alloc(buffer_capacity);
     timeline->id_provider = ht_event_id_provider_get_default();
+    timeline->serialize_events = serialize_events;
 
     timeline->listeners = (timeline->klass->listeners == NULL) ?
                 ht_timeline_listener_container_create() : timeline->klass->listeners;

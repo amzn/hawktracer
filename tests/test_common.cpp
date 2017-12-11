@@ -1,7 +1,12 @@
 #include "test_common.h"
 
-void mixed_test_listener(TEventPtr events, size_t event_count, void* user_data)
+void mixed_test_listener(TEventPtr events, size_t event_count, HT_Boolean is_serialized, void* user_data)
 {
+    if (is_serialized)
+    {
+        return;
+    }
+
     MixedNotifyInfo* i = static_cast<MixedNotifyInfo*>(user_data);
     i->notified_events += event_count;
     i->notify_count++;

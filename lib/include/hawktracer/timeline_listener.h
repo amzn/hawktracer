@@ -16,7 +16,7 @@ typedef struct
 } HT_TimelineListenerContainer;
 
 typedef void(*HT_TimelineListenerCallback)(
-        TEventPtr events, size_t event_count, void* user_data);
+        TEventPtr events, size_t event_count, HT_Boolean serialized, void* user_data);
 
 /* TODO: init instead? */
 HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);

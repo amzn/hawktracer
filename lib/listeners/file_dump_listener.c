@@ -10,6 +10,29 @@ _ht_file_dump_listener_flush(HT_FileDumpListener* listener)
     listener->buffer_usage = 0;
 }
 
+inline static void
+_ht_file_dump_listener_process_unserialized_events(HT_FileDumpListener* listener, TEventPtr events, size_t size)
+{
+    /* TODO */
+}
+
+inline static void
+_ht_file_dump_listener_process_serialized_events(HT_FileDumpListener* listener, TEventPtr events, size_t size)
+{
+    for (size_t i = 0; i < size;)
+    {
+        HT_Event* event = HT_EVENT(events + i);
+
+        if (HT_EVENT_GET_CLASS(event)->type_info->packed_size + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
+        {
+            _ht_file_dump_listener_flush(listener);
+        }
+
+        listener->buffer_usage += HT_EVENT_GET_CLASS(event)->serialize(event, listener->buffer + listener->buffer_usage);
+        i += HT_EVENT_GET_CLASS(event)->type_info->size;
+    }
+}
+
 HT_Boolean
 ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename)
 {
@@ -36,20 +59,16 @@ ht_file_dump_listener_deinit(HT_FileDumpListener* listener)
 }
 
 void
-ht_file_dump_listener_callback(TEventPtr events, size_t event_count, void* user_data)
+ht_file_dump_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data)
 {
     HT_FileDumpListener* listener = (HT_FileDumpListener*)user_data;
 
-    for (size_t i = 0; i < event_count;)
+    if (serialized)
     {
-        HT_Event* event = HT_EVENT(events + i);
-
-        if (HT_EVENT_GET_CLASS(event)->type_info->packed_size + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
-        {
-            _ht_file_dump_listener_flush(listener);
-        }
-
-        listener->buffer_usage += HT_EVENT_GET_CLASS(event)->serialize(event, listener->buffer + listener->buffer_usage);
-        i += HT_EVENT_GET_CLASS(event)->type_info->size;
+        _ht_file_dump_listener_process_serialized_events(listener, events, size);
+    }
+    else
+    {
+        _ht_file_dump_listener_process_unserialized_events(listener, events, size);
     }
 }

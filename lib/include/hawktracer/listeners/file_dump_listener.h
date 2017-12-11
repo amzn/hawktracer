@@ -20,7 +20,7 @@ HT_Boolean ht_file_dump_listener_init(HT_FileDumpListener* listener, const char*
 
 void ht_file_dump_listener_deinit(HT_FileDumpListener* listener);
 
-void ht_file_dump_listener_callback(TEventPtr events, size_t event_count, void* user_data);
+void ht_file_dump_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data);
 
 HT_DECLS_END
 
