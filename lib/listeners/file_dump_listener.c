@@ -19,7 +19,7 @@ _ht_file_dump_listener_process_serialized_events(HT_FileDumpListener* listener, 
     size_t written = 0;
     while (written < size)
     {
-        size_t actual_size = HT_MIN(size, listener->buffer_usage - HT_FILE_DUMP_LISTENER_BUFFER_SIZE);
+        size_t actual_size = HT_MIN(size, HT_FILE_DUMP_LISTENER_BUFFER_SIZE - listener->buffer_usage);
         memcpy(listener->buffer + listener->buffer_usage, events + written, actual_size);
         written += actual_size;
         listener->buffer_usage+= actual_size;

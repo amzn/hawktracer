@@ -18,9 +18,9 @@ TEST(TestGlobalCallstackTimeline, SimpleTest)
     ht_timeline_flush(HT_TIMELINE(ht_global_callstack_timeline_get()));
 
     // Assert
-    ASSERT_EQ(2 * sizeof(HT_CallstackIntEvent), info.notified_events);
+    HT_DECL_EVENT(HT_CallstackIntEvent, int_ev);
+    ASSERT_EQ(2 * HT_EVENT_GET_CLASS(&int_ev)->get_size(HT_EVENT(&int_ev)), info.notified_events);
     ASSERT_EQ(1, info.notify_count);
-    ASSERT_EQ(2u, info.values.size());
 
     ht_timeline_unregister_all_listeners(HT_TIMELINE(timeline));
 }
@@ -46,11 +46,11 @@ TEST(TestGlobalCallstackTimeline, ScopedTracepoint)
     ht_timeline_flush(HT_TIMELINE(timeline));
 
     // Assert
-    ASSERT_EQ(sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), info.notified_events);
-    ASSERT_EQ(1u, info.int_values.size());
-    ASSERT_EQ(1u, info.string_values.size());
-    ASSERT_EQ(int_label, info.int_values[0].label);
-    ASSERT_STREQ(string_label, info.string_values[0].label);
+    HT_DECL_EVENT(HT_CallstackBaseEvent, base_ev);
+    size_t expected_size = 2 * HT_EVENT_GET_CLASS(&base_ev)->get_size(HT_EVENT(&base_ev)) +
+            sizeof(HT_CallstackIntEvent::label) + strlen(string_label) + 1;
+
+    ASSERT_EQ(expected_size, info.notified_events);
 
     ht_timeline_unregister_all_listeners(HT_TIMELINE(timeline));
 }

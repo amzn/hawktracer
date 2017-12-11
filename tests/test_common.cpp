@@ -2,14 +2,15 @@
 
 void mixed_test_listener(TEventPtr events, size_t event_count, HT_Boolean is_serialized, void* user_data)
 {
+    MixedNotifyInfo* i = static_cast<MixedNotifyInfo*>(user_data);
+    i->notified_events += event_count;
+    i->notify_count++;
+
     if (is_serialized)
     {
         return;
     }
 
-    MixedNotifyInfo* i = static_cast<MixedNotifyInfo*>(user_data);
-    i->notified_events += event_count;
-    i->notify_count++;
     TEventPtr end = events + event_count;
     while (events < end)
     {

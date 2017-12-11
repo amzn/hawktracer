@@ -32,7 +32,7 @@ void ht_timeline_flush(HT_Timeline* timeline);
 
 #define HT_TIMELINE_PUSH_EVENT(TIMELINE, EVENT_TYPE, ...) \
     do { \
-        CustomEvent ev = {{ht_##EVENT_TYPE##_get_event_klass_instance(), \
+        EVENT_TYPE ev = {{ht_##EVENT_TYPE##_get_event_klass_instance(), \
             ht_monotonic_clock_get_timestamp(), \
             ht_event_id_provider_next((TIMELINE)->id_provider)}, __VA_ARGS__}; \
         ht_timeline_push_event(TIMELINE, HT_EVENT(&ev)); \

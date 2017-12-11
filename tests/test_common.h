@@ -26,14 +26,16 @@ struct MixedNotifyInfo
 template<typename T>
 void test_listener(TEventPtr events, size_t event_count, HT_Boolean is_serialized, void* user_data)
 {
+    NotifyInfo<T>* i = static_cast<NotifyInfo<T>*>(user_data);
+
+    i->notify_count++;
+    i->notified_events += event_count;
+
     if (is_serialized)
     {
         return;
     }
 
-    NotifyInfo<T>* i = static_cast<NotifyInfo<T>*>(user_data);
-    i->notified_events += event_count;
-    i->notify_count++;
     TEventPtr end = events + event_count;
     while (events < end)
     {
