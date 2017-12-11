@@ -5,6 +5,13 @@
 class TestCallstackTimeline : public ::testing::Test
 {
 protected:
+    static void SetUpTestCase()
+    {
+        ht_registry_register_timeline(
+                    "TestCallstackTimeline_HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
+                    ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
+    }
+
     void TearDown() override
     {
         ht_timeline_unregister_all_listeners(HT_TIMELINE(_timeline));
@@ -17,7 +24,8 @@ protected:
 TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackIntEvent) * 3, nullptr);
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
+                                                              HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackIntEvent) * 3, nullptr);
     NotifyInfo<HT_CallstackIntEvent> info;
 
     ht_timeline_register_listener(HT_TIMELINE(_timeline), test_listener<HT_CallstackIntEvent>, &info);
@@ -50,7 +58,8 @@ TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
+                                                              HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
     MixedNotifyInfo info;
 
     ht_timeline_register_listener(HT_TIMELINE(_timeline), mixed_test_listener, &info);
@@ -84,7 +93,8 @@ TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
 TEST_F(TestCallstackTimeline, TestScopedTracepoint)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
+    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
+                                                              HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
     const HT_CallstackEventLabel int_label = 31337;
     const char* string_label = "31337_string";
     MixedNotifyInfo info;

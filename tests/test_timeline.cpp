@@ -12,7 +12,8 @@ class TestTimeline : public ::testing::Test
 protected:
     void SetUp() override
     {
-        _timeline = ht_timeline_create("simple_ts", "buffer-capacity", sizeof(HT_Event) * 3, nullptr);
+        _timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER,
+                                       HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_Event) * 3, nullptr);
     }
 
     void TearDown() override
@@ -144,9 +145,9 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
 {
     // Arrange
     const size_t event_count = 20000;
-    HT_Timeline* timeline = ht_timeline_create("simple_ts",
-                                   "buffer-capacity", sizeof(HT_Event) * 3,
-                                   "thread-safe", HT_TRUE, nullptr);
+    HT_Timeline* timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER,
+                                   HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_Event) * 3,
+                                   HT_BASE_TIMELINE_PROPERTY_THREAD_SAFE, HT_TRUE, nullptr);
     NotifyInfo<HT_Event> info;
     ht_timeline_register_listener(timeline, test_listener<HT_Event>, &info);
 

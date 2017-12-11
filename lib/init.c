@@ -21,12 +21,8 @@ ht_init(int argc, char** argv)
 
     /* TODO: should we take some action if register() fails? */
     ht_registry_register_timeline(
-                "simple_ts", sizeof(HT_Timeline), HT_FALSE,
+                HT_BASE_TIMELINE_IDENTIFIER, sizeof(HT_Timeline), HT_FALSE,
                 ht_base_timeline_init, ht_base_timeline_deinit);
-
-    ht_registry_register_timeline(
-                "HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
-                ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
 
     ht_registry_register_timeline(
                 "HT_GlobalCallstackTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,

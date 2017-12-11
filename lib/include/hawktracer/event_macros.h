@@ -21,8 +21,8 @@
 #define HT_EVENT_RUNTIME_SERIALIZE_STRUCT(C_TYPE, FIELD) offset += HT_EVENT_SERIALIZE_FUNCTION(C_TYPE)(((HT_Event*)&VAR_NAME->FIELD), buffer);
 #define HT_EVENT_RUNTIME_SERIALIZE_INTEGER(C_TYPE, FIELD) memcpy(buffer + offset, (char*)&VAR_NAME->FIELD, sizeof(VAR_NAME->FIELD)), offset += sizeof(VAR_NAME->FIELD);
 #define HT_EVENT_RUNTIME_SERIALIZE_STRING(C_TYPE, FIELD) do {\
-    size_t len = (VAR_NAME->FIELD) ? strlen(VAR_NAME->FIELD) : 0; /* TODO should not copy if zero */ \
-    memcpy(buffer + offset, VAR_NAME->FIELD, len + 1); \
+    size_t len = (VAR_NAME->FIELD) ? strlen(VAR_NAME->FIELD) + 1 : 0; /* TODO should not copy if zero */ \
+    memcpy(buffer + offset, VAR_NAME->FIELD, len); \
     offset += len; \
 } while (0);
 #define HT_EVENT_RUNTIME_SERIALIZE__(DATA_TYPE, C_TYPE, FIELD, ...) HT_EVENT_RUNTIME_SERIALIZE_##DATA_TYPE(C_TYPE, FIELD)

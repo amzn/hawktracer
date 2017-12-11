@@ -10,23 +10,26 @@
 void
 ht_base_timeline_init(HT_BaseTimeline* timeline, va_list args)
 {
-    size_t buffer_capacity = 1024;
-    HT_Boolean thread_safe = HT_TRUE;
-    HT_Boolean serialize_events = HT_FALSE;
+    size_t buffer_capacity = HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY_DEFAULT;
+    HT_Boolean thread_safe = HT_BASE_TIMELINE_PROPERTY_THREAD_SAFE_DEFAULT;
+    HT_Boolean serialize_events = HT_BASE_TIMELINE_PROPERTY_SERIALIZE_EVENTS_DEFAULT;
 
-    const char* label = va_arg(args, const char*);;
+    const char* label = va_arg(args, const char*);
+
+#define CHECK_PROPERTY(PROPERTY) \
+    strncmp(PROPERTY, label, sizeof(PROPERTY)) == 0
 
     while (label != nullptr)
     {
-        if (strncmp("buffer-capacity", label, 15) == 0)
+        if (CHECK_PROPERTY(HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY))
         {
             buffer_capacity = va_arg(args, size_t);
         }
-        else if (strncmp("thread-safe", label, 11) == 0)
+        else if (CHECK_PROPERTY(HT_BASE_TIMELINE_PROPERTY_THREAD_SAFE))
         {
             thread_safe = va_arg(args, HT_Boolean);
         }
-        else if (strncmp("serialize-events", label, 16) == 0)
+        else if (CHECK_PROPERTY(HT_BASE_TIMELINE_PROPERTY_SERIALIZE_EVENTS))
         {
             serialize_events = va_arg(args, HT_Boolean);
         }

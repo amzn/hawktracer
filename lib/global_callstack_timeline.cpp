@@ -5,8 +5,8 @@ struct GlobalCallstackTimeline
     {
         c_timeline = HT_CALLSTACK_BASE_TIMELINE(
                     ht_timeline_create("HT_GlobalCallstackTimeline", "buffer-size", 1024,
-                                       "thread-safe", HT_FALSE,
-                                       "serialize-events", HT_TRUE, nullptr)); // TODO buffer-size from command line
+                                       HT_BASE_TIMELINE_PROPERTY_THREAD_SAFE, HT_FALSE,
+                                       HT_BASE_TIMELINE_PROPERTY_SERIALIZE_EVENTS, HT_TRUE, nullptr)); // TODO buffer-size from command line
     }
 
     ~GlobalCallstackTimeline()

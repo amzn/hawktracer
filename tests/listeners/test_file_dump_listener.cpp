@@ -106,11 +106,11 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
     ASSERT_LT(HT_FILE_DUMP_LISTENER_BUFFER_SIZE, file_size);
 }
 
-TEST(TestFileDumpListener, SerializedTimeline)
+TEST(TestFileDumpListener, NonSerializedTimeline)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = ht_timeline_create("simple_ts", "serialize-events", HT_TRUE, nullptr);
+    HT_Timeline* timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER, HT_BASE_TIMELINE_PROPERTY_SERIALIZE_EVENTS, HT_FALSE, nullptr);
 
     ht_file_dump_listener_init(&listener, test_file);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);

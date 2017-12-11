@@ -23,7 +23,7 @@ ht_callstack_base_timeline_deinit(HT_BaseTimeline* timeline)
 
     ht_base_timeline_deinit(timeline);
 }
-int i = 2;
+
 void
 ht_callstack_base_timeline_start(HT_CallstackBaseTimeline* timeline, HT_CallstackBaseEvent* event)
 {

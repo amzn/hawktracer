@@ -12,11 +12,16 @@ protected:
     static void SetUpTestCase()
     {
         ht_TestCallstackEvent_register_event_klass();
+
+        ht_registry_register_timeline(
+                    "TestCallstackBaseTimeline_HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
+                    ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
     }
 
     void SetUp() override
     {
-        _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("HT_CallstackBaseTimeline", "buffer-capacity", sizeof(HT_CallstackBaseEvent) * 3, nullptr);
+        _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackBaseTimeline_HT_CallstackBaseTimeline",
+                                                                  HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackBaseEvent) * 3, nullptr);
     }
 
     void TearDown() override
