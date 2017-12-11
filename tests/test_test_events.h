@@ -1,11 +1,11 @@
 #ifndef HAWKTRACER_TEST_TEST_EVENTS_H
 #define HAWKTRACER_TEST_TEST_EVENTS_H
 
-#include <hawktracer/event_macros.h>
+#include <hawktracer/core_events.h>
 
 HT_DECLS_BEGIN
 
-HT_DECLARE_EVENT_KLASS(TestCallstackEvent, HT_Event, (INTEGER, int, info))
+HT_DECLARE_EVENT_KLASS(TestCallstackEvent, HT_CallstackBaseEvent, (INTEGER, int, info))
 
 HT_DECLARE_EVENT_KLASS(RegistryTestEvent, HT_Event, (INTEGER, int, field))
 
