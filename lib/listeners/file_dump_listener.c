@@ -2,6 +2,9 @@
 #include "hawktracer/events.h"
 
 #include <stdio.h>
+#include <string.h>
+
+#define HT_MIN(a, b) (((a) > (b)) ? (b) : (a))
 
 inline static void
 _ht_file_dump_listener_flush(HT_FileDumpListener* listener)
@@ -11,19 +14,31 @@ _ht_file_dump_listener_flush(HT_FileDumpListener* listener)
 }
 
 inline static void
-_ht_file_dump_listener_process_unserialized_events(HT_FileDumpListener* listener, TEventPtr events, size_t size)
+_ht_file_dump_listener_process_serialized_events(HT_FileDumpListener* listener, TEventPtr events, size_t size)
 {
-    /* TODO */
+    size_t written = 0;
+    while (written < size)
+    {
+        size_t actual_size = HT_MIN(size, listener->buffer_usage - HT_FILE_DUMP_LISTENER_BUFFER_SIZE);
+        memcpy(listener->buffer + listener->buffer_usage, events + written, actual_size);
+        written += actual_size;
+        listener->buffer_usage+= actual_size;
+
+        if (listener->buffer_usage == HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
+        {
+            _ht_file_dump_listener_flush(listener);
+        }
+    }
 }
 
 inline static void
-_ht_file_dump_listener_process_serialized_events(HT_FileDumpListener* listener, TEventPtr events, size_t size)
+_ht_file_dump_listener_process_unserialized_events(HT_FileDumpListener* listener, TEventPtr events, size_t size)
 {
     for (size_t i = 0; i < size;)
     {
         HT_Event* event = HT_EVENT(events + i);
 
-        if (HT_EVENT_GET_CLASS(event)->type_info->packed_size + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
+        if (HT_EVENT_GET_CLASS(event)->get_size(event) + listener->buffer_usage > HT_FILE_DUMP_LISTENER_BUFFER_SIZE)
         {
             _ht_file_dump_listener_flush(listener);
         }
