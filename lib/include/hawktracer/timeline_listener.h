@@ -19,11 +19,9 @@ typedef void(*HT_TimelineListenerCallback)(
         TEventPtr events, size_t event_count, void* user_data);
 
 /* TODO: init instead? */
-HT_TimelineListenerContainer*
-ht_timeline_listener_container_create(void);
+HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
 
-void
-ht_timeline_listener_container_destroy(HT_TimelineListenerContainer* container);
+void ht_timeline_listener_container_destroy(HT_TimelineListenerContainer* container);
 
 void ht_timeline_listener_container_register_listener(
         HT_TimelineListenerContainer* container,

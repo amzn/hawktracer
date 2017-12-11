@@ -2,9 +2,7 @@
 
 #include <gtest/gtest.h>
 
-#define HT_DEFINE_TEST_EVENT_KLASS(TYPE_NAME) \
-    HT_DECLARE_EVENT_KLASS(TYPE_NAME, HT_Event, (INTEGER, int, field)) \
-    HT_DEFINE_EVENT_KLASS(TYPE_NAME)
+#include "test_test_events.h"
 
 
 TEST(TestRegistry, RegisterNewClassShouldPass)
@@ -23,8 +21,6 @@ TEST(TestRegistry, RegisterTheSameTimelineSecondTimeShouldSilentlyFail)
     ASSERT_FALSE(ht_registry_register_timeline(class_name, 10, HT_FALSE, nullptr, nullptr));
 }
 
-HT_DEFINE_TEST_EVENT_KLASS(RegistryTestEvent)
-
 TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldSilentlyFail)
 {
     // Arrange
@@ -33,9 +29,6 @@ TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldSilentlyFail)
     // Act & Assert
     ASSERT_FALSE(ht_registry_register_event_klass(ht_RegistryTestEvent_get_event_klass_instance()));
 }
-
-HT_DEFINE_TEST_EVENT_KLASS(RegistryTestEvent_ID_ONE)
-HT_DEFINE_TEST_EVENT_KLASS(RegistryTestEvent_ID_TWO)
 
 TEST(TestRegistry, RegisterEventTwiceShouldAssignDifferentIdentifiersToTheClass)
 {

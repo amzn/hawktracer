@@ -39,6 +39,7 @@ add_executable(hawktracer_tests
     test_global_callstack_timeline.cpp
     test_registry.cpp
     test_stack.cpp
+    test_test_events.c
     test_thread.cpp
     test_timeline.cpp)
 

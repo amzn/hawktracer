@@ -1,13 +1,10 @@
 #include <hawktracer/callstack_base_timeline.h>
-#include <hawktracer/registry.h> /* TODO cyclic include dependency */
 
 #include "test_common.h"
+#include "test_test_events.h"
 
 #include <gtest/gtest.h>
 
-HT_DECLARE_EVENT_KLASS(TestCallstackEvent, HT_CallstackBaseEvent,
-                            (INTEGER, int, info))
-HT_DEFINE_EVENT_KLASS(TestCallstackEvent)
 
 class TestCallstackBaseTimeline : public ::testing::Test
 {

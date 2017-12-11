@@ -1,4 +1,4 @@
-#include <hawktracer/events.h>
+#include <hawktracer/core_events.h>
 
 #include <gtest/gtest.h>
 
@@ -17,7 +17,7 @@ TEST(TestEvent, CallstackIntEventSerialize)
     event.label = 83123;
 
     // Act
-    HT_EVENT_SERIALIZE(&event, buffer);
+    HT_EVENT_GET_CLASS(&event)->serialize(HT_EVENT(&event), buffer);
 
     // Assert
     ASSERT_EQ(_BUFF_TO_TYPE(buffer, HT_EventType), HT_EVENT_GET_CLASS(&event)->type);
@@ -46,7 +46,7 @@ TEST(TestEvent, CallstackStringEventSerialize)
     event.label = "hello_world";
 
     // Act
-    HT_EVENT_SERIALIZE(&event, buffer);
+    HT_EVENT_GET_CLASS(&event)->serialize(HT_EVENT(&event), buffer);
 
     // Assert
     ASSERT_EQ(_BUFF_TO_TYPE(buffer, HT_EventType), HT_EVENT_GET_CLASS(&event)->type);

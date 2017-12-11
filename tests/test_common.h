@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_TESTS_TEST_COMMON_H
 #define HAWKTRACER_TESTS_TEST_COMMON_H
 
-#include <hawktracer/events.h>
+#include <hawktracer/core_events.h>
 
 #include <gtest/gtest.h>
 
