@@ -77,12 +77,20 @@ function generate_lua_variables {
 labels=()
 cpp_regex="TRACEPOINT_NAMED\s*\(([a-zA-Z_][a-zA-Z0-9_]*)\)\s*;"
 lua_regex="Native\.StartTimelineAction\s*\(([a-zA-Z_][a-zA-Z0-9_]*)\)\s*"
-find_regex=".*\.\(lua\|h\|cpp\)"
+
+unamestr=`uname`
+if [[ "$unamestr" == 'Darwin' ]]; then
+    find_regex=".*\.(lua|h|cpp)"
+    find_params="-E"
+else
+    find_regex=".*\.\(lua\|h\|cpp\)"
+    find_params=""
+fi
 
 function generate_labels {
     local dir=$1
 
-    for f in $(find $dir -regex $find_regex)
+    for f in $(find $find_params $dir -regex $find_regex)
     do
         while IFS= read -r line;
         do
