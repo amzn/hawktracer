@@ -16,10 +16,10 @@ HT_DECLS_END
 #include <hawktracer/callstack_scoped_tracepoint.hpp>
 
 #define HT_TP_SCOPED_INT(callstack_timeline, label) \
-    HawkTracer::CallstackScopedTracepoint<HT_CallstackEventLabel>(callstack_timeline, ht_callstack_timeline_int_start, label)
+    HawkTracer::CallstackScopedTracepoint<HT_CallstackEventLabel> _ht_scoped_tracepoint(callstack_timeline, ht_callstack_timeline_int_start, label)
 
 #define HT_TP_SCOPED_STRING(callstack_timeline, label) \
-    HawkTracer::CallstackScopedTracepoint<const char*>(callstack_timeline, ht_callstack_timeline_string_start, label)
+    HawkTracer::CallstackScopedTracepoint<const char*> _ht_scoped_tracepoint(callstack_timeline, ht_callstack_timeline_string_start, label)
 
 #elif defined(__GNUC__)
 
