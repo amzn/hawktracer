@@ -355,7 +355,7 @@ void CommandLineParser::parse(char **argv, int argc, bool throw_on_invalid_argum
             throw std::runtime_error("Option " + std::string(argv[i-1]) + " requires argument!");
         }
 
-        _values.emplace(argv[i-1], argv[i]);
+        _values[std::string(argv[i-1])] = argv[i];
     }
 
     _validate_mandatory_fields();
