@@ -198,6 +198,7 @@ void csv_action_handler(const hawktracer::Action& action, void* userData)
 class ChromeTracing
 {
 public:
+    bool open(const std::string& filename);
     static void action_handler(const hawktracer::Action &action, void* userData);
 
     void finalize();
@@ -206,8 +207,16 @@ private:
     void _action_handler(const hawktracer::Action &action);
     static double to_microseconds(hawktracer::NanoTime_t time);
 
-    bool initialized = false;
+    bool _initialized = false;
+    std::ofstream ofs;
 };
+
+bool ChromeTracing::open(const std::string &filename)
+{
+    ofs.open(filename);
+
+    return ofs.is_open();
+}
 
 void ChromeTracing::action_handler(const hawktracer::Action &action, void* userData)
 {
@@ -221,20 +230,20 @@ double ChromeTracing::to_microseconds(hawktracer::NanoTime_t time)
 
 void ChromeTracing::_action_handler(const hawktracer::Action &action)
 {
-    if (initialized)
+    if (_initialized)
     {
-        std::cout << ",";
+        ofs << ",";
     }
 
-    if (!initialized)
+    if (!_initialized)
     {
-        std::cout << "{\"traceEvents\":[" << std::endl;
-        initialized = true;
+        ofs << "{\"traceEvents\":[" << std::endl;
+        _initialized = true;
     }
 
     TracepointMapper::MapInfo info = mapper.get_label_info(action.label);
 
-    std::cout << std::fixed
+    ofs << std::fixed
               << "{\"name\":\"" << info.label << "\","
               << "\"cat\":\"" << info.category << "\","
               << "\"pid\": 1,"
@@ -246,9 +255,9 @@ void ChromeTracing::_action_handler(const hawktracer::Action &action)
 
 void ChromeTracing::finalize()
 {
-    if (initialized)
+    if (_initialized)
     {
-        std::cout << "]}" << std::flush;
+        ofs << "]}" << std::flush;
     }
 }
 
@@ -399,6 +408,8 @@ int main(int argc, char **argv)
     parser.add_option("-format", "output format (csv or chrome-tracing)", false, false, "chrome-tracing");
     parser.add_option("-map", "comma-separated paths to files with mapping definitions", false, false);
     parser.add_option("-n", "maps labels to the first label in map that is not greater than actual label", true, false);
+    parser.add_option("-output-file", "Output file for tracing (you can use specifiers from strftime like %d, %H etc.)",
+                      false, false, "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace");
 
     try
     {
@@ -455,6 +466,22 @@ int main(int argc, char **argv)
     }
 
     signal(SIGINT, signal_callback_handler);
+
+    time_t rawtime;
+    time(&rawtime);
+    struct tm* time_info = localtime (&rawtime);
+    char file_name_buffer[128];
+    strftime(file_name_buffer, 128, parser.get_value("-output-file").c_str(), time_info);
+
+    if (!chrome_tracing.open(file_name_buffer))
+    {
+        std::cerr << "Unable to open file " << file_name_buffer << std::endl;
+        return 1;
+    }
+    else
+    {
+        std::cerr << "Output will be written to a file: " << file_name_buffer << std::endl;
+    }
 
     hawktracer::TCPClient client;
     client.start(parser.get_value("-ip"), std::stoi(parser.get_value("-port")));
