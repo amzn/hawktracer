@@ -178,23 +178,6 @@ void BufferHandler::_process_buffer(char* buffer, std::size_t bufferSize)
     }
 }
 
-void csv_action_handler(const hawktracer::Action& action, void* userData)
-{
-    static bool initialized = false;
-
-    if (!initialized)
-    {
-        std::cout << "Action label,Action ID,Start time,Stop time,Thread ID" << std::endl;
-        initialized = true;
-    }
-
-    std::cout << mapper.get_label_info(action.label).label << ","
-              << action.actionId << ","
-              << action.startTime << ","
-              << action.stopTime << ","
-              << +action.threadId << std::endl;
-}
-
 class ChromeTracing
 {
 public:
@@ -389,23 +372,15 @@ void CommandLineParser::_validate_mandatory_fields()
     }
 }
 
-ChromeTracing chrome_tracing;
-BufferHandler handler;
-
-void signal_callback_handler(int signum)
-{
-    chrome_tracing.finalize();
-
-    exit(signum);
-}
-
 int main(int argc, char **argv)
 {
-    CommandLineParser parser("-ip 127.0.0.1 -port 8765 -format chrome-tracing -map my-map");
+    CommandLineParser parser("-ip 127.0.0.1 -port 8765 -map my-map");
+
+    ChromeTracing chrome_tracing;
+    BufferHandler handler;
 
     parser.add_option("-ip", "IP address of the porfiled device", false, true);
     parser.add_option("-port", "profiling port", false, false, "8765");
-    parser.add_option("-format", "output format (csv or chrome-tracing)", false, false, "chrome-tracing");
     parser.add_option("-map", "comma-separated paths to files with mapping definitions", false, false);
     parser.add_option("-n", "maps labels to the first label in map that is not greater than actual label", true, false);
     parser.add_option("-output-file", "Output file for tracing (you can use specifiers from strftime like %d, %H etc.)",
@@ -451,22 +426,6 @@ int main(int argc, char **argv)
         } while (len != std::string::npos);
     }
 
-    if (parser.get_value("-format") == "chrome-tracing")
-    {
-        handler.add_action_handler(&ChromeTracing::action_handler, &chrome_tracing);
-    }
-    else if (parser.get_value("-format") == "csv")
-    {
-        handler.add_action_handler(csv_action_handler, nullptr);
-    }
-    else
-    {
-        std::cerr << "invalid mode " << parser.get_value("-format") << std::endl;
-        return 1;
-    }
-
-    signal(SIGINT, signal_callback_handler);
-
     time_t rawtime;
     time(&rawtime);
     struct tm* time_info = localtime (&rawtime);
@@ -483,10 +442,21 @@ int main(int argc, char **argv)
         std::cerr << "Output will be written to a file: " << file_name_buffer << std::endl;
     }
 
+    handler.add_action_handler(&ChromeTracing::action_handler, &chrome_tracing);
+
     hawktracer::TCPClient client;
     client.start(parser.get_value("-ip"), std::stoi(parser.get_value("-port")));
 
-    client.handle_responses(&BufferHandler::process_buffer, &handler);
+    std::thread th = std::thread([&client, &handler] {
+        client.handle_responses(&BufferHandler::process_buffer, &handler);
+    });
+
+    std::cerr << "Hit [Enter] to finish the trace..." << std::endl;
+    getchar();
+    client.stop();
+    th.join();
+    chrome_tracing.finalize();
+    std::cerr << "Trace file has been saved to: " << file_name_buffer << std::endl;
 
     return 0;
 }
