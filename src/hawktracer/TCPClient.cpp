@@ -6,6 +6,7 @@
 
 #include <stdexcept>
 #include <cstring>
+#include <thread>
 
 #define BUFSIZE 1024
 
@@ -46,7 +47,7 @@ bool TCPClient::start(const std::string &ipAddress, uint16_t port)
     {
         while (connect(_sockFd, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0)
         {
-            stop();
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
     else
