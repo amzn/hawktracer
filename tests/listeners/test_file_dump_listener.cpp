@@ -18,7 +18,7 @@ TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = HT_TIMELINE(ht_global_timeline_get());
+    HT_Timeline* timeline = ht_global_timeline_get();
 
     ht_file_dump_listener_init(&listener, test_file);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
@@ -42,7 +42,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = HT_TIMELINE(ht_global_timeline_get());
+    HT_Timeline* timeline = ht_global_timeline_get();
 
     ht_file_dump_listener_init(&listener, test_file);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
@@ -77,7 +77,7 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = HT_TIMELINE(ht_global_timeline_get());
+    HT_Timeline* timeline = ht_global_timeline_get();
 
     remove(test_file);
     ht_file_dump_listener_init(&listener, test_file);
@@ -110,19 +110,20 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER, HT_BASE_TIMELINE_PROPERTY_SERIALIZE_EVENTS, HT_FALSE, nullptr);
+    HT_Timeline timeline;
+    ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, NULL);
 
     ht_file_dump_listener_init(&listener, test_file);
-    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
+    ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &listener);
 
     HT_DECL_EVENT(HT_Event, event);
     event.id = 32;
     event.timestamp = 9983;
 
     // Act
-    ht_timeline_push_event(timeline, &event);
-    ht_timeline_flush(timeline);
-    ht_timeline_unregister_all_listeners(timeline);
+    ht_timeline_push_event(&timeline, &event);
+    ht_timeline_flush(&timeline);
+    ht_timeline_unregister_all_listeners(&timeline);
     ht_file_dump_listener_deinit(&listener);
 
     // Assert
@@ -139,5 +140,5 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
 #undef ASSERT_FROM_BUFFER
 
     fclose(fp);
-    ht_timeline_destroy(timeline);
+    ht_timeline_deinit(&timeline);
 }

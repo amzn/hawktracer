@@ -5,22 +5,6 @@
 
 #include <gtest/gtest.h>
 
-TEST(TestRegistry, RegisterNewClassShouldPass)
-{
-    // Act & Assert
-    ASSERT_TRUE(ht_registry_register_timeline("test_RegisterNewClassShouldPass_1", 10, HT_FALSE, nullptr, nullptr));
-}
-
-TEST(TestRegistry, RegisterTheSameTimelineSecondTimeShouldSilentlyFail)
-{
-    // Arrange
-    const char* class_name = "test_RegisterTheSameClassSecondTimeShouldSilentlyFail_2";
-    ht_registry_register_timeline(class_name, 10, HT_FALSE, nullptr, nullptr);
-
-    // Act & Assert
-    ASSERT_FALSE(ht_registry_register_timeline(class_name, 10, HT_FALSE, nullptr, nullptr));
-}
-
 TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldSilentlyFail)
 {
     // Arrange
@@ -50,12 +34,13 @@ TEST(TestRegistry, PushAllKlassInfoEventsShouldPushAll)
     // Arrange
     size_t event_klass_count = 0;
     HT_EventKlass** klasses = ht_registry_get_event_klasses(&event_klass_count);
-    HT_Timeline* timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER, nullptr);
+    HT_Timeline timeline;
+    ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, nullptr);
     NotifyInfo<HT_EventKlass> info;
-    ht_timeline_register_listener(timeline, test_listener<HT_EventKlass>, &info);
+    ht_timeline_register_listener(&timeline, test_listener<HT_EventKlass>, &info);
 
     // Act
-    ht_registry_push_all_klass_info_events(timeline);
+    ht_registry_push_all_klass_info_events(&timeline);
 
     // Assert
     size_t total_events = 0;
@@ -66,5 +51,5 @@ TEST(TestRegistry, PushAllKlassInfoEventsShouldPushAll)
 
     ASSERT_EQ(total_events, info.values.size());
 
-    ht_timeline_destroy(timeline);
+    ht_timeline_deinit(&timeline);
 }

@@ -2,49 +2,10 @@
 #include <hawktracer/alloc.h>
 
 #include "internal/registry.h"
-#include "internal/timeline_klass.hpp"
 #include "internal/mutex.h"
 
-#include <cstring>
-#include <cassert>
-
-HT_Timeline*
-ht_timeline_create(const char* klass_id, ...)
-{
-    HT_TimelineKlass* klass = ht_registry_find_timeline_class(klass_id);
-
-    if (klass == nullptr)
-    {
-        // TODO error
-        return nullptr;
-    }
-
-    ++klass->refcount;
-
-    HT_Timeline* timeline = (HT_Timeline*)ht_alloc(klass->type_size);
-    timeline->klass = klass;
-
-    va_list args;
-    va_start(args, klass_id);
-
-    klass->init(timeline, args);
-
-    va_end(args);
-
-    return timeline;
-}
-
-void ht_timeline_destroy(HT_Timeline* timeline)
-{
-    ht_timeline_flush(timeline);
-
-    _HT_TimelineKlass* klass = timeline->klass;
-
-    klass->deinit(timeline);
-    ht_free(timeline);
-
-    ht_timeline_klass_unref(klass);
-}
+#include <string.h>
+#include <assert.h>
 
 static inline void
 _ht_timeline_notify_listeners(HT_Timeline* timeline)
@@ -127,4 +88,40 @@ ht_timeline_unregister_all_listeners(HT_Timeline* timeline)
 {
     ht_timeline_listener_container_unregister_all_listeners(
                 timeline->listeners);
+}
+
+void
+ht_timeline_init(HT_Timeline* timeline,
+                     size_t buffer_capacity,
+                     HT_Boolean thread_safe,
+                     HT_Boolean serialize_events,
+                     const char* listeners)
+{
+    timeline->buffer_usage = 0;
+    timeline->buffer_capacity = buffer_capacity;
+    timeline->buffer = (HT_Byte*)ht_alloc(buffer_capacity);
+    timeline->id_provider = ht_event_id_provider_get_default();
+    timeline->serialize_events = serialize_events;
+
+    timeline->listeners = (listeners == NULL) ?
+                ht_timeline_listener_container_create() : ht_find_or_create_listener(listeners);
+
+    timeline->locking_policy = thread_safe ? ht_mutex_create() : NULL;
+}
+
+void
+ht_timeline_deinit(HT_Timeline* timeline)
+{
+    assert(timeline);
+
+    ht_timeline_flush(timeline);
+    ht_free(timeline->buffer);
+
+    // TODO: shared listeners
+    ht_timeline_listener_container_destroy(timeline->listeners);
+
+    if (timeline->locking_policy)
+    {
+        ht_mutex_destroy(timeline->locking_policy);
+    }
 }

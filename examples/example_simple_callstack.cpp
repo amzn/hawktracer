@@ -31,6 +31,8 @@ int main(int argc, char** argv)
     HT_SIMPLE_INIT(argc, argv,
                    (HT_FILE_DUMP_LISTENER_INIT, file_dump_listener, "test_output.htdump"));
 
+    ht_registry_push_all_klass_info_events(ht_global_timeline_get());
+
     fnc_start();
 
     HT_SIMPLE_DEINIT(

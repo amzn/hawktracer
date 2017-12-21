@@ -1,11 +1,11 @@
 #ifndef HAWKTRACER_GLOBAL_TIMELINE_H
 #define HAWKTRACER_GLOBAL_TIMELINE_H
 
-#include <hawktracer/callstack_timeline.h>
+#include <hawktracer/callstack_scoped_tracepoint.h>
 
 HT_DECLS_BEGIN
 
-HT_CallstackTimeline* ht_global_timeline_get(void);
+HT_Timeline* ht_global_timeline_get(void);
 
 HT_DECLS_END
 

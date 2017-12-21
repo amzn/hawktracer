@@ -10,10 +10,9 @@ set(HAWKTRACER_LISTENERS_SOURCES
 set(HAWKTRACER_LIB_SOURCES
     alloc.c
     bag.c
-    base_timeline.cpp
-    callstack_timeline.c
     event_id_provider.cpp
     events.c
+    feature_callstack.c
     global_timeline.cpp
     init.c
     monotonic_clock.cpp
@@ -21,8 +20,7 @@ set(HAWKTRACER_LIB_SOURCES
     registry.c
     stack.c
     thread.cpp
-    timeline.cpp
-    timeline_klass.cpp
+    timeline.c
     timeline_listener.c)
 
 include_directories(include)

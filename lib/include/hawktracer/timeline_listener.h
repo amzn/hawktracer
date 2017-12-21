@@ -31,6 +31,8 @@ void ht_timeline_listener_container_register_listener(
 void ht_timeline_listener_container_unregister_all_listeners(
         HT_TimelineListenerContainer* container);
 
+HT_TimelineListenerContainer* ht_find_or_create_listener(const char* name);
+
 HT_DECLS_END
 
 #endif /* HAWKTRACER_TIMELINE_LISTENER_H */

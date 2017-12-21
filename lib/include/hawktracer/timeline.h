@@ -1,17 +1,38 @@
 #ifndef HAWKTRACER_TIMELINE_H
 #define HAWKTRACER_TIMELINE_H
 
-#include <hawktracer/base_timeline.h>
 #include <hawktracer/events.h>
 #include <hawktracer/monotonic_clock.h>
+#include <hawktracer/timeline_listener.h>
+#include <hawktracer/event_id_provider.h>
 
 #include <stddef.h>
 
+#define HT_TIMELINE_FEATURE(timeline, feature_id, feature_type) \
+    ((feature_type*)timeline->features[feature_id])
+
 HT_DECLS_BEGIN
 
-typedef HT_BaseTimeline HT_Timeline;
+typedef struct
+{
+    void* features[32];
+    size_t buffer_capacity;
+    size_t buffer_usage;
+    HT_Byte* buffer;
+    HT_EventIdProvider* id_provider;
+    HT_TimelineListenerContainer* listeners;
+    struct _HT_Mutex* locking_policy;
+    struct _HT_TimelineKlass* klass;
+    HT_Boolean serialize_events;
+} HT_Timeline;
 
-#define HT_TIMELINE(timeline) ((HT_Timeline*)timeline)
+void ht_timeline_init(HT_Timeline* timeline,
+                      size_t buffer_capacity,
+                      HT_Boolean thread_safe,
+                      HT_Boolean serialize_events,
+                      const char* listeners);
+
+void ht_timeline_deinit(HT_Timeline* timeline);
 
 void ht_timeline_register_listener(
         HT_Timeline* timeline,
@@ -19,10 +40,6 @@ void ht_timeline_register_listener(
         void* user_data);
 
 void ht_timeline_unregister_all_listeners(HT_Timeline* timeline);
-
-HT_Timeline* ht_timeline_create(const char* klass_id, ...);
-
-void ht_timeline_destroy(HT_Timeline* timeline);
 
 void ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event);
 

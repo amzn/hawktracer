@@ -4,23 +4,22 @@ struct GlobalTimeline
 {
     GlobalTimeline()
     {
-        c_timeline = HT_CALLSTACK_BASE_TIMELINE(
-                    ht_timeline_create("HT_GlobalTimeline", "buffer-size", 1024,
-                                       HT_BASE_TIMELINE_PROPERTY_THREAD_SAFE, HT_FALSE,
-                                       HT_BASE_TIMELINE_PROPERTY_SERIALIZE_EVENTS, HT_TRUE, nullptr)); // TODO buffer-size from command line
+        ht_timeline_init(&c_timeline, 1024, HT_FALSE, HT_TRUE, "HT_GlobalTimeline");
+        ht_feature_callstack_enable(&c_timeline);
     }
 
     ~GlobalTimeline()
     {
-        ht_timeline_destroy(HT_TIMELINE(c_timeline));
+        ht_feature_callstack_disable(&c_timeline);
+        ht_timeline_deinit(&c_timeline);
     }
 
-    HT_CallstackTimeline* c_timeline;
+    HT_Timeline c_timeline;
 };
 
-HT_CallstackTimeline* ht_global_timeline_get(void)
+HT_Timeline* ht_global_timeline_get(void)
 {
     static thread_local GlobalTimeline timeline;
 
-    return timeline.c_timeline;
+    return &timeline.c_timeline;
 }

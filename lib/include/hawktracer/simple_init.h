@@ -19,8 +19,8 @@
 
 #define HT_SIMPLE_DEINIT(...) \
     do { \
-        ht_timeline_flush(HT_TIMELINE(ht_global_timeline_get())); \
-        ht_timeline_unregister_all_listeners(HT_TIMELINE(ht_global_timeline_get())); \
+        ht_timeline_flush(ht_global_timeline_get()); \
+        ht_timeline_unregister_all_listeners(ht_global_timeline_get()); \
         MKCREFLECT_FOREACH(HT_DEINIT_GLOBAL_LISTENERS, 0, __VA_ARGS__) \
         ht_deinit(); \
     } while (0)

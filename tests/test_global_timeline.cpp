@@ -5,35 +5,35 @@
 TEST(TestGlobalTimeline, SimpleTest)
 {
     // Arrange
-    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_timeline_get());
+    HT_Timeline* timeline = ht_global_timeline_get();
     NotifyInfo<HT_CallstackIntEvent> info;
-    ht_timeline_register_listener(HT_TIMELINE(timeline), test_listener<HT_CallstackIntEvent>, &info);
+    ht_timeline_register_listener(timeline, test_listener<HT_CallstackIntEvent>, &info);
 
     // Act
-    ht_callstack_timeline_int_start(timeline, 1);
-    ht_callstack_timeline_int_start(timeline, 2);
-    ht_callstack_timeline_stop(timeline);
-    ht_callstack_timeline_stop(timeline);
+    ht_feature_callstack_start_int(timeline, 1);
+    ht_feature_callstack_start_int(timeline, 2);
+    ht_feature_callstack_stop(timeline);
+    ht_feature_callstack_stop(timeline);
 
-    ht_timeline_flush(HT_TIMELINE(ht_global_timeline_get()));
+    ht_timeline_flush(timeline);
 
     // Assert
     HT_DECL_EVENT(HT_CallstackIntEvent, int_ev);
     ASSERT_EQ(2 * HT_EVENT_GET_CLASS(&int_ev)->get_size(HT_EVENT(&int_ev)), info.notified_events);
     ASSERT_EQ(1, info.notify_count);
 
-    ht_timeline_unregister_all_listeners(HT_TIMELINE(timeline));
+    ht_timeline_unregister_all_listeners(timeline);
 }
 
 TEST(TestGlobalTimeline, ScopedTracepoint)
 {
     // Arrange
-    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_timeline_get());
+    HT_Timeline* timeline = ht_global_timeline_get();
     const HT_CallstackEventLabel int_label = 31337;
     const char* string_label = "31337_string";
     MixedNotifyInfo info;
 
-    ht_timeline_register_listener(HT_TIMELINE(timeline), mixed_test_listener, &info);
+    ht_timeline_register_listener(timeline, mixed_test_listener, &info);
 
     // Act
     {
@@ -43,7 +43,7 @@ TEST(TestGlobalTimeline, ScopedTracepoint)
         }
     }
 
-    ht_timeline_flush(HT_TIMELINE(timeline));
+    ht_timeline_flush(timeline);
 
     // Assert
     HT_DECL_EVENT(HT_CallstackBaseEvent, base_ev);
@@ -52,5 +52,5 @@ TEST(TestGlobalTimeline, ScopedTracepoint)
 
     ASSERT_EQ(expected_size, info.notified_events);
 
-    ht_timeline_unregister_all_listeners(HT_TIMELINE(timeline));
+    ht_timeline_unregister_all_listeners(timeline);
 }

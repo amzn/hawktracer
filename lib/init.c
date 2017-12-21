@@ -1,6 +1,5 @@
 #include "hawktracer/init.h"
-#include "hawktracer/base_timeline.h"
-#include "hawktracer/callstack_timeline.h"
+#include "hawktracer/callstack_scoped_tracepoint.h"
 #include "internal/registry.h"
 
 void
@@ -18,19 +17,9 @@ ht_init(int argc, char** argv)
     ht_HT_CallstackBaseEvent_register_event_klass();
     ht_HT_CallstackIntEvent_register_event_klass();
     ht_HT_CallstackStringEvent_register_event_klass();
-
-    /* TODO: should we take some action if register() fails? */
-    ht_registry_register_timeline(
-                HT_BASE_TIMELINE_IDENTIFIER, sizeof(HT_Timeline), HT_FALSE,
-                ht_base_timeline_init, ht_base_timeline_deinit);
-
-    ht_registry_register_timeline(
-                "HT_GlobalTimeline", sizeof(HT_CallstackTimeline), HT_TRUE,
-                ht_callstack_timeline_init, ht_callstack_timeline_deinit);
 }
 
 void ht_deinit(void)
 {
-    htregistry_unregister_all_timelines();
     htregistry_unregister_all_event_klasses();
 }

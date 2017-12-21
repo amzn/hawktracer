@@ -45,3 +45,21 @@ ht_timeline_listener_container_unregister_all_listeners(
     ht_bag_clear(&container->callbacks);
     ht_bag_clear(&container->user_datas);
 }
+
+HT_TimelineListenerContainer*
+ht_find_or_create_listener(const char* name)
+{
+    HT_TimelineListenerContainer* container;
+
+    if (name == NULL)
+    {
+        container = ht_timeline_listener_container_create();
+    }
+    else
+    {
+        // TODO
+        container = ht_timeline_listener_container_create();
+    }
+
+    return container;
+}

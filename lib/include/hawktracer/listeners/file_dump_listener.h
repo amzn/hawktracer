@@ -29,7 +29,7 @@ HT_DECLS_END
     HT_FileDumpListener identifier; \
     if (ht_file_dump_listener_init(&identifier, file_name) != HT_FALSE) \
     { \
-        ht_timeline_register_listener(HT_TIMELINE(timeline), ht_file_dump_listener_callback, &identifier); \
+        ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &identifier); \
     }
 
 #define HT_FILE_DUMP_LISTENER_DEINIT(identifier) \

@@ -12,20 +12,16 @@ class TestTimeline : public ::testing::Test
 protected:
     void SetUp() override
     {
-        _timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER,
-                                       HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_Event) * 3, nullptr);
+        ht_timeline_init(&_timeline, sizeof(HT_Event) * 3, HT_FALSE, HT_FALSE, nullptr);
     }
 
     void TearDown() override
     {
-        if (_timeline)
-        {
-            ht_timeline_unregister_all_listeners(_timeline);
-            ht_timeline_destroy(_timeline);
-        }
+        ht_timeline_unregister_all_listeners(&_timeline);
+        ht_timeline_deinit(&_timeline);
     }
 
-    HT_Timeline* _timeline = nullptr;
+    HT_Timeline _timeline;
 };
 
 // TODO test different types of events
@@ -35,13 +31,13 @@ TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
     // Arrange
     NotifyInfo<HT_Event> info;
 
-    ht_timeline_register_listener(_timeline, test_listener<HT_Event>, &info);
+    ht_timeline_register_listener(&_timeline, test_listener<HT_Event>, &info);
 
     // Act
     for (int i = 0; i < 10; i++)
     {
         HT_DECL_EVENT(HT_Event, event);
-        ht_timeline_push_event(_timeline, &event);
+        ht_timeline_push_event(&_timeline, &event);
     }
 
     // Assert
@@ -55,23 +51,14 @@ TEST_F(TestTimeline, FlushTimelineShouldResetBufferUsage)
     for (int i = 0; i < 10; i++)
     {
         HT_DECL_EVENT(HT_Event, event);
-        ht_timeline_push_event(_timeline, &event);
+        ht_timeline_push_event(&_timeline, &event);
     }
 
     // Act
-    ht_timeline_flush(_timeline);
+    ht_timeline_flush(&_timeline);
 
     // Assert
-    ASSERT_EQ(0u, _timeline->buffer_usage);
-}
-
-TEST_F(TestTimeline, ShouldNotCreateTimelineIfTypeNotRegistered)
-{
-    // Arrange & Act
-    HT_Timeline* timeline = ht_timeline_create("invalid-type-name-which-definitely-does-not-exist", nullptr);
-
-    // Assert
-    ASSERT_EQ(nullptr, timeline);
+    ASSERT_EQ(0u, _timeline.buffer_usage);
 }
 
 TEST_F(TestTimeline, FlushEventsShouldNotifyListener)
@@ -79,32 +66,33 @@ TEST_F(TestTimeline, FlushEventsShouldNotifyListener)
     // Arrange
     NotifyInfo<HT_Event> info;
 
-    ht_timeline_register_listener(_timeline, test_listener<HT_Event>, &info);
+    ht_timeline_register_listener(&_timeline, test_listener<HT_Event>, &info);
 
     HT_DECL_EVENT(HT_Event, event);
-    ht_timeline_push_event(_timeline, &event);
+    ht_timeline_push_event(&_timeline, &event);
 
     // Act
-    ht_timeline_flush(_timeline);
+    ht_timeline_flush(&_timeline);
 
     // Assert
     ASSERT_EQ(1 * sizeof(HT_Event), info.notified_events);
     ASSERT_EQ(1, info.notify_count);
 }
 
-TEST_F(TestTimeline, TimelineShouldBeFlushedBeforeDestroyed)
+TEST_F(TestTimeline, TimelineShouldBeFlushedBeforeUninitialized)
 {
     // Arrange
+    HT_Timeline timeline;
+    ht_timeline_init(&timeline, sizeof(HT_Event) * 3, HT_FALSE, HT_FALSE, nullptr);
     NotifyInfo<HT_Event> info;
 
-    ht_timeline_register_listener(_timeline, test_listener<HT_Event>, &info);
+    ht_timeline_register_listener(&timeline, test_listener<HT_Event>, &info);
 
     HT_DECL_EVENT(HT_Event, event);
-    ht_timeline_push_event(_timeline, &event);
+    ht_timeline_push_event(&timeline, &event);
 
     // Act
-    ht_timeline_destroy(_timeline);
-    _timeline = nullptr;
+    ht_timeline_deinit(&timeline);
 
     // Assert
     ASSERT_EQ(1 * sizeof(HT_Event), info.notified_events);
@@ -116,11 +104,11 @@ TEST_F(TestTimeline, InitEventTwiceShouldIncreaseId)
     // Arrange
     HT_DECL_EVENT(HT_Event, event);
 
-    ht_timeline_init_event(_timeline, &event);
+    ht_timeline_init_event(&_timeline, &event);
     HT_EventId id = event.id;
 
     // Act
-    ht_timeline_init_event(_timeline, &event);
+    ht_timeline_init_event(&_timeline, &event);
 
     // Assert
     ASSERT_EQ(id, event.id - 1);
@@ -131,11 +119,11 @@ TEST_F(TestTimeline, InitEventShouldSetMonotonicTimestamp)
     // Arrange
     HT_DECL_EVENT(HT_Event, event);
 
-    ht_timeline_init_event(_timeline, &event);
+    ht_timeline_init_event(&_timeline, &event);
     HT_TimestampNs ts = event.timestamp;
 
     // Act
-    ht_timeline_init_event(_timeline, &event);
+    ht_timeline_init_event(&_timeline, &event);
 
     // Assert
     ASSERT_LT(ts, event.timestamp);
@@ -145,19 +133,19 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
 {
     // Arrange
     const size_t event_count = 20000;
-    HT_Timeline* timeline = ht_timeline_create(HT_BASE_TIMELINE_IDENTIFIER,
-                                   HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_Event) * 3,
-                                   HT_BASE_TIMELINE_PROPERTY_THREAD_SAFE, HT_TRUE, nullptr);
+    HT_Timeline timeline;
+    ht_timeline_init(&timeline, sizeof(HT_Event) * 3, HT_TRUE, HT_FALSE, NULL);
+
     NotifyInfo<HT_Event> info;
-    ht_timeline_register_listener(timeline, test_listener<HT_Event>, &info);
+    ht_timeline_register_listener(&timeline, test_listener<HT_Event>, &info);
 
     // Act
-    std::thread th = std::thread([timeline] {
+    std::thread th = std::thread([&timeline] {
         for (size_t i = event_count / 2; i < event_count; i++)
         {
             HT_DECL_EVENT(HT_Event, event);
             event.timestamp = i;
-            ht_timeline_push_event(timeline, &event);
+            ht_timeline_push_event(&timeline, &event);
         }
     });
 
@@ -165,12 +153,12 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
     {
         HT_DECL_EVENT(HT_Event, event);
         event.timestamp = i;
-        ht_timeline_push_event(timeline, &event);
+        ht_timeline_push_event(&timeline, &event);
     }
 
     th.join();
 
-    ht_timeline_flush(timeline);
+    ht_timeline_flush(&timeline);
 
     // Assert
     std::vector<int> all_values(event_count, 1);
@@ -184,5 +172,5 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
 
     ASSERT_EQ(event_count, sum);
 
-    ht_timeline_destroy(timeline);
+    ht_timeline_deinit(&timeline);
 }
