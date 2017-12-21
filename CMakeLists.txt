@@ -7,6 +7,7 @@ option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_TESTS "Enable unit tests" OFF)
 option(ENABLE_CODE_COVERAGE "Enable code coverage" OFF)
 option(ENABLE_BENCHMARKS "Enable benchmarks" OFF)
+option(ENABLE_EXAMPLES "Enable examples" OFF)
 
 option(ENABLE_MAINTAINER_MODE "Enables maintainer mode. Overrides some flags
     (e.g. ENABLE_TESTS, ENABLE_CODE_COVERAGE, ENABLE_BENCHMARKS)")
@@ -21,6 +22,7 @@ if(ENABLE_MAINTAINER_MODE)
     set(ENABLE_TESTS ON)
     set(ENABLE_CODE_COVERAGE ON)
     set(ENABLE_BENCHMARKS ON)
+    set(ENABLE_EXAMPLES ON)
 endif(ENABLE_MAINTAINER_MODE)
 
 if(ENABLE_ASAN)
@@ -37,6 +39,10 @@ add_subdirectory(client)
 if(ENABLE_TESTS)
     add_subdirectory(tests)
 endif(ENABLE_TESTS)
+
+if(ENABLE_EXAMPLES)
+    add_subdirectory(examples)
+endif(ENABLE_EXAMPLES)
 
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
