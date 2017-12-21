@@ -8,7 +8,6 @@
 
 #define HT_EVENT_GET_SIZE_FUNCTION(C_TYPE) ht_##C_TYPE##_get_size
 #define HT_EVENT_SERIALIZE_FUNCTION(C_TYPE) ht_##C_TYPE##_fnc_serialize
-#define HT_EVENT_GET_KLASS_INSTANCE_FUNCTION(C_TYPE) ht_##C_TYPE##_get_event_klass_instance
 #define HT_EVENT_REGISTER_KLASS_FUNCTION(C_TYPE) ht_##C_TYPE##_register_event_klass
 
 #define HT_EVENT_RUNTIME_SIZEOF_STRUCT(VAR_NAME, FIELD, C_TYPE) HT_EVENT_GET_SIZE_FUNCTION(C_TYPE)(((HT_Event*)&VAR_NAME->FIELD))

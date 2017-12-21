@@ -30,6 +30,7 @@ struct _HT_EventKlass
 };
 
 #define HT_EVENT_GET_CLASS(event) (((HT_Event*)event)->klass)
+#define HT_EVENT_GET_KLASS_INSTANCE_FUNCTION(C_TYPE) ht_##C_TYPE##_get_event_klass_instance
 
 #define HT_DECL_EVENT(TYPE_NAME, event) \
     TYPE_NAME event; HT_EVENT(&event)->klass = HT_EVENT_GET_KLASS_INSTANCE_FUNCTION(TYPE_NAME)();
