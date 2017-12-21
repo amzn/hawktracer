@@ -32,6 +32,7 @@ if(ENABLE_CODE_COVERAGE)
 endif(ENABLE_CODE_COVERAGE)
 
 add_subdirectory(lib)
+add_subdirectory(client)
 
 if(ENABLE_TESTS)
     add_subdirectory(tests)
