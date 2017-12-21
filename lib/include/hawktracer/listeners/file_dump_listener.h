@@ -24,4 +24,15 @@ void ht_file_dump_listener_callback(TEventPtr events, size_t size, HT_Boolean se
 
 HT_DECLS_END
 
+
+#define HT_FILE_DUMP_LISTENER_INIT(timeline, identifier, file_name) \
+    HT_FileDumpListener identifier; \
+    if (ht_file_dump_listener_init(&identifier, file_name) != HT_FALSE) \
+    { \
+        ht_timeline_register_listener(HT_TIMELINE(timeline), ht_file_dump_listener_callback, &identifier); \
+    }
+
+#define HT_FILE_DUMP_LISTENER_DEINIT(identifier) \
+    ht_file_dump_listener_deinit(&identifier);
+
 #endif /* HAWKTRACER_LISTENERS_FILE_DUMP_LISTENER_H */
