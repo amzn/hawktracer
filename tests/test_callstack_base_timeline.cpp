@@ -1,4 +1,4 @@
-#include <hawktracer/callstack_base_timeline.h>
+#include <hawktracer/callstack_timeline.h>
 
 #include "test_common.h"
 #include "test_test_events.h"
@@ -14,13 +14,13 @@ protected:
         ht_TestCallstackEvent_register_event_klass();
 
         ht_registry_register_timeline(
-                    "TestCallstackBaseTimeline_HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
-                    ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
+                    "TestCallstackBaseTimeline_HT_CallstackBaseTimeline", sizeof(HT_CallstackTimeline), HT_TRUE,
+                    ht_callstack_timeline_init, ht_callstack_timeline_deinit);
     }
 
     void SetUp() override
     {
-        _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackBaseTimeline_HT_CallstackBaseTimeline",
+        _timeline = (HT_CallstackTimeline*)ht_timeline_create("TestCallstackBaseTimeline_HT_CallstackBaseTimeline",
                                                                   HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackBaseEvent) * 3, nullptr);
     }
 
@@ -30,7 +30,7 @@ protected:
         ht_timeline_destroy(HT_TIMELINE(_timeline));
     }
 
-    HT_CallstackBaseTimeline* _timeline = nullptr;
+    HT_CallstackTimeline* _timeline = nullptr;
 };
 
 /* TODO: add test with threading */
@@ -47,12 +47,12 @@ TEST_F(TestCallstackBaseTimeline, Base)
     {
         HT_DECL_EVENT(TestCallstackEvent, event);
         event.info = i;
-        ht_callstack_base_timeline_start(_timeline, (HT_CallstackBaseEvent*)&event);
+        ht_callstack_timeline_start(_timeline, (HT_CallstackBaseEvent*)&event);
     }
 
     for (int i = 0; i < 100; i++)
     {
-        ht_callstack_base_timeline_stop(_timeline);
+        ht_callstack_timeline_stop(_timeline);
     }
 
     ht_timeline_flush(HT_TIMELINE(_timeline));
@@ -77,18 +77,18 @@ TEST_F(TestCallstackBaseTimeline, MixedEventPublishing)
     auto start_event = [this] (int info) {
         HT_DECL_EVENT(TestCallstackEvent, event);
         event.info = info;
-        ht_callstack_base_timeline_start(_timeline, (HT_CallstackBaseEvent*)&event);
+        ht_callstack_timeline_start(_timeline, (HT_CallstackBaseEvent*)&event);
     };
 
     // Act
     start_event(1);
     start_event(2);
-    ht_callstack_base_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
     start_event(3);
     start_event(4);
-    ht_callstack_base_timeline_stop(_timeline);
-    ht_callstack_base_timeline_stop(_timeline);
-    ht_callstack_base_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
 
     ht_timeline_flush(HT_TIMELINE(_timeline));
 

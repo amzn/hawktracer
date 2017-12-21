@@ -1,6 +1,6 @@
 #include "hawktracer/init.h"
 #include "hawktracer/base_timeline.h"
-#include "hawktracer/callstack_base_timeline.h"
+#include "hawktracer/callstack_timeline.h"
 #include "internal/registry.h"
 
 void
@@ -25,8 +25,8 @@ ht_init(int argc, char** argv)
                 ht_base_timeline_init, ht_base_timeline_deinit);
 
     ht_registry_register_timeline(
-                "HT_GlobalCallstackTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
-                ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
+                "HT_GlobalCallstackTimeline", sizeof(HT_CallstackTimeline), HT_TRUE,
+                ht_callstack_timeline_init, ht_callstack_timeline_deinit);
 }
 
 void ht_deinit(void)

@@ -5,15 +5,15 @@
 TEST(TestGlobalCallstackTimeline, SimpleTest)
 {
     // Arrange
-    HT_CallstackBaseTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_callstack_timeline_get());
+    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_callstack_timeline_get());
     NotifyInfo<HT_CallstackIntEvent> info;
     ht_timeline_register_listener(HT_TIMELINE(timeline), test_listener<HT_CallstackIntEvent>, &info);
 
     // Act
     ht_callstack_timeline_int_start(timeline, 1);
     ht_callstack_timeline_int_start(timeline, 2);
-    ht_callstack_base_timeline_stop(timeline);
-    ht_callstack_base_timeline_stop(timeline);
+    ht_callstack_timeline_stop(timeline);
+    ht_callstack_timeline_stop(timeline);
 
     ht_timeline_flush(HT_TIMELINE(ht_global_callstack_timeline_get()));
 
@@ -28,7 +28,7 @@ TEST(TestGlobalCallstackTimeline, SimpleTest)
 TEST(TestGlobalCallstackTimeline, ScopedTracepoint)
 {
     // Arrange
-    HT_CallstackBaseTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_callstack_timeline_get());
+    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_callstack_timeline_get());
     const HT_CallstackEventLabel int_label = 31337;
     const char* string_label = "31337_string";
     MixedNotifyInfo info;

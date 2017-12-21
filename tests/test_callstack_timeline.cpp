@@ -8,8 +8,8 @@ protected:
     static void SetUpTestCase()
     {
         ht_registry_register_timeline(
-                    "TestCallstackTimeline_HT_CallstackBaseTimeline", sizeof(HT_CallstackBaseTimeline), HT_TRUE,
-                    ht_callstack_base_timeline_init, ht_callstack_base_timeline_deinit);
+                    "TestCallstackTimeline_HT_CallstackBaseTimeline", sizeof(HT_CallstackTimeline), HT_TRUE,
+                    ht_callstack_timeline_init, ht_callstack_timeline_deinit);
     }
 
     void TearDown() override
@@ -18,13 +18,13 @@ protected:
         ht_timeline_destroy(HT_TIMELINE(_timeline));
     }
 
-    HT_CallstackBaseTimeline* _timeline = nullptr;
+    HT_CallstackTimeline* _timeline = nullptr;
 };
 
 TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
+    _timeline = (HT_CallstackTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
                                                               HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackIntEvent) * 3, nullptr);
     NotifyInfo<HT_CallstackIntEvent> info;
 
@@ -40,7 +40,7 @@ TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 
     for (int i = 0; i < 4; i++)
     {
-        ht_callstack_base_timeline_stop(_timeline);
+        ht_callstack_timeline_stop(_timeline);
     }
 
     ht_timeline_flush(HT_TIMELINE(_timeline));
@@ -58,7 +58,7 @@ TEST_F(TestCallstackTimeline, SimpleIntCallstackTest)
 TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
+    _timeline = (HT_CallstackTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
                                                               HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
     MixedNotifyInfo info;
 
@@ -71,11 +71,11 @@ TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
     ht_callstack_timeline_int_start(_timeline, 1);
     ht_callstack_timeline_string_start(_timeline, label1);
     ht_callstack_timeline_int_start(_timeline, 2);
-    ht_callstack_base_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
     ht_callstack_timeline_string_start(_timeline, label2);
-    ht_callstack_base_timeline_stop(_timeline);
-    ht_callstack_base_timeline_stop(_timeline);
-    ht_callstack_base_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
+    ht_callstack_timeline_stop(_timeline);
 
     ht_timeline_flush(HT_TIMELINE(_timeline));
 
@@ -93,7 +93,7 @@ TEST_F(TestCallstackTimeline, MixedCallstackEventTypes)
 TEST_F(TestCallstackTimeline, TestScopedTracepoint)
 {
     // Arrange
-    _timeline = (HT_CallstackBaseTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
+    _timeline = (HT_CallstackTimeline*)ht_timeline_create("TestCallstackTimeline_HT_CallstackBaseTimeline",
                                                               HT_BASE_TIMELINE_PROPERTY_BUFFER_CAPACITY, sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), nullptr);
     const HT_CallstackEventLabel int_label = 31337;
     const char* string_label = "31337_string";

@@ -14,10 +14,10 @@ struct GlobalCallstackTimeline
         ht_timeline_destroy(HT_TIMELINE(c_timeline));
     }
 
-    HT_CallstackBaseTimeline* c_timeline;
+    HT_CallstackTimeline* c_timeline;
 };
 
-HT_CallstackBaseTimeline* ht_global_callstack_timeline_get(void)
+HT_CallstackTimeline* ht_global_callstack_timeline_get(void)
 {
     static thread_local GlobalCallstackTimeline timeline;
 

@@ -5,7 +5,7 @@
 
 HT_DECLS_BEGIN
 
-HT_CallstackBaseTimeline* ht_global_callstack_timeline_get(void);
+HT_CallstackTimeline* ht_global_callstack_timeline_get(void);
 
 HT_DECLS_END
 

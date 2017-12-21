@@ -11,7 +11,6 @@ set(HAWKTRACER_LIB_SOURCES
     alloc.c
     bag.c
     base_timeline.cpp
-    callstack_base_timeline.c
     callstack_timeline.c
     event_id_provider.cpp
     events.c
