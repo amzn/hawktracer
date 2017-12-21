@@ -14,7 +14,7 @@ set(HAWKTRACER_LIB_SOURCES
     callstack_timeline.c
     event_id_provider.cpp
     events.c
-    global_callstack_timeline.cpp
+    global_timeline.cpp
     init.c
     monotonic_clock.cpp
     mutex.cpp

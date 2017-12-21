@@ -1,5 +1,5 @@
 #include <hawktracer/listeners/file_dump_listener.h>
-#include <hawktracer/global_callstack_timeline.h>
+#include <hawktracer/global_timeline.h>
 
 #include <gtest/gtest.h>
 
@@ -18,7 +18,7 @@ TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = HT_TIMELINE(ht_global_callstack_timeline_get());
+    HT_Timeline* timeline = HT_TIMELINE(ht_global_timeline_get());
 
     ht_file_dump_listener_init(&listener, test_file);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
@@ -42,7 +42,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = HT_TIMELINE(ht_global_callstack_timeline_get());
+    HT_Timeline* timeline = HT_TIMELINE(ht_global_timeline_get());
 
     ht_file_dump_listener_init(&listener, test_file);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
@@ -77,7 +77,7 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 {
     // Arrange
     HT_FileDumpListener listener;
-    HT_Timeline* timeline = HT_TIMELINE(ht_global_callstack_timeline_get());
+    HT_Timeline* timeline = HT_TIMELINE(ht_global_timeline_get());
 
     remove(test_file);
     ht_file_dump_listener_init(&listener, test_file);

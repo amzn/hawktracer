@@ -1,11 +1,11 @@
-#include <hawktracer/global_callstack_timeline.h>
+#include <hawktracer/global_timeline.h>
 
 #include "test_common.h"
 
-TEST(TestGlobalCallstackTimeline, SimpleTest)
+TEST(TestGlobalTimeline, SimpleTest)
 {
     // Arrange
-    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_callstack_timeline_get());
+    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_timeline_get());
     NotifyInfo<HT_CallstackIntEvent> info;
     ht_timeline_register_listener(HT_TIMELINE(timeline), test_listener<HT_CallstackIntEvent>, &info);
 
@@ -15,7 +15,7 @@ TEST(TestGlobalCallstackTimeline, SimpleTest)
     ht_callstack_timeline_stop(timeline);
     ht_callstack_timeline_stop(timeline);
 
-    ht_timeline_flush(HT_TIMELINE(ht_global_callstack_timeline_get()));
+    ht_timeline_flush(HT_TIMELINE(ht_global_timeline_get()));
 
     // Assert
     HT_DECL_EVENT(HT_CallstackIntEvent, int_ev);
@@ -25,10 +25,10 @@ TEST(TestGlobalCallstackTimeline, SimpleTest)
     ht_timeline_unregister_all_listeners(HT_TIMELINE(timeline));
 }
 
-TEST(TestGlobalCallstackTimeline, ScopedTracepoint)
+TEST(TestGlobalTimeline, ScopedTracepoint)
 {
     // Arrange
-    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_callstack_timeline_get());
+    HT_CallstackTimeline* timeline = HT_CALLSTACK_BASE_TIMELINE(ht_global_timeline_get());
     const HT_CallstackEventLabel int_label = 31337;
     const char* string_label = "31337_string";
     MixedNotifyInfo info;

@@ -25,7 +25,7 @@ ht_init(int argc, char** argv)
                 ht_base_timeline_init, ht_base_timeline_deinit);
 
     ht_registry_register_timeline(
-                "HT_GlobalCallstackTimeline", sizeof(HT_CallstackTimeline), HT_TRUE,
+                "HT_GlobalTimeline", sizeof(HT_CallstackTimeline), HT_TRUE,
                 ht_callstack_timeline_init, ht_callstack_timeline_deinit);
 }
 
