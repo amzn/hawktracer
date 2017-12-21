@@ -15,7 +15,7 @@ ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 
 ExternalProject_Get_Property(googletest binary_dir)
-set(GTEST_LIBRARY_PATH ${binary_dir}/googlemock/gtest/${CMAKE_FIND_LIBRARY_PREFIXES}gtest.a)
+set(GTEST_LIBRARY_PATH ${binary_dir}/googlemock/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(GTEST_LIBRARY hawktracer_gtest)
 
 add_library(${GTEST_LIBRARY} UNKNOWN IMPORTED)
