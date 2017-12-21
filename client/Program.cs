@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public delegate void OnEventReceived(Event evt);
 
     class MainClass
     {
-        EventKlassRegistry klassRegistry = new EventKlassRegistry();
+        readonly EventKlassRegistry klassRegistry = new EventKlassRegistry();
         readonly DataProvider dataProvider;
         ChromeTracingOutput chout = new ChromeTracingOutput("/home/loganek/out.json");
 
@@ -57,30 +57,12 @@ namespace hawktracerclient
             var mc = new MainClass(provider);
             try
             {
-                mc.onEventReceived += MainClass.PrintEvent;
-
                 mc.run();
             }
             catch (Exception ex)
             {
                 mc.chout.Dispose();
                 Console.WriteLine(ex.Message);
-            }
-        }
-
-        internal static void PrintEvent(Event evt)
-        {
-            foreach (var value in evt.FieldValues)
-            {
-                if (value.field.Type == typeof(Event))
-                {
-                    Console.WriteLine(value.field.Name + " (" + value.field.TypeName + "): ");
-                    PrintEvent(value.Value as Event);
-                }
-                else
-                {
-                    Console.WriteLine(value.field.Name + ": " + value.Value);
-                }
             }
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public static class TypeHelper
     {

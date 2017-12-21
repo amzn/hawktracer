@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public class EventKlassRegistry
     {

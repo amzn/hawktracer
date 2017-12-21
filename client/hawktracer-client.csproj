@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{6CE573CB-E906-4CF0-AA30-985BB43C2DF7}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>hawktracerclient</RootNamespace>
+    <RootNamespace>HawkTracer.Client</RootNamespace>
     <AssemblyName>hawktracer-client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -44,6 +44,7 @@
     <Compile Include="SourceStreamFactory.cs" />
     <Compile Include="ArgParser.cs" />
     <Compile Include="ChromeTracingOutput.cs" />
+    <Compile Include="BufferPool.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

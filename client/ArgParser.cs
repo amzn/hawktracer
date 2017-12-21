@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public class ArgParser
     {
@@ -82,9 +83,9 @@ namespace hawktracerclient
             return (T) values[option];
         }
 
-        public ISet<string> GetFreeValues() // TODO should be readonly
+        public IReadOnlyCollection<string> GetFreeValues()
         {
-            return freeValues;
+            return freeValues.ToList().AsReadOnly();
         }
 
         private void LoadNamedOption(string arg)

@@ -2,11 +2,12 @@
 using System.Text.RegularExpressions;
 using System;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public static class SourceStreamFactory
     {
         private const string ipRegex = @"^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:(\d{1,5}))?$";
+        private const int defaultPort = 8765;
 
         public static Stream Create(string sourceDescription)
         {
@@ -22,7 +23,7 @@ namespace hawktracerclient
 
         private static int GetPort(string portStr)
         {
-            int port = 8765; // TODO constant default port
+            int port = defaultPort;
 
             if (!String.IsNullOrEmpty(portStr))
             {

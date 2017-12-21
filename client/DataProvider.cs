@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Collections.Concurrent;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public class DataProvider
     {

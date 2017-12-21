@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace hawktracerclient
+namespace HawkTracer.Client
 {
     public class ChromeTracingOutput : IDisposable
     {
