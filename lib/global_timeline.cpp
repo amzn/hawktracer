@@ -6,6 +6,7 @@ struct GlobalTimeline
     {
         ht_timeline_init(&c_timeline, 1024, HT_FALSE, HT_TRUE, "HT_GlobalTimeline");
         ht_feature_callstack_enable(&c_timeline);
+        ht_feature_cached_string_enable(&c_timeline);
     }
 
     ~GlobalTimeline()
