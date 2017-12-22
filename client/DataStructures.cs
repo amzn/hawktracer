@@ -13,6 +13,8 @@ namespace HawkTracer.Client
 
         public const uint FieldInfo = 3;
 
+        public const uint StringMapping = 7;
+
         public static bool IsKnownEventType(uint type)
         {
             return type == KlassInfo || type == FieldInfo || type == KlassEvent;

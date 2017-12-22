@@ -89,6 +89,9 @@ namespace HawkTracer.Client
                     case KnownEventTypes.FieldInfo:
                         AddFieldToEventKlass(fieldValues);
                         break;
+                    case KnownEventTypes.StringMapping:
+                        chout.AddMapping((UInt64)fieldValues["hash"].Value, fieldValues["label"].Value as string);
+                        break;
                     default:
                         if (onEventReceived != null)
                         {
