@@ -1,6 +1,7 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/bag.h"
 #include "hawktracer/core_events.h"
+#include "hawktracer/hash.h"
 #include "internal/registry.h"
 
 #include <assert.h>
@@ -8,20 +9,6 @@
 
 static HT_Bag event_klass_register;
 static HT_Bag listeners_register;
-
-static uint32_t
-djb2_hash(const char *str)
-{
-    uint32_t hash = 5381;
-    int c;
-
-    while ((c = *str++))
-    {
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
-    }
-
-    return hash;
-}
 
 void
 ht_registry_init(void)

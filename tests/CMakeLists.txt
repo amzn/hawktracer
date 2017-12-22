@@ -31,6 +31,7 @@ add_executable(hawktracer_tests
     listeners/test_file_dump_listener.cpp
     test_alloc.cpp
     test_bag.cpp
+    test_feature_cached_string.cpp
     test_feature_callstack.cpp
     test_common.cpp
     test_event.cpp

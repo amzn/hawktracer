@@ -28,6 +28,10 @@ HT_DECLARE_EVENT_KLASS(HT_CallstackIntEvent, HT_CallstackBaseEvent,
 HT_DECLARE_EVENT_KLASS(HT_CallstackStringEvent, HT_CallstackBaseEvent,
                        (STRING, const char*, label))
 
+HT_DECLARE_EVENT_KLASS(HT_StringMappingEvent, HT_Event,
+                       (INTEGER, uintptr_t, hash),
+                       (STRING, const char*, label))
+
 HT_DECLS_END
 
 #endif /* HAWKTRACER_CORE_EVENTS_H */

@@ -12,6 +12,7 @@ set(HAWKTRACER_LIB_SOURCES
     bag.c
     event_id_provider.cpp
     events.c
+    feature_cached_string.c
     feature_callstack.c
     global_timeline.cpp
     init.c
