@@ -1,6 +1,7 @@
 #include "hawktracer/timeline_listener.h"
 
 #include "hawktracer/alloc.h"
+#include "internal/registry.h"
 
 #include <assert.h>
 
@@ -11,19 +12,24 @@ ht_timeline_listener_container_create(void)
 
     ht_bag_init(&container->callbacks, 16);
     ht_bag_init(&container->user_datas, 16);
+    container->id = 0;
+    container->refcount = 1;
 
     return container;
 }
 
 void
-ht_timeline_listener_container_destroy(HT_TimelineListenerContainer* container)
+ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container)
 {
     assert(container);
 
-    ht_bag_deinit(&container->callbacks);
-    ht_bag_deinit(&container->user_datas);
+    if (--container->refcount == 0)
+    {
+        ht_bag_deinit(&container->callbacks);
+        ht_bag_deinit(&container->user_datas);
 
-    ht_free(container);
+        ht_free(container);
+    }
 }
 
 void
@@ -57,8 +63,16 @@ ht_find_or_create_listener(const char* name)
     }
     else
     {
-        // TODO
-        container = ht_timeline_listener_container_create();
+        container = ht_registry_find_listener_container(name);
+        if (container == NULL)
+        {
+            container = ht_timeline_listener_container_create();
+            ht_registry_register_listener_container(name, container);
+        }
+        else
+        {
+            container->refcount++;
+        }
     }
 
     return container;

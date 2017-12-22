@@ -2,12 +2,17 @@
 #define HAWKTRACER_INTERNAL_REGISTRY_H
 
 #include "hawktracer/registry.h"
+#include "hawktracer/timeline_listener.h"
 
 HT_DECLS_BEGIN
 
 void ht_registry_init(void);
 
-void htregistry_unregister_all_event_klasses(void);
+void ht_registry_deinit(void);
+
+HT_TimelineListenerContainer* ht_registry_find_listener_container(const char* name);
+
+HT_Boolean ht_registry_register_listener_container(const char* name, HT_TimelineListenerContainer* container);
 
 HT_DECLS_END
 

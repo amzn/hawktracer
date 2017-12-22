@@ -174,3 +174,29 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
 
     ht_timeline_deinit(&timeline);
 }
+
+TEST_F(TestTimeline, SharedListener)
+{
+    // Arrange
+    HT_Timeline timeline1;
+    ht_timeline_init(&timeline1, sizeof(HT_Event) * 3, HT_TRUE, HT_FALSE, "listener");
+    NotifyInfo<HT_Event> info;
+    ht_timeline_register_listener(&timeline1, test_listener<HT_Event>, &info);
+
+    HT_DECL_EVENT(HT_Event, event);
+    ht_timeline_init_event(&_timeline, &event);
+
+    // Act
+    HT_Timeline timeline2;
+    ht_timeline_init(&timeline2, sizeof(HT_Event) * 3, HT_TRUE, HT_FALSE, "listener");
+
+    ht_timeline_push_event(&timeline2, &event);
+    ht_timeline_flush(&timeline2);
+
+    // Assert
+    ASSERT_EQ(1u, info.values.size());
+    ASSERT_EQ(event.timestamp, info.values.front().timestamp);
+
+    ht_timeline_deinit(&timeline1);
+    ht_timeline_deinit(&timeline2);
+}

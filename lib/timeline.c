@@ -12,7 +12,7 @@ _ht_timeline_notify_listeners(HT_Timeline* timeline)
 {
     for (size_t i = 0; i < timeline->listeners->user_datas.size; i++)
     {
-        ((HT_TimelineListenerCallback)timeline->listeners->callbacks.data[i])
+        (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
                 (timeline->buffer, timeline->buffer_usage, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
     }
 }
@@ -103,8 +103,7 @@ ht_timeline_init(HT_Timeline* timeline,
     timeline->id_provider = ht_event_id_provider_get_default();
     timeline->serialize_events = serialize_events;
 
-    timeline->listeners = (listeners == NULL) ?
-                ht_timeline_listener_container_create() : ht_find_or_create_listener(listeners);
+    timeline->listeners = ht_find_or_create_listener(listeners);
 
     timeline->locking_policy = thread_safe ? ht_mutex_create() : NULL;
 }
@@ -117,8 +116,7 @@ ht_timeline_deinit(HT_Timeline* timeline)
     ht_timeline_flush(timeline);
     ht_free(timeline->buffer);
 
-    // TODO: shared listeners
-    ht_timeline_listener_container_destroy(timeline->listeners);
+    ht_timeline_listener_container_unref(timeline->listeners);
 
     if (timeline->locking_policy)
     {

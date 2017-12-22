@@ -13,6 +13,8 @@ typedef struct
     /* TODO single struct with pair? */
     HT_Bag callbacks;
     HT_Bag user_datas;
+    uint32_t id;
+    int refcount; /* TODO atomic */
 } HT_TimelineListenerContainer;
 
 typedef void(*HT_TimelineListenerCallback)(
@@ -21,7 +23,7 @@ typedef void(*HT_TimelineListenerCallback)(
 /* TODO: init instead? */
 HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
 
-void ht_timeline_listener_container_destroy(HT_TimelineListenerContainer* container);
+void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);
 
 void ht_timeline_listener_container_register_listener(
         HT_TimelineListenerContainer* container,

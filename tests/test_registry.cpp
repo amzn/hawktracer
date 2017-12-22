@@ -2,6 +2,7 @@
 #include "test_test_events.h"
 
 #include <hawktracer/registry.h>
+#include <internal/registry.h>
 
 #include <gtest/gtest.h>
 
@@ -52,4 +53,18 @@ TEST(TestRegistry, PushAllKlassInfoEventsShouldPushAll)
     ASSERT_EQ(total_events, info.values.size());
 
     ht_timeline_deinit(&timeline);
+}
+
+TEST(TestRegistry, RegisterListenerTwiceShouldFail)
+{
+    // Arrange
+    const char* container_name = "conatiner_name_RegisterListenerTwiceShouldFail";
+    HT_TimelineListenerContainer* container = ht_timeline_listener_container_create();
+    ASSERT_TRUE(ht_registry_register_listener_container(container_name, container));
+
+    // Act & Assert
+    HT_TimelineListenerContainer* container2 = ht_timeline_listener_container_create();
+    ASSERT_FALSE(ht_registry_register_listener_container(container_name, container2));
+    ht_timeline_listener_container_unref(container2);
+    ht_timeline_listener_container_unref(container);
 }

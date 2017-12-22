@@ -21,5 +21,5 @@ ht_init(int argc, char** argv)
 
 void ht_deinit(void)
 {
-    htregistry_unregister_all_event_klasses();
+    ht_registry_deinit();
 }

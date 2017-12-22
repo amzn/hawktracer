@@ -7,6 +7,7 @@
 #include <string.h>
 
 static HT_Bag event_klass_register;
+static HT_Bag listeners_register;
 
 static uint32_t
 djb2_hash(const char *str)
@@ -26,6 +27,7 @@ void
 ht_registry_init(void)
 {
     ht_bag_init(&event_klass_register, 8);
+    ht_bag_init(&listeners_register, 8);
 }
 
 HT_Boolean
@@ -89,7 +91,44 @@ ht_registry_get_event_klasses(size_t* out_klass_count)
 }
 
 void
-htregistry_unregister_all_event_klasses(void)
+ht_registry_deinit(void)
 {
+    for (size_t i = 0; i < listeners_register.size; i++)
+    {
+        ht_timeline_listener_container_unref(listeners_register.data[i]);
+    }
+
+    ht_bag_deinit(&listeners_register);
     ht_bag_deinit(&event_klass_register);
+}
+
+HT_TimelineListenerContainer*
+ht_registry_find_listener_container(const char* name)
+{
+    uint32_t id = djb2_hash(name);
+
+    for (size_t i = 0; i < listeners_register.size; i++)
+    {
+        if (((HT_TimelineListenerContainer*)listeners_register.data[i])->id == id)
+        {
+            return listeners_register.data[i];
+        }
+    }
+
+    return NULL;
+}
+
+HT_Boolean
+ht_registry_register_listener_container(const char* name, HT_TimelineListenerContainer* container)
+{
+    if (ht_registry_find_listener_container(name) != NULL)
+    {
+        return HT_FALSE;
+    }
+
+    container->id = djb2_hash(name);
+    container->refcount++;
+    ht_bag_add(&listeners_register, container);
+
+    return HT_TRUE;
 }
