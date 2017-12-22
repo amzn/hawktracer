@@ -1,6 +1,7 @@
 #include <hawktracer/timeline.h>
 #include <hawktracer/alloc.h>
 
+#include "internal/feature.h"
 #include "internal/registry.h"
 #include "internal/mutex.h"
 
@@ -106,6 +107,8 @@ ht_timeline_init(HT_Timeline* timeline,
     timeline->listeners = ht_find_or_create_listener(listeners);
 
     timeline->locking_policy = thread_safe ? ht_mutex_create() : NULL;
+
+    memset(timeline->features, 0, sizeof(timeline->features));
 }
 
 void
@@ -117,6 +120,15 @@ ht_timeline_deinit(HT_Timeline* timeline)
     ht_free(timeline->buffer);
 
     ht_timeline_listener_container_unref(timeline->listeners);
+
+    for (size_t i = 0; i < sizeof(timeline->features) / sizeof(timeline->features[0]); i++)
+    {
+        if (timeline->features[i])
+        {
+            ht_feature_disable(timeline, i);
+            timeline->features[i] = NULL;
+        }
+    }
 
     if (timeline->locking_policy)
     {

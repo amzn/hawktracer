@@ -27,6 +27,5 @@ TEST(TestFeatureCachedString, PushingEventTwiceShouldEmitOnlyOneEventToListener)
     ASSERT_STREQ(label, string_map_info.values.front().label);
     ASSERT_EQ(id1, string_map_info.values.front().hash);
 
-    ht_feature_cached_string_disable(&timeline);
     ht_timeline_deinit(&timeline);
 }

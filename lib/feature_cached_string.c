@@ -17,6 +17,7 @@ ht_feature_cached_string_disable(HT_Timeline* timeline)
 {
     ht_bag_deinit(&((HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING])->cached_data);
     ht_free(timeline->features[HT_FEATURE_CACHED_STRING]);
+    timeline->features[HT_FEATURE_CACHED_STRING] = NULL;
 }
 
 uintptr_t

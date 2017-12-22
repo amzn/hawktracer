@@ -14,6 +14,7 @@ ht_feature_callstack_disable(HT_Timeline* timeline)
 {
     ht_stack_deinit(&((HT_FeatureCallstack*)timeline->features[HT_FEATURE_CALLSTACK])->stack);
     ht_free(timeline->features[HT_FEATURE_CALLSTACK]);
+    timeline->features[HT_FEATURE_CALLSTACK] = 0;
 }
 
 void ht_feature_callstack_start(HT_Timeline* timeline, HT_CallstackBaseEvent* event)

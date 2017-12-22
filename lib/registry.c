@@ -2,6 +2,7 @@
 #include "hawktracer/bag.h"
 #include "hawktracer/core_events.h"
 #include "hawktracer/hash.h"
+#include "internal/feature.h"
 #include "internal/registry.h"
 
 #include <assert.h>
@@ -9,6 +10,22 @@
 
 static HT_Bag event_klass_register;
 static HT_Bag listeners_register;
+static HT_FeatureDisableCallback feature_disable_callback[HT_TIMELINE_MAX_FEATURES];
+
+HT_Boolean
+ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback)
+{
+    assert(disable_callback);
+    assert(feature_id < HT_TIMELINE_MAX_FEATURES);
+
+    if (!feature_disable_callback[feature_id])
+    {
+        feature_disable_callback[feature_id] = disable_callback;
+        return HT_TRUE;
+    }
+
+    return HT_FALSE;
+}
 
 void
 ht_registry_init(void)
@@ -118,4 +135,24 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
     ht_bag_add(&listeners_register, container);
 
     return HT_TRUE;
+}
+
+void
+ht_feature_disable(HT_Timeline *timeline, uint32_t id)
+{
+    assert(timeline);
+    assert(feature_disable_callback[id]);
+
+    feature_disable_callback[id](timeline);
+}
+
+
+#include "hawktracer/feature_cached_string.h"
+#include "hawktracer/feature_callstack.h"
+
+void
+ht_feature_register_core_features(void)
+{
+    ht_registry_register_feature(HT_FEATURE_CALLSTACK, ht_feature_callstack_disable);
+    ht_registry_register_feature(HT_FEATURE_CACHED_STRING, ht_feature_cached_string_disable);
 }

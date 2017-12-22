@@ -5,6 +5,10 @@
 
 HT_DECLS_BEGIN
 
+typedef void (*HT_FeatureDisableCallback)(HT_Timeline*);
+
+HT_Boolean ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback);
+
 HT_Boolean ht_registry_register_event_klass(HT_EventKlass* event_klass);
 
 void ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass);

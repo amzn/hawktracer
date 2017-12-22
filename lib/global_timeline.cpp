@@ -10,7 +10,6 @@ struct GlobalTimeline
 
     ~GlobalTimeline()
     {
-        ht_feature_callstack_disable(&c_timeline);
         ht_timeline_deinit(&c_timeline);
     }
 

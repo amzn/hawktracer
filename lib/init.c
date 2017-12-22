@@ -1,6 +1,7 @@
 #include "hawktracer/init.h"
 #include "hawktracer/callstack_scoped_tracepoint.h"
 #include "internal/registry.h"
+#include "internal/feature.h"
 
 void
 ht_init(int argc, char** argv)
@@ -18,6 +19,8 @@ ht_init(int argc, char** argv)
     ht_HT_CallstackIntEvent_register_event_klass();
     ht_HT_CallstackStringEvent_register_event_klass();
     ht_HT_StringMappingEvent_register_event_klass();
+
+    ht_feature_register_core_features();
 }
 
 void ht_deinit(void)

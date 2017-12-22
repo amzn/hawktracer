@@ -23,7 +23,6 @@ protected:
     void TearDown() override
     {
         ht_timeline_unregister_all_listeners(&_timeline);
-        ht_feature_callstack_disable(&_timeline);
         ht_timeline_deinit(&_timeline);
     }
 

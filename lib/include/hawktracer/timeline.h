@@ -13,9 +13,11 @@
 
 HT_DECLS_BEGIN
 
+#define HT_TIMELINE_MAX_FEATURES 32
+
 typedef struct
 {
-    void* features[32];
+    void* features[HT_TIMELINE_MAX_FEATURES];
     size_t buffer_capacity;
     size_t buffer_usage;
     HT_Byte* buffer;
