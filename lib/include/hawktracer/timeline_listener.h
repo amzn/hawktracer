@@ -13,6 +13,7 @@ typedef struct
     /* TODO single struct with pair? */
     HT_Bag callbacks;
     HT_Bag user_datas;
+    struct _HT_Mutex* mutex;
     uint32_t id;
     int refcount; /* TODO atomic */
 } HT_TimelineListenerContainer;

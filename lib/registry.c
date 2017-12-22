@@ -4,6 +4,7 @@
 #include "hawktracer/hash.h"
 #include "internal/feature.h"
 #include "internal/registry.h"
+#include "internal/mutex.h"
 
 #include <assert.h>
 #include <string.h>
@@ -11,6 +12,8 @@
 static HT_Bag event_klass_register;
 static HT_Bag listeners_register;
 static HT_FeatureDisableCallback feature_disable_callback[HT_TIMELINE_MAX_FEATURES];
+
+static HT_Mutex* listeners_register_mutex;
 
 HT_Boolean
 ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback)
@@ -32,6 +35,7 @@ ht_registry_init(void)
 {
     ht_bag_init(&event_klass_register, 8);
     ht_bag_init(&listeners_register, 8);
+    listeners_register_mutex = ht_mutex_create();
 }
 
 HT_Boolean
@@ -102,6 +106,7 @@ ht_registry_deinit(void)
         ht_timeline_listener_container_unref(listeners_register.data[i]);
     }
 
+    ht_mutex_destroy(listeners_register_mutex);
     ht_bag_deinit(&listeners_register);
     ht_bag_deinit(&event_klass_register);
 }
@@ -111,13 +116,17 @@ ht_registry_find_listener_container(const char* name)
 {
     uint32_t id = djb2_hash(name);
 
+    ht_mutex_lock(listeners_register_mutex);
     for (size_t i = 0; i < listeners_register.size; i++)
     {
         if (((HT_TimelineListenerContainer*)listeners_register.data[i])->id == id)
         {
-            return listeners_register.data[i];
+            void* container = listeners_register.data[i];
+            ht_mutex_unlock(listeners_register_mutex);
+            return container;
         }
     }
+    ht_mutex_unlock(listeners_register_mutex);
 
     return NULL;
 }
@@ -130,9 +139,11 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
         return HT_FALSE;
     }
 
+    ht_mutex_lock(listeners_register_mutex);
     container->id = djb2_hash(name);
     container->refcount++;
     ht_bag_add(&listeners_register, container);
+    ht_mutex_unlock(listeners_register_mutex);
 
     return HT_TRUE;
 }

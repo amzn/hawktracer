@@ -2,6 +2,7 @@
 
 #include "hawktracer/alloc.h"
 #include "internal/registry.h"
+#include "internal/mutex.h"
 
 #include <assert.h>
 
@@ -14,6 +15,7 @@ ht_timeline_listener_container_create(void)
     ht_bag_init(&container->user_datas, 16);
     container->id = 0;
     container->refcount = 1;
+    container->mutex = ht_mutex_create();
 
     return container;
 }
@@ -27,6 +29,7 @@ ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container)
     {
         ht_bag_deinit(&container->callbacks);
         ht_bag_deinit(&container->user_datas);
+        ht_mutex_destroy(container->mutex);
 
         ht_free(container);
     }
@@ -38,18 +41,22 @@ ht_timeline_listener_container_register_listener(
         HT_TimelineListenerCallback callback,
         void* user_data)
 {
+    ht_mutex_lock(container->mutex);
     /* weird cast because of ISO C forbids passing argument 2 of
        ‘ht_bag_add’ between function pointer and ‘void *’ */
     ht_bag_add(&container->callbacks, *(void **)&callback);
     ht_bag_add(&container->user_datas, user_data);
+    ht_mutex_unlock(container->mutex);
 }
 
 void
 ht_timeline_listener_container_unregister_all_listeners(
         HT_TimelineListenerContainer* container)
 {
+    ht_mutex_lock(container->mutex);
     ht_bag_clear(&container->callbacks);
     ht_bag_clear(&container->user_datas);
+    ht_mutex_unlock(container->mutex);
 }
 
 HT_TimelineListenerContainer*
