@@ -85,6 +85,11 @@ namespace HawkTracer.Client
             }
         }
 
+        public bool HasField(string label)
+        {
+            return values.ContainsKey(label);
+        }
+
         public ReadOnlyCollection<EventFieldValue> FieldValues
         {
             get
