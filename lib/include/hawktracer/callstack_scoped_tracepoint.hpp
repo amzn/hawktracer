@@ -6,16 +6,25 @@
 namespace HawkTracer
 {
 
-template<typename T>
+#ifdef HT_CPP11
+template<typename ...T>
+#else
+template<typename ...T>
+#endif
 class CallstackScopedTracepoint
 {
 public:
     CallstackScopedTracepoint(
             HT_Timeline* timeline,
-            void (*start_fnc)(HT_Timeline*, T), T label) :
+#ifdef HT_CPP11
+            void (*start_fnc)(HT_Timeline*, T...), T... label
+#else
+            void (*start_fnc)(HT_Timeline*, T), T label
+#endif
+           ):
         _timeline(timeline)
     {
-        start_fnc(_timeline, label);
+        start_fnc(_timeline, label...);
     }
 
     ~CallstackScopedTracepoint()

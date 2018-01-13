@@ -11,6 +11,10 @@
 #  define HT_DECLS_END
 #endif
 
+#if __cplusplus >= 201103L
+#  define HT_CPP11
+#endif
+
 #if defined(__GNUC__) && (__GNUC__ > 2) && defined(__OPTIMIZE__)
 #  define HT_LIKELY(expr) (__builtin_expect ((expr), 1))
 #  define HT_UNLIKELY(expr) (__builtin_expect ((expr), 0))
