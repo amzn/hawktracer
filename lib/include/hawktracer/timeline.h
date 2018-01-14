@@ -50,10 +50,16 @@ void ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event);
 void ht_timeline_flush(HT_Timeline* timeline);
 
 #define HT_TIMELINE_PUSH_EVENT(TIMELINE, EVENT_TYPE, ...) \
+    HT_TIMELINE_PUSH_EVENT_PEDANTIC(TIMELINE, EVENT_TYPE, ht_base_event, __VA_ARGS__)
+
+#define HT_TIMELINE_PUSH_EVENT_PEDANTIC(TIMELINE, EVENT_TYPE, ...) \
     do { \
-        EVENT_TYPE ev = {{ht_##EVENT_TYPE##_get_event_klass_instance(), \
+        HT_Event ht_base_event = { \
+            ht_##EVENT_TYPE##_get_event_klass_instance(), \
             ht_monotonic_clock_get_timestamp(), \
-            ht_event_id_provider_next((TIMELINE)->id_provider)}, __VA_ARGS__}; \
+            ht_event_id_provider_next((TIMELINE)->id_provider) \
+        }; \
+        EVENT_TYPE ev = {__VA_ARGS__}; \
         ht_timeline_push_event(TIMELINE, HT_EVENT(&ev)); \
     } while (0)
 
