@@ -75,7 +75,7 @@ namespace HawkTracer.Client
     {
         private readonly Dictionary<string, EventFieldValue> values;
 
-        internal EventKlass Klass { get; private set; }
+        public EventKlass Klass { get; private set; }
 
         internal EventFieldValue this [string label]
         {
