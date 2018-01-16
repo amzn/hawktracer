@@ -24,7 +24,6 @@ typedef struct
     HT_EventIdProvider* id_provider;
     HT_TimelineListenerContainer* listeners;
     struct _HT_Mutex* locking_policy;
-    struct _HT_TimelineKlass* klass;
     HT_Boolean serialize_events;
 } HT_Timeline;
 
