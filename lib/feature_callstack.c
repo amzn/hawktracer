@@ -1,6 +1,6 @@
 #include "hawktracer/feature_callstack.h"
 #include "hawktracer/alloc.h"
-#include "internal/thread.h"
+#include "hawktracer/thread.h"
 
 void
 ht_feature_callstack_enable(HT_Timeline* timeline)

@@ -1,4 +1,4 @@
-#include "internal/thread.h"
+#include "hawktracer/thread.h"
 
 #include <atomic>
 
