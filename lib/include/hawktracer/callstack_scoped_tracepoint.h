@@ -28,7 +28,7 @@ _HT_GENERATE_CALLSTACK_TIMELINE_CALLSTACK_RET(int, HT_CallstackEventLabel)
 _HT_GENERATE_CALLSTACK_TIMELINE_CALLSTACK_RET(string, const char*)
 
 #define _HT_TP_SCOPED_GENERIC(type, callstack_timeline, label) \
-    HT_CallstackTimeline* _ht_callstack_timeline __attribute__ ((__cleanup__(_ht_callstack_timeline_scoped_cleanup))) \
+    HT_Timeline* _ht_callstack_timeline __attribute__ ((__cleanup__(_ht_callstack_timeline_scoped_cleanup))) \
         = _ht_callstack_timeline_##type##_start_and_ret(callstack_timeline, label)
 
 #define HT_TP_SCOPED_INT(callstack_timeline, label) \
