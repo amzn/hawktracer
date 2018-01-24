@@ -9,7 +9,7 @@ namespace HawkTracer.Client
     {
         readonly EventKlassRegistry klassRegistry = new EventKlassRegistry();
         readonly DataProvider dataProvider;
-        ChromeTracingOutput chout = new ChromeTracingOutput("/home/loganek/out.json");
+        ChromeTracingOutput chout;
 
         public OnEventReceived onEventReceived;
 
@@ -17,8 +17,7 @@ namespace HawkTracer.Client
         {
             var parser = new ArgParser("help", "--", args);
             parser.RegisterOption("source", typeof(string), "A source description. Either filename, or server address");
-            parser.RegisterOption("test", typeof(bool), "A test");
-            parser.RegisterOption("number", typeof(int), "a number");
+            parser.RegisterOption("output", typeof(string), "An output Chrome Tracing Json file");
 
             try
             {
@@ -44,6 +43,13 @@ namespace HawkTracer.Client
                 return;
             }
 
+            if (!parser.HasOption("output"))
+            {
+                Console.WriteLine("Missing 'output' parameter");
+                parser.PrintHelp();
+                return;
+            }
+
             System.IO.Stream stream = SourceStreamFactory.Create(parser.Get<string>("source"));
            
             if (stream == null)
@@ -55,8 +61,10 @@ namespace HawkTracer.Client
             var provider = new DataProvider(stream);
 
             var mc = new MainClass(provider);
+
             try
             {
+                mc.chout = new ChromeTracingOutput(parser.Get<string>("output"));
                 mc.run();
             }
             catch (Exception ex)
