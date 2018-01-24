@@ -38,18 +38,16 @@ ht_registry_init(void)
     listeners_register_mutex = ht_mutex_create();
 }
 
-HT_Boolean
+HT_EventType
 ht_registry_register_event_klass(HT_EventKlass* event_klass)
 {
-    if (event_klass->type > 0)
+    if (event_klass->type == 0)
     {
-        return HT_FALSE;
+        ht_bag_add(&event_klass_register, event_klass);
+        event_klass->type = event_klass_register.size;
     }
 
-    ht_bag_add(&event_klass_register, event_klass);
-    event_klass->type = event_klass_register.size;
-
-    return HT_TRUE;
+    return event_klass->type;
 }
 
 void

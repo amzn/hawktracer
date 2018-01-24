@@ -6,13 +6,13 @@
 
 #include <gtest/gtest.h>
 
-TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldSilentlyFail)
+TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldReturnTheSameType)
 {
     // Arrange
-    ht_RegistryTestEvent_register_event_klass();
+    uint32_t type = ht_RegistryTestEvent_register_event_klass();
 
     // Act & Assert
-    ASSERT_FALSE(ht_registry_register_event_klass(ht_RegistryTestEvent_get_event_klass_instance()));
+    ASSERT_EQ(type, ht_registry_register_event_klass(ht_RegistryTestEvent_get_event_klass_instance()));
 }
 
 TEST(TestRegistry, RegisterEventTwiceShouldAssignDifferentIdentifiersToTheClass)

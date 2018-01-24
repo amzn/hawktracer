@@ -16,7 +16,7 @@ MKCREFLECT_DEFINE_STRUCT(HT_Event,
                          (INTEGER, HT_EventId, id))
 
 HT_EventKlass* ht_HT_Event_get_event_klass_instance(void);
-void ht_HT_Event_register_event_klass(void);
+HT_EventType ht_HT_Event_register_event_klass(void);
 size_t ht_HT_Event_get_size(HT_Event* event);
 size_t ht_HT_Event_fnc_serialize(HT_Event* event, HT_Byte* buffer);
 #define HT_EVENT(event) ((HT_Event*)(event))
