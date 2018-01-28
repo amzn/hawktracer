@@ -10,9 +10,14 @@ else()
     set(CLIENT_CONFIGURATION "Debug")
 endif()
 
+set(CLIENT_COMPILATION_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/bin/")
+
 add_custom_target(hawktracer-client ALL
     COMMAND ${MSBUILD}
-        /p:OutputPath="${CMAKE_CURRENT_BINARY_DIR}/bin/"
+        /p:OutputPath="${CLIENT_COMPILATION_OUT_DIR}"
         /p:Configuration=${CLIENT_CONFIGURATION}
         /p:BaseIntermediateOutputPath="${CMAKE_CURRENT_BINARY_DIR}/obj/"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+install(PROGRAMS "${CLIENT_COMPILATION_OUT_DIR}/hawktracer-client.exe"
+    DESTINATION bin)
