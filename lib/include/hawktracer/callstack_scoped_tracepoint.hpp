@@ -9,7 +9,7 @@ namespace HawkTracer
 #ifdef HT_CPP11
 template<typename ...T>
 #else
-template<typename ...T>
+template<typename T>
 #endif
 class CallstackScopedTracepoint
 {
