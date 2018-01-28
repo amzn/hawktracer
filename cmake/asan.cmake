@@ -1,5 +1,5 @@
-if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-    message(FATAL_ERROR "ASAN can be built only in Debug configuration")
+if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+    message(FATAL_ERROR "ASAN cannot be built in Release configuration")
 endif()
 
 set(CLANG_ASAN_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
