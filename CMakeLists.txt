@@ -61,3 +61,5 @@ endif(ENABLE_EXAMPLES)
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif(ENABLE_BENCHMARKS)
+
+include(cmake/packager.cmake)
