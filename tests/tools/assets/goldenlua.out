@@ -1,0 +1,1 @@
+local Lua_ok_2,_lua_not_ok,lua_ok_1 = 5,4,3

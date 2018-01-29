@@ -1,0 +1,7 @@
+#ifndef HAWKTRACER_AUTOGEN_TRACEPOINT_LABELS_H
+#define HAWKTRACER_AUTOGEN_TRACEPOINT_LABELS_H
+
+#define hawktracer_autogen_tracepoint_label__ok_2 2
+#define hawktracer_autogen_tracepoint_label_ok_1 1
+
+#endif /* HAWKTRACER_AUTOGEN_TRACEPOINT_LABELS_H */
