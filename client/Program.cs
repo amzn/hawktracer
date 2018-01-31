@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace HawkTracer.Client
@@ -18,6 +19,7 @@ namespace HawkTracer.Client
             var parser = new ArgParser("help", "--", args);
             parser.RegisterOption("source", typeof(string), "A source description. Either filename, or server address");
             parser.RegisterOption("output", typeof(string), "An output Chrome Tracing Json file");
+            parser.RegisterOption("map", typeof(string), "Comma-separated list of mapping files");
 
             try
             {
@@ -58,13 +60,19 @@ namespace HawkTracer.Client
                 return;
             }
 
+            LabelMapper mapper = null;
+            if (parser.HasOption("map"))
+            {
+                mapper = new LabelMapper(parser.Get<string>("map").Split(new char[]{ ',' }).Select(e => e.Trim()));
+            }
+
             var provider = new DataProvider(stream);
 
             var mc = new MainClass(provider);
 
             try
             {
-                mc.chout = new ChromeTracingOutput(parser.Get<string>("output"));
+                mc.chout = new ChromeTracingOutput(parser.Get<string>("output"), mapper);
                 mc.run();
             }
             catch (Exception ex)

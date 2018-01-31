@@ -41,6 +41,7 @@
     <Compile Include="TypeHelper.cs" />
     <Compile Include="EventKlassRegistry.cs" />
     <Compile Include="DataProvider.cs" />
+    <Compile Include="LabelMapper.cs" />
     <Compile Include="SourceStreamFactory.cs" />
     <Compile Include="ArgParser.cs" />
     <Compile Include="ChromeTracingOutput.cs" />

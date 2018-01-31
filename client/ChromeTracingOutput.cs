@@ -9,11 +9,13 @@ namespace HawkTracer.Client
     {
         readonly StreamWriter writer;
         bool firstEntry = true;
+        LabelMapper mapper;
         readonly Dictionary<UInt64, string> stringMapping = new Dictionary<UInt64, string>();
 
-        public ChromeTracingOutput(string filename)
+        public ChromeTracingOutput(string filename, LabelMapper mapper)
         {
             writer = new StreamWriter(filename);
+            this.mapper = mapper;
 
             writer.Write(@"{""traceEvents"": [");
         }
@@ -58,7 +60,8 @@ namespace HawkTracer.Client
                 if (!(labelObj is string))
                 {
                     var labelInt = (UInt64)FindValue(evt, "label");
-                    labelObj = stringMapping.ContainsKey(labelInt) ? stringMapping[labelInt] : labelInt.ToString();
+                    labelObj = stringMapping.ContainsKey(labelInt) ? stringMapping[labelInt] : 
+                        (mapper != null ? mapper.GetLabelInfo(labelInt).Label : labelInt.ToString());
                 }
                 WriteCallstackEvent(labelObj, timestamp, duration, threadId, GetAttributeString(evt));
             }
