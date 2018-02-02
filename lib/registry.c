@@ -14,6 +14,8 @@ static HT_Bag listeners_register;
 static HT_FeatureDisableCallback feature_disable_callback[HT_TIMELINE_MAX_FEATURES];
 
 static HT_Mutex* listeners_register_mutex;
+static HT_Mutex* features_register_mutex;
+static HT_Mutex* event_klass_registry_register_mutex;
 
 HT_Boolean
 ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback)
@@ -21,12 +23,16 @@ ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disa
     assert(disable_callback);
     assert(feature_id < HT_TIMELINE_MAX_FEATURES);
 
+    ht_mutex_lock(features_register_mutex);
+
     if (!feature_disable_callback[feature_id])
     {
         feature_disable_callback[feature_id] = disable_callback;
+        ht_mutex_unlock(features_register_mutex);
         return HT_TRUE;
     }
 
+    ht_mutex_unlock(features_register_mutex);
     return HT_FALSE;
 }
 
@@ -36,6 +42,8 @@ ht_registry_init(void)
     ht_bag_init(&event_klass_register, 8);
     ht_bag_init(&listeners_register, 8);
     listeners_register_mutex = ht_mutex_create();
+    features_register_mutex = ht_mutex_create();
+    event_klass_registry_register_mutex = ht_mutex_create();
 }
 
 HT_EventType
@@ -43,8 +51,10 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
 {
     if (event_klass->type == 0)
     {
+        ht_mutex_lock(event_klass_registry_register_mutex);
         ht_bag_add(&event_klass_register, event_klass);
         event_klass->type = event_klass_register.size;
+        ht_mutex_unlock(event_klass_registry_register_mutex);
     }
 
     return event_klass->type;
@@ -53,10 +63,14 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
 void
 ht_registry_push_all_klass_info_events(HT_Timeline* timeline)
 {
+    ht_mutex_lock(event_klass_registry_register_mutex);
+
     for (size_t i = 0; i < event_klass_register.size; i++)
     {
         ht_registry_push_klass_info_event(timeline, (HT_EventKlass*)event_klass_register.data[i]);
     }
+
+    ht_mutex_unlock(event_klass_registry_register_mutex);
 
     ht_timeline_flush(timeline);
 }
@@ -104,6 +118,8 @@ ht_registry_deinit(void)
         ht_timeline_listener_container_unref(listeners_register.data[i]);
     }
 
+    ht_mutex_destroy(features_register_mutex);
+    ht_mutex_destroy(event_klass_registry_register_mutex);
     ht_mutex_destroy(listeners_register_mutex);
     ht_bag_deinit(&listeners_register);
     ht_bag_deinit(&event_klass_register);
