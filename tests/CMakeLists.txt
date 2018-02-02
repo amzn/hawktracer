@@ -27,7 +27,7 @@ add_dependencies(${GTEST_LIBRARY} googletest)
 include_directories(../lib/include "${GTEST_INCLUDE_DIRS}")
 
 add_executable(hawktracer_tests
-    main.cpp
+    main_gtest_tests.cpp
     listeners/test_file_dump_listener.cpp
     test_alloc.cpp
     test_bag.cpp
@@ -43,5 +43,5 @@ add_executable(hawktracer_tests
     test_thread.cpp
     test_timeline.cpp
     )
-
 target_link_libraries(hawktracer_tests ${GTEST_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
+add_test(main hawktracer_tests)

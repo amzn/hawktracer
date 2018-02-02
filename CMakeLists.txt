@@ -50,6 +50,7 @@ add_subdirectory(lib)
 add_subdirectory(client)
 
 if(ENABLE_TESTS)
+    enable_testing()
     add_subdirectory(tests)
 endif(ENABLE_TESTS)
 
