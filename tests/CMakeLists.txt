@@ -45,3 +45,8 @@ add_executable(hawktracer_tests
     )
 target_link_libraries(hawktracer_tests ${GTEST_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
 add_test(main hawktracer_tests)
+
+add_executable(hawktracer_test_destroy_timeline_after_uninit
+    main_destroy_timeline_after_uninit.c)
+target_link_libraries(hawktracer_test_destroy_timeline_after_uninit hawktracer)
+add_test(destroy_timeline_after_uninit hawktracer_test_destroy_timeline_after_uninit)
