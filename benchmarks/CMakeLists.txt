@@ -10,6 +10,7 @@ ExternalProject_Add(
     GIT_REPOSITORY https://github.com/google/benchmark.git
     UPDATE_COMMAND ""
     INSTALL_COMMAND ""
+    GIT_TAG v1.3.0
     CMAKE_ARGS "-DCMAKE_BUILD_TYPE=Release"
     LOG_DOWNLOAD ON
     LOG_CONFIGURE ON
