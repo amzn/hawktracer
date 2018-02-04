@@ -2,6 +2,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     message(WARNING "Benchmarks should not be built in Debug mode.")
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 include(ExternalProject)
@@ -25,8 +26,7 @@ set(BENCHMARK_LIBRARY hawktracer_googlebenchmark)
 
 add_library(${BENCHMARK_LIBRARY} UNKNOWN IMPORTED)
 set_target_properties(${BENCHMARK_LIBRARY} PROPERTIES
-    IMPORTED_LOCATION ${BENCHMARK_LIBRARY_PATH}
-    IMPORTED_LINK_INTERFACE_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+    IMPORTED_LOCATION ${BENCHMARK_LIBRARY_PATH})
 add_dependencies(${BENCHMARK_LIBRARY} googlebenchmark)
 
 include_directories(../lib/include "${BENCHMARK_INCLUDE_DIRS}")

@@ -1,3 +1,4 @@
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 include(ExternalProject)
@@ -17,11 +18,9 @@ set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 ExternalProject_Get_Property(googletest binary_dir)
 set(GTEST_LIBRARY_PATH ${binary_dir}/googlemock/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(GTEST_LIBRARY hawktracer_gtest)
-
 add_library(${GTEST_LIBRARY} UNKNOWN IMPORTED)
 set_target_properties(${GTEST_LIBRARY} PROPERTIES
-  IMPORTED_LOCATION ${GTEST_LIBRARY_PATH}
-  IMPORTED_LINK_INTERFACE_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+  IMPORTED_LOCATION ${GTEST_LIBRARY_PATH})
 add_dependencies(${GTEST_LIBRARY} googletest)
 
 include_directories(../lib/include "${GTEST_INCLUDE_DIRS}")
