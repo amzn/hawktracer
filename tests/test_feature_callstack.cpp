@@ -5,6 +5,7 @@
 
 #include <gtest/gtest.h>
 
+#include <thread>
 
 class TestFeatureCallstack : public ::testing::Test
 {
@@ -42,8 +43,6 @@ TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
     // Act
     for (int i = 0; i < 4; i++)
     {
-        HT_DECL_EVENT(HT_CallstackIntEvent, event);
-
         ht_feature_callstack_start_int(&_timeline, i);
     }
 
@@ -62,6 +61,35 @@ TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
     {
         ASSERT_EQ(3 - i, info.values[i].label);
     }
+}
+
+TEST_F(TestFeatureCallstack, CallstackTimelinesRunOnDifferentThreadsShouldGenerateDifferentThreadID)
+{
+    // Assert
+    init_timeline(sizeof(HT_CallstackIntEvent));
+    NotifyInfo<HT_CallstackIntEvent> info1;
+    NotifyInfo<HT_CallstackIntEvent> info2;
+    ht_timeline_register_listener(&_timeline, test_listener<HT_CallstackIntEvent>, &info1);
+
+    // Act
+    ht_feature_callstack_start_int(&_timeline, 1);
+    ht_feature_callstack_stop(&_timeline);
+    ht_timeline_flush(&_timeline);
+    std::thread([&info2]
+    {
+        HT_Timeline tm;
+        ht_timeline_init(&tm, sizeof(HT_CallstackIntEvent), HT_FALSE, HT_FALSE, NULL);
+        ht_feature_callstack_enable(&tm);
+        ht_timeline_register_listener(&tm, test_listener<HT_CallstackIntEvent>, &info2);
+        ht_feature_callstack_start_int(&tm, 2);
+        ht_feature_callstack_stop(&tm);
+        ht_timeline_deinit(&tm);
+    }).join();
+
+    // Assert
+    HT_CallstackIntEvent& event1 = info1.values.front();
+    HT_CallstackIntEvent& event2 = info2.values.front();
+    ASSERT_NE(event1.base.thread_id, event2.base.thread_id);
 }
 
 TEST_F(TestFeatureCallstack, MixedCallstackEventTypes)
