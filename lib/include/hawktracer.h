@@ -20,7 +20,6 @@
 #include <hawktracer/mkcreflect.h>
 #include <hawktracer/monotonic_clock.h>
 #include <hawktracer/registry.h>
-#include <hawktracer/simple_init.h>
 #include <hawktracer/stack.h>
 #include <hawktracer/thread.h>
 #include <hawktracer/timeline.h>

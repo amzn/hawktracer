@@ -1,5 +1,4 @@
-#include <hawktracer/listeners/file_dump_listener.h>
-#include <hawktracer/simple_init.h>
+#include <hawktracer.h>
 
 static void fnc_bar()
 {
@@ -10,7 +9,7 @@ static void fnc_foo()
 {
     HT_TP_GLOBAL_SCOPED_STRING("foo");
 
-    for (int i = 0; i < 2048; i++)
+    for (int i = 0; i < 16; i++)
     {
         fnc_bar();
     }
@@ -20,7 +19,7 @@ static void fnc_start()
 {
     HT_TP_GLOBAL_SCOPED_STRING("start");
 
-    for (int i = 0; i < 4096; i++)
+    for (int i = 0; i < 32; i++)
     {
         fnc_foo();
     }
@@ -28,13 +27,18 @@ static void fnc_start()
 
 int main(int argc, char** argv)
 {
-    HT_SIMPLE_INIT(argc, argv,
-                   (HT_FILE_DUMP_LISTENER_INIT, file_dump_listener, "test_output.htdump"));
+    ht_init(argc, argv);
+
+    HT_FileDumpListener file_dump_listener;
+    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump") != HT_FALSE)
+    {
+        ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, &file_dump_listener);
+    }
 
     ht_registry_push_all_klass_info_events(ht_global_timeline_get());
 
     fnc_start();
 
-    HT_SIMPLE_DEINIT(
-                (HT_FILE_DUMP_LISTENER_DEINIT, file_dump_listener));
+    ht_file_dump_listener_deinit(&file_dump_listener);
+    ht_deinit();
 }
