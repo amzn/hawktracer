@@ -61,10 +61,10 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
     FILE* fp = fopen(test_file, "rb");
     ASSERT_NE(nullptr, fp);
     char buff[64];
-    fread(buff, sizeof(char), 64, fp);
+    EXPECT_EQ(event.klass->get_size(&event), fread(buff, sizeof(char), 64, fp));
     size_t offset = 0;
 #define ASSERT_FROM_BUFFER(event_value) \
-    ASSERT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
+    EXPECT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
     ASSERT_FROM_BUFFER(event.klass->type);
     ASSERT_FROM_BUFFER(event.timestamp);
     ASSERT_FROM_BUFFER(event.id);
@@ -130,10 +130,10 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
     FILE* fp = fopen(test_file, "rb");
     ASSERT_NE(nullptr, fp);
     char buff[64];
-    fread(buff, sizeof(char), 64, fp);
+    EXPECT_EQ(event.klass->get_size(&event), fread(buff, sizeof(char), 64, fp));
     size_t offset = 0;
 #define ASSERT_FROM_BUFFER(event_value) \
-    ASSERT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
+    EXPECT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
     ASSERT_FROM_BUFFER(event.klass->type);
     ASSERT_FROM_BUFFER(event.timestamp);
     ASSERT_FROM_BUFFER(event.id);
