@@ -1,3 +1,20 @@
+0.3.0 (unstable) - 6.02.2017:
+ library:
+  * Review and update C library API
+  * Add Timeline Features
+  * Add possibility to extend Event data structure
+  * Integrate MKCREFLECT library and use it to auto-generate event helper methods
+  * Add file dump timeline listener
+  * Add lots of tests for C library (increase test coverage to 87%)
+  * Add few benchmark tests
+ client:
+  * Re-implement client functionality in C# and add support for new HawkTracer binary format
+  * Implement loading HawkTracer data from file
+ tools:
+  * Re-implement tracepoint label generator in Python
+ build:
+  * Fix installation script
+
 0.2.0 (unstable) - 7.07.2017:
  * add tool for generate function address map from binary file
  * add feature for finding closest label (if label is not specified in map)
