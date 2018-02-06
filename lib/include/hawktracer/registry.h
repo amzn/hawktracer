@@ -15,6 +15,7 @@ void ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* kla
 
 void ht_registry_push_all_klass_info_events(HT_Timeline* timeline);
 
+/* TODO: this API should probably be removed */
 HT_EventKlass** ht_registry_get_event_klasses(size_t* out_klass_count);
 
 HT_DECLS_END

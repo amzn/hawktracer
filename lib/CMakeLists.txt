@@ -1,5 +1,6 @@
 set(HAWKTRACER_LISTENER_HEADERS
-    include/hawktracer/listeners/file_dump_listener.h)
+    include/hawktracer/listeners/file_dump_listener.h
+    include/hawktracer/listeners/tcp_listener.h)
 
 set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/alloc.h
@@ -30,7 +31,8 @@ set(HAWKTRACER_CORE_HEADERS
 set(HAWKTRACER_LIB_HEADERS ${HAWKTRACER_LISTENER_HEADERS} ${HAWKTRACER_CORE_HEADERS})
 
 set(HAWKTRACER_LISTENERS_SOURCES
-    listeners/file_dump_listener.c)
+    listeners/file_dump_listener.c
+    listeners/tcp_listener.cpp)
 
 set(HAWKTRACER_CORE_SOURCES
     alloc.c
@@ -46,6 +48,7 @@ set(HAWKTRACER_CORE_SOURCES
     mutex.cpp
     registry.c
     stack.c
+    tcp_server.cpp
     thread.cpp
     timeline.c
     timeline_listener.c)
