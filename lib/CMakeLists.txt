@@ -16,6 +16,7 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/global_timeline.h
     include/hawktracer/hash.h
     include/hawktracer/init.h
+    include/hawktracer/listener_buffer.h
     include/hawktracer/listeners.h
     include/hawktracer/macros.h
     include/hawktracer/mkcreflect.h
@@ -40,6 +41,7 @@ set(HAWKTRACER_CORE_SOURCES
     feature_callstack.c
     global_timeline.cpp
     init.c
+    listener_buffer.c
     monotonic_clock.cpp
     mutex.cpp
     registry.c

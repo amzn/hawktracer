@@ -34,6 +34,7 @@ add_executable(hawktracer_tests
     test_feature_callstack.cpp
     test_common.cpp
     test_event.cpp
+    test_listener_buffer.cpp
     test_event_id_provider.cpp
     test_global_timeline.cpp
     test_registry.cpp

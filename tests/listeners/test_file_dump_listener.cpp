@@ -33,7 +33,7 @@ TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
 
     // Assert
     ht_timeline_unregister_all_listeners(timeline);
-    ASSERT_LT(0u, listener.buffer_usage);
+    ASSERT_LT(0u, listener.buffer.usage);
 
     ht_file_dump_listener_deinit(&listener);
 }
