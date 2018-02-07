@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text.RegularExpressions;
 using System;
+using System.Net;
+using System.Net.Sockets;
 
 namespace HawkTracer.Client
 {
@@ -35,9 +37,11 @@ namespace HawkTracer.Client
 
         private static Stream CreateNetworkStream(string ipAddress, int port)
         {
-            var socket = new System.Net.Sockets.Socket(
-                System.Net.Sockets.SocketType.Stream, 
-                System.Net.Sockets.ProtocolType.Tcp);
+            IPAddress address = IPAddress.Parse(ipAddress);
+            var socket = new Socket(
+                address.AddressFamily,
+                SocketType.Stream, 
+                ProtocolType.Tcp);
 
             var startTime = DateTime.Now;
 
@@ -45,7 +49,7 @@ namespace HawkTracer.Client
             {
                 try
                 {
-                    socket.Connect(ipAddress, port);
+                    socket.Connect(new IPEndPoint(address, port));
                 }
                 catch (System.Net.Sockets.SocketException)
                 {
