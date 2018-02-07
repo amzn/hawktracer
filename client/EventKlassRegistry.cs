@@ -50,7 +50,7 @@ namespace HawkTracer.Client
 
         public void RegisterKlass(EventKlass klass)
         {
-            eventTypes.Add(klass.EventType, klass);
+            eventTypes[klass.EventType] = klass;
         }
 
         public EventKlass FindByKlassName(string typeName)
