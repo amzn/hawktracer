@@ -42,7 +42,7 @@ HT_Boolean HT_TCPListenerPimpl::init(int port)
     return HT_FALSE;
 }
 
-HT_TCPListenerPimpl::~HT_TCPListenerPimpl()
+HT_TCPListenerPimpl::~_HT_TCPListenerPimpl()
 {
     _flush();
     _tcp_server.stop();
