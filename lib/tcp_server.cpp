@@ -36,7 +36,7 @@ void TCPServer::stop()
     }
 }
 
-bool TCPServer::start(int port)
+bool TCPServer::start(int port, OnClientConnected client_connected, void* user_data)
 {
     if (is_running())
     {
@@ -75,7 +75,10 @@ bool TCPServer::start(int port)
         return false;
     }
 
-    _accept_client_thread = std::thread([this] { _run(); });
+    _accept_client_thread = std::thread([this, client_connected, user_data]
+    {
+        _run(client_connected, user_data);
+    });
 
     return true;
 }
@@ -86,7 +89,7 @@ void TCPServer::write(char* buffer, size_t size)
 
     for (auto it = _client_sock_fd.begin(); it != _client_sock_fd.end();)
     {
-        if (_safe_write(*it, buffer, size))
+        if (write_to_socket(*it, buffer, size))
         {
             ++it;
         }
@@ -97,7 +100,7 @@ void TCPServer::write(char* buffer, size_t size)
     }
 }
 
-bool TCPServer::_safe_write(int sock_fd, char* buffer, size_t size)
+bool TCPServer::write_to_socket(int sock_fd, char* buffer, size_t size)
 {
     size_t sent = 0;
 
@@ -116,7 +119,7 @@ bool TCPServer::_safe_write(int sock_fd, char* buffer, size_t size)
     return true;
 }
 
-void TCPServer::_run()
+void TCPServer::_run(OnClientConnected client_connected, void* user_data)
 {
     while (is_running())
     {
@@ -127,6 +130,7 @@ void TCPServer::_run()
         if (client_fd >= 0)
         {
             std::lock_guard<std::mutex> l(_client_mutex);
+            client_connected(client_fd, user_data);
             _client_sock_fd.insert(client_fd);
         }
     }

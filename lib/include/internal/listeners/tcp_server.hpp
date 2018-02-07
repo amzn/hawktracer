@@ -11,18 +11,20 @@ namespace HawkTracer
 class TCPServer
 {
 public:
+    typedef void(*OnClientConnected)(int, void*);
+
     ~TCPServer();
 
     void write(char* buffer, size_t size);
-    bool start(int port);
+    bool start(int port, OnClientConnected client_connected, void* user_data);
     void stop();
 
     bool is_running() const { return _sock_fd != -1; }
     size_t client_count() const { return _client_sock_fd.size(); }
+    bool write_to_socket(int sock_fd, char* buffer, size_t size);
 
 private:
-    bool _safe_write(int sock_fd, char* buffer, size_t size);
-    void _run();
+    void _run(OnClientConnected client_connected, void* user_data);
 
     std::thread _accept_client_thread;
     std::unordered_set<int> _client_sock_fd;
