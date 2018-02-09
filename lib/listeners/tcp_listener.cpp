@@ -9,9 +9,8 @@
 struct _HT_TCPListenerPimpl
 {
 public:
-    HT_Boolean init(int port);
     ~_HT_TCPListenerPimpl();
-
+    HT_Boolean init(int port);
     void push_events(TEventPtr events, size_t size, HT_Boolean serialized);
 
 private:
@@ -19,6 +18,7 @@ private:
     {
         _tcp_server.write((char*)_buffer.data, _buffer.usage);
         _buffer.usage = 0;
+        _was_flushed = true;
     }
 
     static void _client_connected(int sock_fd, void* user_data)
@@ -30,7 +30,9 @@ private:
 
     static void _f_flush(void* listener)
     {
-        reinterpret_cast<HT_TCPListenerPimpl*>(listener)->_flush();
+        HT_TCPListenerPimpl* tcp_listener = reinterpret_cast<HT_TCPListenerPimpl*>(listener);
+        tcp_listener->_flush();
+        tcp_listener->_was_flushed = true;
     }
 
     std::mutex _push_action_mutex;
@@ -38,6 +40,9 @@ private:
     HawkTracer::TCPServer _tcp_server;
     HT_Timeline _reg_timeline;
     int _last_client_sock_fd = 0;
+    /* TODO: This is just a hack to prevent from sending half-events.
+     * We should revisit this for next release */
+    bool _was_flushed = false;
 };
 
 HT_Boolean HT_TCPListenerPimpl::init(int port)
@@ -49,6 +54,7 @@ HT_Boolean HT_TCPListenerPimpl::init(int port)
         ht_timeline_init(&_reg_timeline, 4096, HT_FALSE, HT_TRUE, NULL);
         ht_timeline_register_listener(&_reg_timeline, [] (TEventPtr e, size_t c, HT_Boolean, void* ud) {
             HT_TCPListenerPimpl* listener = reinterpret_cast<HT_TCPListenerPimpl*>(ud);
+            std::lock_guard<std::mutex> l(listener->_push_action_mutex);
             listener->_tcp_server.write_to_socket(listener->_last_client_sock_fd, (char*)e, c);
         }, this);
 
@@ -82,6 +88,12 @@ void HT_TCPListenerPimpl::push_events(TEventPtr events, size_t size, HT_Boolean 
     else
     {
         ht_listener_buffer_process_unserialized_events(&_buffer, events, size, _f_flush, this);
+    }
+
+    if (_was_flushed)
+    {
+        _flush();
+        _was_flushed = false;
     }
 }
 

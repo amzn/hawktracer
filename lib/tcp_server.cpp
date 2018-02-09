@@ -102,6 +102,11 @@ void TCPServer::write(char* buffer, size_t size)
 
 bool TCPServer::write_to_socket(int sock_fd, char* buffer, size_t size)
 {
+    if (size == 0)
+    {
+        return true;
+    }
+
     size_t sent = 0;
 
     while (sent < size)
