@@ -25,10 +25,10 @@ ht_feature_cached_string_push(HT_Timeline* timeline, const char* label)
 {
     HT_FeatureCachedString* f = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
     assert(f);
-
+    size_t i;
     uintptr_t id = djb2_hash(label);
 
-    for (size_t i = 0; i < f->cached_data.size; i++)
+    for (i = 0; i < f->cached_data.size; i++)
     {
         if ((uintptr_t)f->cached_data.data[i] == id)
         {
