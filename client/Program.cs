@@ -11,6 +11,7 @@ namespace HawkTracer.Client
         readonly EventKlassRegistry klassRegistry = new EventKlassRegistry();
         readonly DataProvider dataProvider;
         ChromeTracingOutput chout;
+        bool isRunning = false;
 
         public OnEventReceived onEventReceived;
 
@@ -73,12 +74,22 @@ namespace HawkTracer.Client
             try
             {
                 mc.chout = new ChromeTracingOutput(parser.Get<string>("output"), mapper);
+                mc.isRunning = true;
+                Console.WriteLine("Press Ctrl+C to stop tracing");
+                Console.CancelKeyPress += (sender, e) => {
+                    mc.isRunning = false;
+                    e.Cancel = true;
+                };
+
                 mc.run();
             }
             catch (Exception ex)
             {
-                mc.chout.Dispose();
                 Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                mc.chout.Dispose();
             }
         }
 
@@ -90,7 +101,7 @@ namespace HawkTracer.Client
         void run()
         {
             onEventReceived += chout.HandleEvent;
-            while (true)
+            while (isRunning)
             {
                 Event header = ReadEventHeader();
                 UInt32 type = (UInt32)header["type"].Value;
@@ -116,6 +127,8 @@ namespace HawkTracer.Client
                         break;
                 }
             }
+            dataProvider.Disconnect();
+            Console.WriteLine("Tracing completed!");
         }
 
         void AddEventKlass(IDictionary<string, EventFieldValue> values)

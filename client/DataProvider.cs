@@ -27,23 +27,38 @@ namespace HawkTracer.Client
             readDataThread.Start();
         }
 
+        public void Disconnect()
+        {
+            streamReader.Close();
+            readDataThread.Join();
+        }
+
         private void ReadFromStream()
         {
             bool ok = true;
-            while (ok)
+            try 
             {
-                var buff = new byte[1024]; // TODO configurable & use bufferpool
-                int read = streamReader.Read(buff, 0, 1024);
-                if (read == 0)
+                while (ok)
                 {
-                    ok = false;
-                    bufferQueue.Add(null);
+                    var buff = new byte[1024]; // TODO configurable & use bufferpool
+                    int read = streamReader.Read(buff, 0, 1024);
+                    if (read == 0)
+                    {
+                        ok = false;
+                        bufferQueue.Add(null);
+                    }
+                    else
+                    {
+                        Array.Resize(ref buff, read);
+                        bufferQueue.Add(buff);
+                    }
                 }
-                else
-                {
-                    Array.Resize(ref buff, read);
-                    bufferQueue.Add(buff);
-                }
+            }
+            catch (ObjectDisposedException)
+            {
+                // That's very hacky, we should read asynchronously
+                // and handle error gracefully. However, it's just
+                // a temporary client, and we'll get rid of it soon.
             }
         }
 
