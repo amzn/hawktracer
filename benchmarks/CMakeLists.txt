@@ -35,4 +35,4 @@ add_executable(hawktracer_benchmarks
     benchmark_main.cpp
     benchmark_timeline.cpp)
 
-target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer)
+target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
