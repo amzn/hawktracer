@@ -38,10 +38,10 @@ add_executable(hawktracer_tests
     test_stack.cpp
     test_test_events.c
     test_thread.cpp
-    test_timeline.cpp
-    )
+    test_timeline.cpp)
+
 target_link_libraries(hawktracer_tests ${GTEST_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
-add_test(main hawktracer_tests)
+add_test(NAME hawktracer_tests COMMAND hawktracer_tests --gtest_output=xml:hawktracer_tests.xml)
 
 add_executable(hawktracer_test_destroy_timeline_after_uninit
     main_destroy_timeline_after_uninit.c)
