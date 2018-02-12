@@ -63,9 +63,11 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
 void
 ht_registry_push_all_klass_info_events(HT_Timeline* timeline)
 {
+    size_t i;
+
     ht_mutex_lock(event_klass_registry_register_mutex);
 
-    for (size_t i = 0; i < event_klass_register.size; i++)
+    for (i = 0; i < event_klass_register.size; i++)
     {
         ht_registry_push_klass_info_event(timeline, (HT_EventKlass*)event_klass_register.data[i]);
     }
@@ -78,6 +80,7 @@ ht_registry_push_all_klass_info_events(HT_Timeline* timeline)
 void
 ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass)
 {
+    size_t j;
     HT_DECL_EVENT(HT_EventKlassInfoEvent, event);
     ht_timeline_init_event(timeline, HT_EVENT(&event));
     event.event_klass_name = klass->type_info->name;
@@ -86,7 +89,7 @@ ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass)
 
     ht_timeline_push_event(timeline, HT_EVENT(&event));
 
-    for (size_t j = 0; j < klass->type_info->fields_count; j++)
+    for (j = 0; j < klass->type_info->fields_count; j++)
     {
         MKCREFLECT_FieldInfo* info = &klass->type_info->fields[j];
         HT_DECL_EVENT(HT_EventKlassFieldInfoEvent, field_event);
@@ -113,7 +116,8 @@ ht_registry_get_event_klasses(size_t* out_klass_count)
 void
 ht_registry_deinit(void)
 {
-    for (size_t i = 0; i < listeners_register.size; i++)
+    size_t i;
+    for (i = 0; i < listeners_register.size; i++)
     {
         ht_timeline_listener_container_unref(listeners_register.data[i]);
     }
@@ -128,10 +132,11 @@ ht_registry_deinit(void)
 HT_TimelineListenerContainer*
 ht_registry_find_listener_container(const char* name)
 {
+    size_t i;
     uint32_t id = djb2_hash(name);
 
     ht_mutex_lock(listeners_register_mutex);
-    for (size_t i = 0; i < listeners_register.size; i++)
+    for (i = 0; i < listeners_register.size; i++)
     {
         if (((HT_TimelineListenerContainer*)listeners_register.data[i])->id == id)
         {

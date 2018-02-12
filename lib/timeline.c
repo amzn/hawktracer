@@ -11,7 +11,8 @@
 static inline void
 _ht_timeline_notify_listeners(HT_Timeline* timeline)
 {
-    for (size_t i = 0; i < timeline->listeners->user_datas.size; i++)
+    size_t i;
+    for (i = 0; i < timeline->listeners->user_datas.size; i++)
     {
         (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
                 (timeline->buffer, timeline->buffer_usage, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
@@ -114,6 +115,8 @@ ht_timeline_init(HT_Timeline* timeline,
 void
 ht_timeline_deinit(HT_Timeline* timeline)
 {
+    size_t i;
+
     assert(timeline);
 
     ht_timeline_flush(timeline);
@@ -121,7 +124,7 @@ ht_timeline_deinit(HT_Timeline* timeline)
 
     ht_timeline_listener_container_unref(timeline->listeners);
 
-    for (size_t i = 0; i < sizeof(timeline->features) / sizeof(timeline->features[0]); i++)
+    for (i = 0; i < sizeof(timeline->features) / sizeof(timeline->features[0]); i++)
     {
         if (timeline->features[i])
         {

@@ -50,7 +50,8 @@ ht_listener_buffer_process_unserialized_events(HT_ListenerBuffer* buffer,
                                                HT_ListenerFlushCallback flush_callback,
                                                void* listener)
 {
-    for (size_t i = 0; i < size;)
+    size_t i;
+    for (i = 0; i < size;)
     {
         HT_Event* event = HT_EVENT(events + i);
 
