@@ -39,6 +39,8 @@ int main(int argc, char** argv)
 
     fnc_start();
 
+    ht_timeline_flush(ht_global_timeline_get());
+    ht_timeline_unregister_all_listeners(ht_global_timeline_get());
     ht_file_dump_listener_deinit(&file_dump_listener);
     ht_deinit();
 }
