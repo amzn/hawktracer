@@ -50,6 +50,7 @@ if(ENABLE_CODE_COVERAGE)
 endif(ENABLE_CODE_COVERAGE)
 
 add_subdirectory(lib)
+add_subdirectory(parser)
 add_subdirectory(client)
 
 if(ENABLE_TESTS)
