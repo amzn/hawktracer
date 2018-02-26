@@ -115,8 +115,7 @@ int main(int argc, char** argv)
     parser::DebugEventListener l;
     std::string out_file = create_output_path(output_path.c_str());
     chrome_listener.init(out_file);
-    //reader.register_events_listener([&chrome_listener] (const parser::Event& event) { chrome_listener.process_event(event); });
-    reader.register_events_listener([&l] (const parser::Event& event) { l(event); });
+    reader.register_events_listener([&chrome_listener] (const parser::Event& event) { chrome_listener.process_event(event); });
 
     std::cout << "Output will be written to a file: " << out_file << std::endl;
 
