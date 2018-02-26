@@ -4,6 +4,7 @@
 #include "parser/file_stream.hpp"
 #include "parser/protocol_reader.hpp"
 #include "parser/event.hpp"
+#include "parser/make_unique.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -96,11 +97,11 @@ int main(int argc, char** argv)
     bool is_network = false;
     if (file_exists(source.c_str()))
     {
-        stream = std::make_unique<parser::FileStream>(source);
+        stream = parser::make_unique<parser::FileStream>(source);
     }
     else if (scan_ip_address(source, ip, port, 8765))
     {
-        stream = std::make_unique<client::TCPClientStream>(ip, port);
+        stream = parser::make_unique<client::TCPClientStream>(ip, port);
         is_network = true;
     }
     else
@@ -109,7 +110,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    parser::ProtocolReader reader(std::move(stream));
+    parser::ProtocolReader reader(std::move(stream), true);
     client::ChromeTraceListener chrome_listener;
     parser::DebugEventListener l;
     std::string out_file = create_output_path(output_path.c_str());

@@ -8,9 +8,6 @@ namespace HawkTracer
 namespace parser
 {
 
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
-
 static void print_field_value(const Event::Value& value)
 {
 #define PRINT_FIELD_VALUE(TYPE) case FieldTypeId::TYPE: std::cout << value.value.f_##TYPE << std::endl; break

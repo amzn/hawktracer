@@ -20,7 +20,7 @@ class ProtocolReader
 public:
     using OnNewEventCallback = std::function<void(const Event&)>;
 
-    ProtocolReader(std::unique_ptr<Stream> stream);
+    ProtocolReader(std::unique_ptr<Stream> stream, bool flat_events);
     ~ProtocolReader();
 
     void register_events_listener(OnNewEventCallback callback);
@@ -45,6 +45,7 @@ private:
     std::atomic_bool _is_running;
     std::condition_variable _cv;
     std::mutex _mtx_cv;
+    bool _flat_events;
 };
 
 } // namespace parser

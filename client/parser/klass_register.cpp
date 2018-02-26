@@ -1,5 +1,6 @@
 #include "klass_register.hpp"
 #include "event.hpp"
+#include "make_unique.hpp"
 
 namespace HawkTracer {
 namespace parser {
@@ -13,23 +14,23 @@ KlassRegister& KlassRegister::get()
 KlassRegister::KlassRegister()
 {
     EventKlass base_event("HT_Event", to_underlying(WellKnownKlasses::EventKlass));
-    base_event.add_field(std::make_unique<EventKlassField>("type", "uint32_t", FieldTypeId::UINT32));
-    base_event.add_field(std::make_unique<EventKlassField>("timestamp", "uint64_t", FieldTypeId::UINT64));
-    base_event.add_field(std::make_unique<EventKlassField>("id", "uint64_t", FieldTypeId::UINT64));
+    base_event.add_field(make_unique<EventKlassField>("type", "uint32_t", FieldTypeId::UINT32));
+    base_event.add_field(make_unique<EventKlassField>("timestamp", "uint64_t", FieldTypeId::UINT64));
+    base_event.add_field(make_unique<EventKlassField>("id", "uint64_t", FieldTypeId::UINT64));
     add_klass(std::move(base_event));
 
     EventKlass klass_info_event("HT_EventKlassInfoEvent", to_underlying(WellKnownKlasses::EventKlassInfoEventKlass));
-    klass_info_event.add_field(std::make_unique<EventKlassField>("event_type", "uint32_t", FieldTypeId::UINT32));
-    klass_info_event.add_field(std::make_unique<EventKlassField>("event_klass_name", "const char*", FieldTypeId::STRING));
-    klass_info_event.add_field(std::make_unique<EventKlassField>("field_count", "uint8_t", FieldTypeId::UINT8));
+    klass_info_event.add_field(make_unique<EventKlassField>("event_type", "uint32_t", FieldTypeId::UINT32));
+    klass_info_event.add_field(make_unique<EventKlassField>("event_klass_name", "const char*", FieldTypeId::STRING));
+    klass_info_event.add_field(make_unique<EventKlassField>("field_count", "uint8_t", FieldTypeId::UINT8));
     add_klass(std::move(klass_info_event));
 
     EventKlass klass_field_info_event("HT_EventKlassFieldInfoEvent", to_underlying(WellKnownKlasses::EventKlassFieldInfoEventKlass));
-    klass_field_info_event.add_field(std::make_unique<EventKlassField>("event_type", "uint32_t", FieldTypeId::UINT32));
-    klass_field_info_event.add_field(std::make_unique<EventKlassField>("field_type", "const char*", FieldTypeId::STRING));
-    klass_field_info_event.add_field(std::make_unique<EventKlassField>("field_name", "const char*", FieldTypeId::STRING));
-    klass_field_info_event.add_field(std::make_unique<EventKlassField>("size", "uint64_t", FieldTypeId::UINT64));
-    klass_field_info_event.add_field(std::make_unique<EventKlassField>("data_type", "uint8_t", FieldTypeId::UINT8));
+    klass_field_info_event.add_field(make_unique<EventKlassField>("event_type", "uint32_t", FieldTypeId::UINT32));
+    klass_field_info_event.add_field(make_unique<EventKlassField>("field_type", "const char*", FieldTypeId::STRING));
+    klass_field_info_event.add_field(make_unique<EventKlassField>("field_name", "const char*", FieldTypeId::STRING));
+    klass_field_info_event.add_field(make_unique<EventKlassField>("size", "uint64_t", FieldTypeId::UINT64));
+    klass_field_info_event.add_field(make_unique<EventKlassField>("data_type", "uint8_t", FieldTypeId::UINT8));
     add_klass(std::move(klass_field_info_event));
 }
 
@@ -64,7 +65,7 @@ void KlassRegister::handle_register_events(const Event& event)
         auto klass_id = event.get_value<uint32_t>("event_type");
         if (!KlassRegister::is_well_known_klass(klass_id))
         {
-            auto field = std::make_unique<EventKlassField>(event.get_value<char*>("field_name"),
+            auto field = make_unique<EventKlassField>(event.get_value<char*>("field_name"),
                     event.get_value<char*>("field_type"),
                     get_type_id(event.get_value<uint64_t>("size"), static_cast<MKCREFLECT_Types>(event.get_value<uint8_t>("data_type"))));
 

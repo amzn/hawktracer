@@ -12,6 +12,7 @@ namespace client
 #define BUFSIZE 1024
 
 TCPClientStream::TCPClientStream(const std::string& ip_address, uint16_t port, bool wait_for_server) :
+    _sock_fd(-1),
     _ip_address(ip_address),
     _port(port),
     _wait_for_server(wait_for_server)
@@ -116,7 +117,7 @@ bool TCPClientStream::_wait_for_data(std::unique_lock<std::mutex>& l)
 
 int TCPClientStream::read_byte()
 {
-    std::unique_lock l(_datas_mtx);
+    std::unique_lock<std::mutex> l(_datas_mtx);
 
     if (!_wait_for_data(l))
     {
@@ -134,7 +135,7 @@ int TCPClientStream::read_byte()
 bool TCPClientStream::read_data(char* buff, size_t size)
 {
     do {
-        std::unique_lock l(_datas_mtx);
+        std::unique_lock<std::mutex> l(_datas_mtx);
         if (!_wait_for_data(l))
         {
             return false;

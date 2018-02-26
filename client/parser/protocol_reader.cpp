@@ -5,15 +5,14 @@
 #include <cassert>
 #include <cstring>
 
-#define FLAT_EVENT_STRUCTURE
-
 namespace HawkTracer
 {
 namespace parser
 {
 
-ProtocolReader::ProtocolReader(std::unique_ptr<Stream> stream) :
-    _stream(std::move(stream))
+ProtocolReader::ProtocolReader(std::unique_ptr<Stream> stream, bool flat_events) :
+    _stream(std::move(stream)),
+    _flat_events(flat_events)
 {
     register_events_listener(KlassRegister::handle_register_events);
 }
@@ -52,7 +51,7 @@ void ProtocolReader::stop()
 
 void ProtocolReader::wait_for_complete()
 {
-    std::unique_lock l(_mtx_cv);
+    std::unique_lock<std::mutex> l(_mtx_cv);
     _cv.wait(l, [this] { return !_is_running; });
 }
 
@@ -78,12 +77,15 @@ void ProtocolReader::_read_events()
         }
 
         Event event(KlassRegister::get().get_klass(base_event.get_value<uint32_t>("type")));
-#ifdef FLAT_EVENT_STRUCTURE
-        _read_event(is_error, event, nullptr);
-        event.merge(std::move(base_event));
-#else
-        _read_event(is_error, event, &base_event);
-#endif // FLAT_EVENT_STRUCTURE
+        if (_flat_events)
+        {
+            _read_event(is_error, event, nullptr);
+            event.merge(std::move(base_event));
+        }
+        else
+        {
+            _read_event(is_error, event, &base_event);
+        }
 
         if (is_error)
         {
@@ -110,14 +112,17 @@ void ProtocolReader::_read_event(bool& is_error, Event& event, Event* base_event
             return;
         }
 
-#ifdef FLAT_EVENT_STRUCTURE
-        if (field->get_type_id() != FieldTypeId::STRUCT)
+        if (_flat_events)
+        {
+            if (field->get_type_id() != FieldTypeId::STRUCT)
+            {
+                event.set_value(field.get(), value);
+            }
+        }
+        else
         {
             event.set_value(field.get(), value);
         }
-#else
-        event.set_value(field.get(), value);
-#endif // FLAT_EVENT_STRUCTURE
     }
 
     is_error = false;
@@ -180,10 +185,11 @@ bool ProtocolReader::_read_struct(FieldType& value, const EventKlassField& field
 {
     if (field.get_type_name() == "HT_Event" && field.get_name() == "base")
     {
-#ifndef FLAT_EVENT_STRUCTURE
-        assert(base_event != nullptr);
-        value.f_EVENT = new Event(std::move(*base_event));
-#endif // FLAT_EVENT_STRUCTURE
+        if (!_flat_events)
+        {
+            assert(base_event != nullptr);
+            value.f_EVENT = new Event(std::move(*base_event));
+        }
         return true;
     }
     else
@@ -191,11 +197,14 @@ bool ProtocolReader::_read_struct(FieldType& value, const EventKlassField& field
         bool is_error;
         Event sub_event(KlassRegister::get().get_klass(KlassRegister::get().get_klass_id(field.get_type_name())));
         _read_event(is_error, sub_event, base_event);
-#ifdef FLAT_EVENT_STRUCTURE
-        event->merge(std::move(sub_event));
-#else
-        value.f_EVENT = new Event(std::move(sub_event));
-#endif // FLAT_EVENT_STRUCTURE
+        if (_flat_events)
+        {
+            event->merge(std::move(sub_event));
+        }
+        else
+        {
+            value.f_EVENT = new Event(std::move(sub_event));
+        }
         return !is_error;
     }
 }

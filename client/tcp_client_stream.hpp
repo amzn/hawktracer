@@ -39,7 +39,7 @@ private:
     std::condition_variable _datas_cv;
     std::thread _thread;
 
-    std::atomic<int> _sock_fd = -1;
+    std::atomic<int> _sock_fd;
 
     std::string _ip_address;
     uint16_t _port;
