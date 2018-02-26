@@ -5,6 +5,11 @@ namespace HawkTracer
 namespace client
 {
 
+ChromeTraceListener::ChromeTraceListener(std::unique_ptr<TracepointMap> tracepoint_map) :
+    _tracepoint_map(std::move(tracepoint_map))
+{
+}
+
 ChromeTraceListener::~ChromeTraceListener()
 {
     uninit();
@@ -35,7 +40,19 @@ void ChromeTraceListener::process_event(const parser::Event& event)
     std::string label;
     if (event.has_value("label"))
     {
-        label = event.get_value<char*>("label");
+        const parser::Event::Value& value = event.get_raw_value("label");
+        if (value.field->get_type_id() == parser::FieldTypeId::UINT64)
+        {
+            label = _tracepoint_map->get_label_info(value.value.f_UINT64).label;
+        }
+        else if (value.field->get_type_id() == parser::FieldTypeId::STRING)
+        {
+            label = value.value.f_STRING;
+        }
+        else
+        {
+            label = "invalid label type";
+        }
     }
     else if (event.has_value("name"))
     {

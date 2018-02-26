@@ -1,9 +1,8 @@
 #include "chrome_tracing_listener.hpp"
 #include "tcp_client_stream.hpp"
-#include "parser/debug_event_listener.hpp"
+
 #include "parser/file_stream.hpp"
 #include "parser/protocol_reader.hpp"
-#include "parser/event.hpp"
 #include "parser/make_unique.hpp"
 
 #include <iostream>
@@ -54,6 +53,7 @@ int main(int argc, char** argv)
 {
     std::string output_path = "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace";
     std::string source;
+    std::string map_files;
 
     for (int i = 1; i < argc; i++)
     {
@@ -67,9 +67,7 @@ int main(int argc, char** argv)
         }
         else if (strcmp(argv[i], "--map") == 0 && i < argc - 1)
         {
-            // TODO
-            std::cerr << "--map parameter is not supported yet" << std::endl;
-            i++;
+            map_files = argv[++i];
         }
         else
         {
@@ -110,9 +108,19 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    auto tracepoint_map = parser::make_unique<client::TracepointMap>();
+
+    if (map_files.empty())
+    {
+        std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
+    }
+    else
+    {
+        tracepoint_map->load_maps(map_files);
+    }
+
     parser::ProtocolReader reader(std::move(stream), true);
-    client::ChromeTraceListener chrome_listener;
-    parser::DebugEventListener l;
+    client::ChromeTraceListener chrome_listener(std::move(tracepoint_map));
     std::string out_file = create_output_path(output_path.c_str());
     chrome_listener.init(out_file);
     reader.register_events_listener([&chrome_listener] (const parser::Event& event) { chrome_listener.process_event(event); });

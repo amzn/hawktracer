@@ -2,6 +2,7 @@
 #define HAWKTRACER_CLIENT_CHROME_TRACING_LISTENER_HPP
 
 #include "parser/event.hpp"
+#include "tracepoint_map.hpp"
 
 #include <fstream>
 
@@ -13,6 +14,7 @@ namespace client
 class ChromeTraceListener
 {
 public:
+    ChromeTraceListener(std::unique_ptr<TracepointMap> tracepoint_map);
     ~ChromeTraceListener();
 
     bool init(const std::string& file_name);
@@ -21,6 +23,7 @@ public:
 
 private:
     std::ofstream file;
+    std::unique_ptr<TracepointMap> _tracepoint_map;
 };
 
 } // namespace client

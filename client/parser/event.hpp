@@ -49,9 +49,9 @@ public:
         return _values.find(key) != _values.end();
     }
 
-    FieldType get_raw_value(const std::string& key) const
+    const Value& get_raw_value(const std::string& key) const
     {
-        return _values.at(key).value;
+        return _values.at(key);
     }
 
     void set_value(const EventKlassField* field, FieldType value)
