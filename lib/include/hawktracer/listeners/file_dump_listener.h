@@ -11,6 +11,7 @@ typedef struct
 {
     HT_ListenerBuffer buffer;
     FILE* p_file;
+    struct _HT_Mutex* mtx;
 } HT_FileDumpListener;
 
 #define HT_FILE_DUMP_LISTENER_BUFFER_SIZE 4096u
