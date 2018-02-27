@@ -23,7 +23,21 @@ add_dependencies(${GTEST_LIBRARY} googletest)
 
 include_directories(../lib/include "${GTEST_INCLUDE_DIRS}")
 
-add_executable(hawktracer_tests
+function(DEFINE_HT_TEST)
+    set(MULTI_PARAM SOURCES LINK_LIBS RUN_PARAMS)
+    cmake_parse_arguments(ht "" "NAME" "${MULTI_PARAM}" ${ARGN})
+    message("${ht_RUN_PARAMS}")
+    set(EXE_NAME hawktracer_test_${ht_NAME})
+    add_executable(${EXE_NAME} ${ht_SOURCES})
+    target_link_libraries(${EXE_NAME} ${ht_LINK_LIBS} hawktracer ${CMAKE_THREAD_LIBS_INIT})
+    if ("${ht_RUN_PARAMS}" STREQUAL "")
+        add_test(${ht_NAME} ${EXE_NAME})
+    else()
+        add_test(${ht_NAME} ${EXE_NAME} COMMAND hawktracer_tests ${ht_RUN_PARAMS})
+    endif()
+endfunction(DEFINE_HT_TEST)
+
+set(hawktracer_gtest_tests_SOURCE
     main_gtest_tests.cpp
     listeners/test_file_dump_listener.cpp
     test_alloc.cpp
@@ -41,10 +55,5 @@ add_executable(hawktracer_tests
     test_thread.cpp
     test_timeline.cpp)
 
-target_link_libraries(hawktracer_tests ${GTEST_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
-add_test(NAME hawktracer_tests COMMAND hawktracer_tests --gtest_output=xml:hawktracer_tests.xml)
-
-add_executable(hawktracer_test_destroy_timeline_after_uninit
-    main_destroy_timeline_after_uninit.c)
-target_link_libraries(hawktracer_test_destroy_timeline_after_uninit hawktracer ${CMAKE_THREAD_LIBS_INIT})
-add_test(destroy_timeline_after_uninit hawktracer_test_destroy_timeline_after_uninit)
+DEFINE_HT_TEST(NAME gtest SOURCES ${hawktracer_gtest_tests_SOURCE} LINK_LIBS ${GTEST_LIBRARY} RUN_PARAMS --gtest_output=xml:hawktracer_tests.xml)
+DEFINE_HT_TEST(NAME destroy_timeline_after_uninit SOURCES main_destroy_timeline_after_uninit.c)
