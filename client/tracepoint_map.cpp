@@ -20,10 +20,10 @@ bool TracepointMap::load_map(const std::string& map_file)
 
     std::string label_str;
     uint64_t label;
-    uint32_t category;
-    while (file >> label >> category >> label_str)
+    std::string category;
+    while (file >> category >> label_str >> label)
     {
-        _input_map[label] = MapInfo{ label_str, category_to_string((Category)category) };
+        _input_map[label] = MapInfo{ label_str, category };
     }
 
     return true;

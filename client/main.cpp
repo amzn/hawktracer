@@ -46,6 +46,7 @@ void print_help(const char* app_name)
     std::cout << "usage: " << app_name << " [OPTION]..." << std::endl
               << "  --source    data source description (either filename, or server address)" << std::endl
               << "  --output    an output Chrome Tracing Json file" << std::endl
+              << "  --map       comma-separated list of map files" << std::endl
               << "  --help      print this text" << std::endl;
 }
 
