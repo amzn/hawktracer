@@ -13,11 +13,11 @@ typedef struct
 
 #define HT_FEATURE_CACHED_STRING 1
 
-void ht_feature_cached_string_enable(HT_Timeline* timeline);
+HT_API void ht_feature_cached_string_enable(HT_Timeline* timeline);
 
-void ht_feature_cached_string_disable(HT_Timeline* timeline);
+HT_API void ht_feature_cached_string_disable(HT_Timeline* timeline);
 
-uintptr_t ht_feature_cached_string_push(HT_Timeline* timeline, const char* label);
+HT_API uintptr_t ht_feature_cached_string_push(HT_Timeline* timeline, const char* label);
 
 HT_DECLS_END
 

@@ -22,19 +22,19 @@ typedef void(*HT_TimelineListenerCallback)(
         TEventPtr events, size_t event_count, HT_Boolean serialized, void* user_data);
 
 /* TODO: init instead? */
-HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
+HT_API HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
 
-void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);
+HT_API void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);
 
-void ht_timeline_listener_container_register_listener(
+HT_API void ht_timeline_listener_container_register_listener(
         HT_TimelineListenerContainer* container,
         HT_TimelineListenerCallback callback,
         void* user_data);
 
-void ht_timeline_listener_container_unregister_all_listeners(
+HT_API void ht_timeline_listener_container_unregister_all_listeners(
         HT_TimelineListenerContainer* container);
 
-HT_TimelineListenerContainer* ht_find_or_create_listener(const char* name);
+HT_API HT_TimelineListenerContainer* ht_find_or_create_listener(const char* name);
 
 HT_DECLS_END
 

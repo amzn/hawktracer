@@ -33,4 +33,18 @@
 #    endif
 #endif
 
+#ifdef _WIN32
+#  define HT_PLATFORM_WIN32
+#endif
+
+#ifdef HT_PLATFORM_WIN32
+#  if defined(HT_COMPILE_SHARED_EXPORT)
+#    define HT_API __declspec(dllexport)
+#  else
+#    define HT_API __declspec(dllimport)
+#  endif
+#else
+#  define HT_API
+#endif
+
 #endif /* HAWKTRACER_MACROS_H */

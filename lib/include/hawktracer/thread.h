@@ -6,8 +6,7 @@
 
 HT_DECLS_BEGIN
 
-HT_ThreadId
-ht_thread_get_current_thread_id(void);
+HT_API HT_ThreadId ht_thread_get_current_thread_id(void);
 
 HT_DECLS_END
 

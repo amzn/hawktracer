@@ -9,13 +9,13 @@ HT_DECLS_BEGIN
 
 typedef void* (*realloc_function)(void* /* ptr */, size_t /* size */, void* /* user_data */);
 
-void ht_allocator_set(realloc_function func, void* user_data);
+HT_API void ht_allocator_set(realloc_function func, void* user_data);
 
-void* ht_alloc(size_t size);
+HT_API void* ht_alloc(size_t size);
 
-void* ht_realloc(void* ptr, size_t size);
+HT_API void* ht_realloc(void* ptr, size_t size);
 
-void ht_free(void* ptr);
+HT_API void ht_free(void* ptr);
 
 #define HT_CREATE_TYPE(Type) (Type*)ht_alloc(sizeof(Type))
 

@@ -21,7 +21,7 @@ static void __attribute__((unused)) _ht_callstack_timeline_scoped_cleanup(HT_Tim
 }
 
 #define _HT_GENERATE_CALLSTACK_TIMELINE_CALLSTACK_RET(type, c_type) \
-    inline static HT_Timeline* _ht_callstack_timeline_##type##_start_and_ret(HT_Timeline* t, c_type l) \
+    HT_API inline static HT_Timeline* _ht_callstack_timeline_##type##_start_and_ret(HT_Timeline* t, c_type l) \
     { ht_feature_callstack_start_##type(t, l); return t; }
 
 _HT_GENERATE_CALLSTACK_TIMELINE_CALLSTACK_RET(int, HT_CallstackEventLabel)

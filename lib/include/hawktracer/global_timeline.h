@@ -6,7 +6,7 @@
 
 HT_DECLS_BEGIN
 
-HT_Timeline* ht_global_timeline_get(void);
+HT_API HT_Timeline* ht_global_timeline_get(void);
 
 HT_DECLS_END
 

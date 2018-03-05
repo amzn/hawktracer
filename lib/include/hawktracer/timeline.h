@@ -27,26 +27,26 @@ typedef struct
     HT_Boolean serialize_events;
 } HT_Timeline;
 
-void ht_timeline_init(HT_Timeline* timeline,
-                      size_t buffer_capacity,
-                      HT_Boolean thread_safe,
-                      HT_Boolean serialize_events,
-                      const char* listeners);
+HT_API void ht_timeline_init(HT_Timeline* timeline,
+                             size_t buffer_capacity,
+                             HT_Boolean thread_safe,
+                             HT_Boolean serialize_events,
+                             const char* listeners);
 
-void ht_timeline_deinit(HT_Timeline* timeline);
+HT_API void ht_timeline_deinit(HT_Timeline* timeline);
 
-void ht_timeline_register_listener(
+HT_API void ht_timeline_register_listener(
         HT_Timeline* timeline,
         HT_TimelineListenerCallback callback,
         void* user_data);
 
-void ht_timeline_unregister_all_listeners(HT_Timeline* timeline);
+HT_API void ht_timeline_unregister_all_listeners(HT_Timeline* timeline);
 
-void ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event);
+HT_API void ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event);
 
-void ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event);
+HT_API void ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event);
 
-void ht_timeline_flush(HT_Timeline* timeline);
+HT_API void ht_timeline_flush(HT_Timeline* timeline);
 
 #define HT_TIMELINE_PUSH_EVENT(TIMELINE, EVENT_TYPE, ...) \
     HT_TIMELINE_PUSH_EVENT_PEDANTIC(TIMELINE, EVENT_TYPE, ht_base_event, __VA_ARGS__)

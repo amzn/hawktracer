@@ -5,9 +5,9 @@
 
 HT_DECLS_BEGIN
 
-void ht_init(int argc, char** argv);
+HT_API void ht_init(int argc, char** argv);
 
-void ht_deinit(void);
+HT_API void ht_deinit(void);
 
 HT_DECLS_END
 

@@ -18,11 +18,11 @@ typedef struct
     HT_TCPListenerPimpl *pimpl;
 } HT_TCPListener;
 
-HT_Boolean ht_tcp_listener_init(HT_TCPListener* listener, int port);
+HT_API HT_Boolean ht_tcp_listener_init(HT_TCPListener* listener, int port);
 
-void ht_tcp_listener_deinit(HT_TCPListener* listener);
+HT_API void ht_tcp_listener_deinit(HT_TCPListener* listener);
 
-void ht_tcp_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data);
+HT_API void ht_tcp_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data);
 
 HT_DECLS_END
 

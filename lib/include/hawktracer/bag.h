@@ -17,17 +17,17 @@ struct _HT_Bag
     void** data;
 };
 
-void ht_bag_init(HT_Bag* bag, size_t capacity);
+HT_API void ht_bag_init(HT_Bag* bag, size_t capacity);
 
-void ht_bag_deinit(HT_Bag* bag);
+HT_API void ht_bag_deinit(HT_Bag* bag);
 
-void ht_bag_remove(HT_Bag* bag, void* data);
+HT_API void ht_bag_remove(HT_Bag* bag, void* data);
 
-void ht_bag_remove_nth(HT_Bag* bag, size_t n);
+HT_API void ht_bag_remove_nth(HT_Bag* bag, size_t n);
 
-void ht_bag_add(HT_Bag* bag, void* data);
+HT_API void ht_bag_add(HT_Bag* bag, void* data);
 
-void ht_bag_clear(HT_Bag* bag);
+HT_API void ht_bag_clear(HT_Bag* bag);
 
 #define ht_bag_last(bag) bag.data[bag.size - 1]
 
