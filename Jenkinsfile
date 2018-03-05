@@ -10,6 +10,16 @@ stage('Linux') {
     runBuild(linuxBuild, 'ignite-linux', 'ignite-linux')
 }
 
+stage('OSX') {
+    def osxBuild = new LinuxBuild(this, 'OSX')
+        .withDebugBuild()
+        .withTests()
+
+    withEnv (['PATH+MAVEN=/usr/local/bin']) {
+        runBuild(osxBuild, 'hawktracer-osx', 'hawktracer-osx')
+    }
+}
+
 stage('Raspberry PI') {
     def rpiBuild = new RaspberryBuild(this, 'Raspberry PI')
         .withToolchain('../rpi-toolchain.cmake')
