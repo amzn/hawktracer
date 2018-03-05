@@ -15,7 +15,6 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/feature_cached_string.h
     include/hawktracer/feature_callstack.h
     include/hawktracer/global_timeline.h
-    include/hawktracer/hash.h
     include/hawktracer/init.h
     include/hawktracer/listener_buffer.h
     include/hawktracer/listeners.h

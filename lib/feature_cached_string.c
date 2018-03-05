@@ -1,7 +1,7 @@
 #include "hawktracer/feature_cached_string.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/core_events.h"
-#include "hawktracer/hash.h"
+#include "internal/hash.h"
 
 #include <assert.h>
 

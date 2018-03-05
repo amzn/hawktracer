@@ -1,7 +1,7 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/bag.h"
 #include "hawktracer/core_events.h"
-#include "hawktracer/hash.h"
+#include "internal/hash.h"
 #include "internal/feature.h"
 #include "internal/registry.h"
 #include "internal/mutex.h"
