@@ -33,6 +33,7 @@ public:
             return false;
         }
         value = (uint8_t)v;
+        return true;
     }
 
     bool read_value(int8_t& value)
