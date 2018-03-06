@@ -1,11 +1,18 @@
 include(ExternalProject)
 
+set(GTEST_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/googletest")
+
 ExternalProject_Add(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG release-1.8.0
+  BINARY_DIR "${GTEST_BIN_DIR}"
+  BUILD_COMMAND "${CMAKE_COMMAND}" --build "${GTEST_BIN_DIR}" --config Release
   UPDATE_COMMAND ""
   INSTALL_COMMAND ""
-  CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
+  CMAKE_ARGS
+    "-DCMAKE_BUILD_TYPE=Release"
+    "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
   LOG_DOWNLOAD ON
   LOG_CONFIGURE ON
   LOG_BUILD ON)
@@ -13,8 +20,7 @@ ExternalProject_Add(
 ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 
-ExternalProject_Get_Property(googletest binary_dir)
-set(GTEST_LIBRARY_PATH ${binary_dir}/googlemock/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
+set(GTEST_LIBRARY_PATH ${GTEST_BIN_DIR}/googlemock/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX})
 set(GTEST_LIBRARY hawktracer_gtest)
 add_library(${GTEST_LIBRARY} UNKNOWN IMPORTED)
 set_target_properties(${GTEST_LIBRARY} PROPERTIES
