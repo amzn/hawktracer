@@ -11,7 +11,7 @@ ExternalProject_Add(
     "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
     "-DBUILD_SHARED_LIBS=ON"
   BINARY_DIR "${GTEST_BIN_DIR}"
-  BUILD_COMMAND "${CMAKE_COMMAND}" --build "${GTEST_BIN_DIR}" --config "$(Configuration)"
+  BUILD_COMMAND "${CMAKE_COMMAND}" --build "${GTEST_BIN_DIR}" --config "Release"
   LOG_DOWNLOAD ON
   LOG_CONFIGURE ON
   LOG_BUILD ON)
@@ -20,9 +20,9 @@ ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 
 if(MSVC)
-    set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/$(Configuration)/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/Release/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
 else()
-    set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/${CMAKE_SHARED_LIBRARY_PREFIX}gtest${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 set(GTEST_LIBRARY hawktracer_gtest)
 
