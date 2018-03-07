@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 
 project(HawkTracer
     VERSION 0.3.0)
@@ -18,13 +18,10 @@ option(ENABLE_RELEASE_MODE "Enables release mode. This flag should be used
     to compile and release product.")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
-
+set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-
-# TODO must be moved somewhere else
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++11 -Wno-unused-function")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -std=c99 -pedantic -Wmissing-prototypes -Wstrict-prototypes -Wold-style-definition -Wno-unused-function")
 
 if(ENABLE_MAINTAINER_MODE)
     set(ENABLE_TESTS ON)
@@ -40,6 +37,8 @@ if(ENABLE_RELEASE_MODE)
     set(ENABLE_BENCHMARKS ON)
     set(ENABLE_EXAMPLES ON)
 endif(ENABLE_RELEASE_MODE)
+
+include(warnings)
 
 if(ENABLE_ASAN)
     include(asan)
