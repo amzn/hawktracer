@@ -1,15 +1,29 @@
 #include "tcp_client_stream.hpp"
 
+#ifdef _WIN32
+#define NOMINMAX
+#include <WinSock2.h>
+#pragma comment(lib, "Ws2_32.lib")
+#else
 #include <arpa/inet.h>
 #include <unistd.h>
+#endif
 #include <cstring>
 
 namespace HawkTracer
 {
 namespace client
 {
-
 #define BUFSIZE 1024
+
+static int close_socket(int sock_fd)
+{
+#ifdef _WIN32
+    return closesocket(sock_fd);
+#else
+    return close(sock_fd);
+#endif
+}
 
 TCPClientStream::TCPClientStream(const std::string& ip_address, uint16_t port, bool wait_for_server) :
     _sock_fd(-1),
@@ -30,6 +44,14 @@ bool TCPClientStream::start()
     {
         stop();
     }
+
+#ifdef _WIN32
+    WSAData wsa_data;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0)
+    {
+        return false;
+    }
+#endif
 
     struct sockaddr_in serveraddr;
 
@@ -69,9 +91,13 @@ void TCPClientStream::stop()
 {
     if (is_connected())
     {
-        close(_sock_fd);
+        close_socket(_sock_fd);
         _sock_fd = -1;
     }
+
+#ifdef _WIN32
+    WSACleanup();
+#endif
 
     if (_thread.joinable())
     {
@@ -85,10 +111,11 @@ void TCPClientStream::_run()
 
     while (is_connected())
     {
-        int size = read(_sock_fd, buf, BUFSIZE);
-        if (size == 0)
+        int size = recv(_sock_fd, buf, BUFSIZE, 0);
+        
+        if (size == 0 || size == -1)
         {
-            close(_sock_fd);
+            close_socket(_sock_fd);
             _sock_fd = -1;
         }
         else if (size > 0)
