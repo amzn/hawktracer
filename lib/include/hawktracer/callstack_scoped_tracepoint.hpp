@@ -24,7 +24,11 @@ public:
            ):
         _timeline(timeline)
     {
+#ifdef HT_CPP11
         start_fnc(_timeline, label...);
+#else
+        start_fnc(_timeline, label);
+#endif
     }
 
     ~CallstackScopedTracepoint()
