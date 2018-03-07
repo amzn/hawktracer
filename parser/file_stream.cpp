@@ -15,7 +15,7 @@ FileStream::~FileStream()
 
 bool FileStream::start()
 {
-    _file = fopen(_file_name.c_str(), "r");
+    _file = fopen(_file_name.c_str(), "rb");
     return _file != nullptr;
 }
 
