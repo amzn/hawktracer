@@ -127,12 +127,10 @@ typedef struct
 #define MKCREFLECT_FIELD_INFO(X, USER_DATA) \
     MKCREFLECT_FIELD_INFO_(USER_DATA, MKCREFLECT_EXPAND_VA_ X)
 
-#define MKCREFLECT_DEFINE_STRUCT(TYPE_NAME, ...) \
-    typedef struct \
-    { \
-        MKCREFLECT_FOREACH(MKCREFLECT_DECLARE_FIELD, 0, __VA_ARGS__) \
-    } TYPE_NAME; \
-    static MKCREFLECT_TypeInfo* mkcreflect_get_##TYPE_NAME##_type_info(void) \
+#ifdef MKCREFLECT_IMPL
+
+#define MKCREFLECT_DEFINE_GET_METHOD(TYPE_NAME, ...) \
+    MKCREFLECT_TypeInfo* mkcreflect_get_##TYPE_NAME##_type_info(void) \
     { \
         static MKCREFLECT_FieldInfo fields_info[MKCREFLECT_FOREACH(MKCREFLECT_SUM, 0, __VA_ARGS__)] = \
         { \
@@ -148,6 +146,20 @@ typedef struct
         }; \
         return &type_info; \
     }
+
+#else
+
+#define MKCREFLECT_DEFINE_GET_METHOD(TYPE_NAME, ...)
+
+#endif /* MKCREFLECT_IMPL */
+
+#define MKCREFLECT_DEFINE_STRUCT(TYPE_NAME, ...) \
+    typedef struct \
+    { \
+        MKCREFLECT_FOREACH(MKCREFLECT_DECLARE_FIELD, 0, __VA_ARGS__) \
+    } TYPE_NAME; \
+    MKCREFLECT_TypeInfo* mkcreflect_get_##TYPE_NAME##_type_info(void); \
+    MKCREFLECT_DEFINE_GET_METHOD(TYPE_NAME, __VA_ARGS__) \
 
 #ifdef __cplusplus
 }

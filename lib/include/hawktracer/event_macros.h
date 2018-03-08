@@ -1,6 +1,11 @@
 #ifndef HAWKTRACER_EVENT_MACROS_H
 #define HAWKTRACER_EVENT_MACROS_H
 
+#ifdef HAWKTRACER_DEFINE_EVENTS
+#define MKCREFLECT_IMPL
+#include <hawktracer/mkcreflect.h>
+#endif /* HAWKTRACER_DEFINE_EVENTS */
+
 #include <hawktracer/events.h>
 #include <hawktracer/registry.h>
 
