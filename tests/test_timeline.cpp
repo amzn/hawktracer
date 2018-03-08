@@ -161,13 +161,13 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
     ht_timeline_flush(&timeline);
 
     // Assert
-    std::vector<int> all_values(event_count, 1);
-    size_t sum = 0;
+    std::vector<HT_TimestampNs> all_values(event_count, 1);
+    HT_TimestampNs sum = 0;
     for (const auto& event : info.values)
     {
         ASSERT_GT(event_count, event.timestamp);
-        sum += all_values[event.timestamp];
-        all_values[event.timestamp] = 0;
+        sum += all_values[(size_t)event.timestamp];
+        all_values[(size_t)event.timestamp] = 0;
     }
 
     ASSERT_EQ(event_count, sum);
