@@ -20,6 +20,13 @@ stage('OSX') {
     }
 }
 
+stage('Windows') {
+    def winBuild = new MSVCBuild(this, 'MSVC')
+        .withTests()
+
+    runBuild(winBuild, 'ignite-windows', 'ignite-windows')
+}
+
 stage('Raspberry PI') {
     def rpiBuild = new RaspberryBuild(this, 'Raspberry PI')
         .withToolchain('../rpi-toolchain.cmake')
@@ -180,9 +187,7 @@ class LinuxBuild extends HTBuild {
     }
 
     def runBenchmarks() {
-        context.stage(name + ': run benchmarks') {
-            context.sh 'LD_LIBRARY_PATH=./lib ./benchmarks/hawktracer_benchmarks --benchmark_format=json --benchmark_out=benchmark.json'
-        }
+        context.sh 'LD_LIBRARY_PATH=./lib ./benchmarks/hawktracer_benchmarks --benchmark_format=json --benchmark_out=benchmark.json'
     }
 
     def stashBuildArtifacts(String stashName) {
@@ -210,6 +215,25 @@ class LinuxBuild extends HTBuild {
         }
 
         context.stash includes: reports, name: stashName
+    }
+}
+
+@InheritConstructors
+class MSVCBuild extends HTBuild {
+    def build() {
+        context.bat 'msbuild /p:Configuration=Release HawkTracer.sln'
+    }
+
+    def runTests() {
+        context.bat 'copy tests\\googletest\\googlemock\\gtest\\Release\\gtest.dll tests\\Release\\'
+        context.bat 'copy lib\\Release\\hawktracer.dll tests\\Release\\'
+        context.bat 'ctest --verbose'
+    }
+
+    def runBenchmarks() {
+        context.bat 'copy lib\\Release\\hawktracer.dll benchmarks\\Release\\'
+        context.bat './benchmarks/hawktracer_benchmarks --benchmark_format=json --benchmark_out=benchmark.json'
+        // TODO: we should have common step to add platform to benchmark.json
     }
 }
 
