@@ -40,7 +40,7 @@ enum class FieldTypeId
     STRUCT
 };
 
-FieldTypeId get_type_id(size_t type_size, MKCREFLECT_Types data_type);
+FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type);
 
 class EventKlassField
 {

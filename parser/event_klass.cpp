@@ -2,6 +2,7 @@
 #include "event.hpp"
 
 #include <cassert>
+#include <stdexcept>
 
 namespace HawkTracer {
 namespace parser {
@@ -42,7 +43,7 @@ void EventKlass::add_field(std::unique_ptr<EventKlassField> field)
 }
 
 
-FieldTypeId get_type_id(size_t type_size, MKCREFLECT_Types data_type)
+FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type)
 {
     switch (data_type)
     {
@@ -61,6 +62,7 @@ FieldTypeId get_type_id(size_t type_size, MKCREFLECT_Types data_type)
     case MKCREFLECT_TYPES_STRUCT:
         return FieldTypeId::STRUCT;
     default: assert(0); // TODO other types
+        throw std::runtime_error("invalid type id");
     }
 }
 

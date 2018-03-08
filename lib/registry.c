@@ -85,7 +85,7 @@ ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass)
     ht_timeline_init_event(timeline, HT_EVENT(&event));
     event.event_klass_name = klass->type_info->name;
     event.event_type = klass->type;
-    event.field_count = klass->type_info->fields_count;
+    event.field_count = (uint8_t) klass->type_info->fields_count;
 
     ht_timeline_push_event(timeline, HT_EVENT(&event));
 

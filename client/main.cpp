@@ -24,7 +24,7 @@ bool scan_ip_address(const std::string& address, std::string& out_ip, uint16_t& 
     if (num >= 4)
     {
         out_ip = address.substr(0, address.find(':'));
-        out_port = (num == 5) ? port : default_port;
+        out_port = (num == 5) ? (uint16_t)port : default_port;
         return true;
     }
     return false;
