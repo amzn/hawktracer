@@ -1,5 +1,6 @@
 #include <hawktracer/timeline.h>
 #include <hawktracer/alloc.h>
+#include <hawktracer/mkcreflect.h>
 
 #include "internal/feature.h"
 #include "internal/registry.h"

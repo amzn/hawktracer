@@ -26,7 +26,7 @@ typedef enum
     MKCREFLECT_TYPES_POINTER = 6
 } MKCREFLECT_Types;
 
-typedef struct
+struct _MKCREFLECT_FieldInfo
 {
     const char* field_type;
     const char* field_name;
@@ -35,16 +35,20 @@ typedef struct
     int is_signed;
     int array_size;
     MKCREFLECT_Types data_type;
-} MKCREFLECT_FieldInfo;
+};
 
-typedef struct
+typedef struct _MKCREFLECT_FieldInfo MKCREFLECT_FieldInfo;
+
+struct _MKCREFLECT_TypeInfo
 {
     const char* name;
     size_t fields_count;
     size_t size;
     size_t packed_size;
     MKCREFLECT_FieldInfo* fields;
-} MKCREFLECT_TypeInfo;
+};
+
+typedef struct _MKCREFLECT_TypeInfo MKCREFLECT_TypeInfo;
 
 #define MKCREFLECT_EXPAND_(X) X
 #define MKCREFLECT_EXPAND_VA_(...) __VA_ARGS__

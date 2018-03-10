@@ -1,6 +1,7 @@
 #include "hawktracer/listener_buffer.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/events.h"
+#include "hawktracer/mkcreflect.h"
 
 #include <string.h>
 
