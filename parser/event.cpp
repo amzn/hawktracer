@@ -1,9 +1,42 @@
 #include "event.hpp"
 
+#include <cstring>
+
 namespace HawkTracer
 {
 namespace parser
 {
+
+Event::Value::Value(const Value& other) :
+    field(other.field)
+{
+    switch (field->get_type_id())
+    {
+    case FieldTypeId::STRING:
+        if (other.value.f_STRING)
+        {
+            value.f_STRING = (char*)malloc(strlen(other.value.f_STRING));
+            strcpy(value.f_STRING, other.value.f_STRING);
+        }
+        else
+        {
+            value.f_STRING = nullptr;
+        }
+        break;
+    case FieldTypeId::STRUCT:
+        if (value.f_EVENT)
+        {
+            value.f_EVENT = new Event(*other.value.f_EVENT);
+        }
+        else
+        {
+            value.f_EVENT = nullptr;
+        }
+        break;
+    default:
+        value = other.value;
+    }
+}
 
 Event::~Event()
 {

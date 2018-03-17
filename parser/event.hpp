@@ -20,6 +20,7 @@ public:
         {
         }
         Value(Value&&) = default;
+        Value(const Value& other);
 
         FieldType value;
         const EventKlassField* field;
@@ -29,8 +30,10 @@ public:
         _klass(klass)
     {
     }
-    ~Event();
+    Event(const Event& other) = default;
     Event(Event&&) = default;
+
+    ~Event();
 
     void merge(Event event);
 
