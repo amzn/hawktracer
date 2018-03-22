@@ -1,4 +1,11 @@
-0.3.0 (unstable) - 6.02.2017:
+0.4.0 (unstable) - 22.03.2018:
+  * port HawkTracer to Windows
+  * setup continuous integration service (Jenkins)
+  * create library for parsing HawkTracer stream
+  * re-write client in C++, performance improvements
+  * many bug fixes
+
+0.3.0 (unstable) - 6.02.2018:
  library:
   * Review and update C library API
   * Add Timeline Features
