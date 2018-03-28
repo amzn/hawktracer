@@ -65,7 +65,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
     size_t offset = 0;
 #define ASSERT_FROM_BUFFER(event_value) \
     EXPECT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
-    ASSERT_FROM_BUFFER(event.klass->type);
+    ASSERT_FROM_BUFFER(event.klass->klass_id);
     ASSERT_FROM_BUFFER(event.timestamp);
     ASSERT_FROM_BUFFER(event.id);
 #undef ASSERT_FROM_BUFFER
@@ -134,7 +134,7 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
     size_t offset = 0;
 #define ASSERT_FROM_BUFFER(event_value) \
     EXPECT_EQ(event_value, *(decltype(&event_value)(buff + offset))); offset += sizeof(event_value)
-    ASSERT_FROM_BUFFER(event.klass->type);
+    ASSERT_FROM_BUFFER(event.klass->klass_id);
     ASSERT_FROM_BUFFER(event.timestamp);
     ASSERT_FROM_BUFFER(event.id);
 #undef ASSERT_FROM_BUFFER

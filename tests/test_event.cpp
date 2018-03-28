@@ -20,8 +20,8 @@ TEST(TestEvent, CallstackIntEventSerialize)
     HT_EVENT_GET_CLASS(&event)->serialize(HT_EVENT(&event), buffer);
 
     // Assert
-    ASSERT_EQ(_BUFF_TO_TYPE(buffer, HT_EventType), HT_EVENT_GET_CLASS(&event)->type);
-    size_t offset = sizeof(HT_EventType);
+    ASSERT_EQ(_BUFF_TO_TYPE(buffer, HT_EventKlassId), HT_EVENT_GET_CLASS(&event)->klass_id);
+    size_t offset = sizeof(HT_EventKlassId);
     ASSERT_EQ(_BUFF_TO_TYPE(buffer + offset, HT_TimestampNs), HT_EVENT(&event)->timestamp);
     offset += sizeof(HT_TimestampNs);
     ASSERT_EQ(_BUFF_TO_TYPE(buffer + offset, HT_EventId), HT_EVENT(&event)->id);
@@ -49,8 +49,8 @@ TEST(TestEvent, CallstackStringEventSerialize)
     HT_EVENT_GET_CLASS(&event)->serialize(HT_EVENT(&event), buffer);
 
     // Assert
-    ASSERT_EQ(_BUFF_TO_TYPE(buffer, HT_EventType), HT_EVENT_GET_CLASS(&event)->type);
-    size_t offset = sizeof(HT_EventType);
+    ASSERT_EQ(_BUFF_TO_TYPE(buffer, HT_EventKlassId), HT_EVENT_GET_CLASS(&event)->klass_id);
+    size_t offset = sizeof(HT_EventKlassId);
     ASSERT_EQ(_BUFF_TO_TYPE(buffer + offset, HT_TimestampNs), HT_EVENT(&event)->timestamp);
     offset += sizeof(HT_TimestampNs);
     ASSERT_EQ(_BUFF_TO_TYPE(buffer + offset, HT_EventId), HT_EVENT(&event)->id);

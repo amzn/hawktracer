@@ -46,18 +46,18 @@ ht_registry_init(void)
     event_klass_registry_register_mutex = ht_mutex_create();
 }
 
-HT_EventType
+HT_EventKlassId
 ht_registry_register_event_klass(HT_EventKlass* event_klass)
 {
-    if (event_klass->type == 0)
+    if (event_klass->klass_id == 0)
     {
         ht_mutex_lock(event_klass_registry_register_mutex);
         ht_bag_add(&event_klass_register, event_klass);
-        event_klass->type = event_klass_register.size;
+        event_klass->klass_id = event_klass_register.size;
         ht_mutex_unlock(event_klass_registry_register_mutex);
     }
 
-    return event_klass->type;
+    return event_klass->klass_id;
 }
 
 void
@@ -84,7 +84,7 @@ ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass)
     HT_DECL_EVENT(HT_EventKlassInfoEvent, event);
     ht_timeline_init_event(timeline, HT_EVENT(&event));
     event.event_klass_name = klass->type_info->name;
-    event.event_type = klass->type;
+    event.info_klass_id = klass->klass_id;
     event.field_count = (uint8_t) klass->type_info->fields_count;
 
     ht_timeline_push_event(timeline, HT_EVENT(&event));
@@ -95,7 +95,7 @@ ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass)
         HT_DECL_EVENT(HT_EventKlassFieldInfoEvent, field_event);
         ht_timeline_init_event(timeline, HT_EVENT(&field_event));
         field_event.data_type = info->data_type;
-        field_event.event_type = event.event_type;
+        field_event.info_klass_id = event.info_klass_id;
         field_event.field_name = info->field_name;
         field_event.field_type = info->field_type;
         field_event.size = info->size;

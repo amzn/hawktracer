@@ -7,7 +7,7 @@
 
 HT_DECLS_BEGIN
 
-typedef uint32_t HT_EventType;
+typedef uint32_t HT_EventKlassId;
 typedef uint64_t HT_TimestampNs;
 typedef uint64_t HT_EventId;
 typedef uint64_t HT_DurationNs;

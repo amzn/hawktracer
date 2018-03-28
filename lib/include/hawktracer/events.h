@@ -19,7 +19,7 @@ typedef struct
 
 struct _MKCREFLECT_TypeInfo* mkcreflect_get_HT_Event_type_info(void);
 HT_API HT_EventKlass* ht_HT_Event_get_event_klass_instance(void);
-HT_API HT_EventType ht_HT_Event_register_event_klass(void);
+HT_API HT_EventKlassId ht_HT_Event_register_event_klass(void);
 HT_API size_t ht_HT_Event_get_size(HT_Event* event);
 HT_API size_t ht_HT_Event_fnc_serialize(HT_Event* event, HT_Byte* buffer);
 
@@ -30,7 +30,7 @@ struct _HT_EventKlass
     struct _MKCREFLECT_TypeInfo* type_info;
     size_t (*serialize)(HT_Event* event, HT_Byte* buffer);
     size_t (*get_size)(HT_Event* event);
-    HT_EventType type;
+    HT_EventKlassId klass_id;
 };
 
 #define HT_EVENT_GET_CLASS(event) (((HT_Event*)event)->klass)

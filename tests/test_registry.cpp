@@ -24,8 +24,8 @@ TEST(TestRegistry, RegisterEventTwiceShouldAssignDifferentIdentifiersToTheClass)
     ht_RegistryTestEvent_ID_TWO_register_event_klass();
 
     // Act & Assert
-    HT_EventId id_one = ht_RegistryTestEvent_ID_ONE_get_event_klass_instance()->type;
-    HT_EventId id_two = ht_RegistryTestEvent_ID_TWO_get_event_klass_instance()->type;
+    HT_EventId id_one = ht_RegistryTestEvent_ID_ONE_get_event_klass_instance()->klass_id;
+    HT_EventId id_two = ht_RegistryTestEvent_ID_TWO_get_event_klass_instance()->klass_id;
 
     ASSERT_NE(id_one, id_two);
 }

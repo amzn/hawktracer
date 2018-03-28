@@ -6,11 +6,11 @@
 HT_DECLS_BEGIN
 
 HT_DECLARE_EVENT_KLASS(HT_EventKlassInfoEvent, HT_Event,
-                       (INTEGER, HT_EventType, event_type),
+                       (INTEGER, HT_EventKlassId, info_klass_id),
                        (STRING, const char*, event_klass_name),
                        (INTEGER, int8_t, field_count))
 HT_DECLARE_EVENT_KLASS(HT_EventKlassFieldInfoEvent, HT_Event,
-                       (INTEGER, HT_EventType, event_type),
+                       (INTEGER, HT_EventKlassId, info_klass_id),
                        (STRING, const char*, field_type),
                        (STRING, const char*, field_name),
                        (INTEGER, uint64_t, size),

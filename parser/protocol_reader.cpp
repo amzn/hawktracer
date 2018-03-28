@@ -68,7 +68,7 @@ void ProtocolReader::_read_events()
             break;
         }
 
-        auto klass_id = base_event.get_value<uint32_t>("type");
+        auto klass_id = base_event.get_value<uint32_t>("klass_id");
 
         if (klass_id == to_underlying(WellKnownKlasses::EventKlass))
         {
@@ -76,7 +76,7 @@ void ProtocolReader::_read_events()
             continue;
         }
 
-        Event event(KlassRegister::get().get_klass(base_event.get_value<uint32_t>("type")));
+        Event event(KlassRegister::get().get_klass(base_event.get_value<uint32_t>("klass_id")));
         if (_flat_events)
         {
             _read_event(is_error, event, nullptr);

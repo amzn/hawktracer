@@ -25,14 +25,14 @@ MKCREFLECT_TypeInfo* mkcreflect_get_HT_Event_type_info(void)
 
 size_t HT_EVENT_GET_SIZE_FUNCTION(HT_Event)(HT_Event* event)
 {
-    return sizeof(event->klass->type) + sizeof(event->timestamp) + sizeof(event->id);
+    return sizeof(event->klass->klass_id) + sizeof(event->timestamp) + sizeof(event->id);
 }
 
 size_t HT_EVENT_SERIALIZE_FUNCTION(HT_Event)(HT_Event* event, HT_Byte* buffer)
 {
     size_t offset = 0;
 
-    _HT_EVENT_COPY_FIELD(buffer, offset, event->klass->type);
+    _HT_EVENT_COPY_FIELD(buffer, offset, event->klass->klass_id);
     _HT_EVENT_COPY_FIELD(buffer, offset, event->timestamp);
     _HT_EVENT_COPY_FIELD(buffer, offset, event->id);
 
