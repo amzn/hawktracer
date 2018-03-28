@@ -28,10 +28,12 @@ public:
     static void handle_register_events(const Event& event);
 
     const EventKlass& get_klass(uint32_t klass_id) const;
+    const EventKlass& get_klass(const std::string& name) const;
     uint32_t get_klass_id(const std::string& name) const;
     void add_klass(EventKlass klass);
     void add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field);
     bool klass_exists(uint32_t klass_id) const { return _register.find(klass_id) != _register.end(); }
+    const std::unordered_map<uint32_t, EventKlass>& get_klasses() const { return _register; }
 
 private:
     KlassRegister();

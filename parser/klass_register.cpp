@@ -83,6 +83,11 @@ const EventKlass& KlassRegister::get_klass(uint32_t klass_id) const
     return _register.find(klass_id)->second;
 }
 
+const EventKlass& KlassRegister::get_klass(const std::string& name) const
+{
+    return get_klass(get_klass_id(name));
+}
+
 uint32_t KlassRegister::get_klass_id(const std::string& name) const
 {
     for (const auto& klass : _register)
