@@ -70,6 +70,7 @@ public:
     std::string get_name() const { return _name; }
     uint32_t get_id() const { return _id; }
     const std::vector<std::unique_ptr<EventKlassField>>& get_fields() const { return _fields; }
+    const EventKlassField* get_field(const char* name, bool recursive) const;
     void add_field(std::unique_ptr<EventKlassField> field);
 
 private:

@@ -1,7 +1,9 @@
 #include "event_klass.hpp"
 #include "event.hpp"
+#include "klass_register.hpp"
 
 #include <cassert>
+#include <cstring>
 #include <stdexcept>
 
 namespace HawkTracer {
@@ -64,6 +66,28 @@ FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type)
     default: assert(0); // TODO other types
         throw std::runtime_error("invalid type id");
     }
+}
+
+const EventKlassField* EventKlass::get_field(const char* name, bool recursive) const
+{
+    for (const auto& field : _fields)
+    {
+        if (strcmp(name, field->get_name().c_str()) == 0)
+        {
+            return field.get();
+        }
+        else if (field->get_type_id() == FieldTypeId::STRUCT && recursive)
+        {
+            auto klass_id = KlassRegister::get().get_klass_id(field->get_type_name());
+            auto field = KlassRegister::get().get_klass(klass_id).get_field(name, recursive);
+            if (field)
+            {
+                return field;
+            }
+        }
+    }
+
+    return nullptr;
 }
 
 } // namespace parser
