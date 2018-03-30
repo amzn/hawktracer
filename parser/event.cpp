@@ -75,6 +75,16 @@ void Event::merge(Event event)
     }
 }
 
+void Event::set_value(const EventKlassField* field, FieldType value)
+{
+    _values.insert(std::make_pair(field->get_name(), std::move(Value(std::move(value), field))));
+
+    if (field->get_name() == "timestamp")
+    {
+        _timestamp = get_value<HT_TimestampNs>("timestamp");
+    }
+}
+
 template<typename T>
 T Event::get_value(const std::string& key) const
 {

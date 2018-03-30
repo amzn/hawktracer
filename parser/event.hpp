@@ -3,6 +3,8 @@
 
 #include "parser/event_klass.hpp"
 
+#include <hawktracer/base_types.h>
+
 #include <unordered_map>
 
 namespace HawkTracer
@@ -57,18 +59,18 @@ public:
         return _values.at(key);
     }
 
-    void set_value(const EventKlassField* field, FieldType value)
-    {
-        _values.insert(std::make_pair(field->get_name(), std::move(Value(std::move(value), field))));
-    }
-
     const EventKlass& get_klass() const { return _klass; }
 
     const std::unordered_map<std::string, Value>& get_values() const { return _values; }
 
+    HT_TimestampNs get_timestamp() const { return _timestamp; }
+
+    void set_value(const EventKlassField* field, FieldType value);
+
 private:
     std::unordered_map<std::string, Value> _values;
     const EventKlass& _klass;
+    HT_TimestampNs _timestamp = (HT_TimestampNs)-1;
 };
 
 } // namespace parser
