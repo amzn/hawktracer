@@ -75,24 +75,17 @@ void Event::merge(Event event)
     }
 }
 
-#define EVENT_GET_VALUE(C_TYPE, UNION_FIELD) \
-    template<> C_TYPE Event::get_value(const std::string& key) const \
-    { \
-        return _values.at(key).value.UNION_FIELD; \
-    }
+template<typename T>
+T Event::get_value(const std::string& key) const
+{
+    return *(T*)&_values.at(key).value;
+}
 
-EVENT_GET_VALUE(uint8_t, f_UINT8)
-EVENT_GET_VALUE(int8_t, f_UINT8)
-EVENT_GET_VALUE(uint16_t, f_UINT16)
-EVENT_GET_VALUE(int16_t, f_INT16)
-EVENT_GET_VALUE(uint32_t, f_UINT32)
-EVENT_GET_VALUE(int32_t, f_INT32)
-EVENT_GET_VALUE(uint64_t, f_UINT64)
-EVENT_GET_VALUE(int64_t, f_INT64)
-EVENT_GET_VALUE(void*, f_POINTER)
-EVENT_GET_VALUE(char*, f_STRING)
-EVENT_GET_VALUE(Event*, f_EVENT)
+#define EVENT_GET_VALUE(C_TYPE, _UNUSED) \
+    template C_TYPE Event::get_value<C_TYPE>(const std::string& key) const;
 
+MKCREFLECT_FOREACH(EVENT_GET_VALUE, 0, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t)
+MKCREFLECT_FOREACH(EVENT_GET_VALUE, 0, uint64_t, int64_t, void*, char*, Event*)
 
 } // namespace parser
 } // namespace HawkTracer
