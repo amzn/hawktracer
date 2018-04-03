@@ -1,6 +1,7 @@
 #include "event.hpp"
 
 #include <cstring>
+#include <cstdlib>
 
 namespace HawkTracer
 {
@@ -77,7 +78,7 @@ void Event::merge(Event event)
 
 void Event::set_value(const EventKlassField* field, FieldType value)
 {
-    _values.insert(std::make_pair(field->get_name(), std::move(Value(std::move(value), field))));
+    _values.insert(std::make_pair(field->get_name(), Value(std::move(value), field)));
 
     if (field->get_name() == "timestamp")
     {
