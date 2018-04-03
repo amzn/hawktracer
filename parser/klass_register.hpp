@@ -32,12 +32,13 @@ public:
     std::shared_ptr<const EventKlass> get_klass(const std::string& name) const;
     uint32_t get_klass_id(const std::string& name) const;
     void add_klass(std::unique_ptr<EventKlass> klass);
-    void add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field);
     bool klass_exists(uint32_t klass_id) const;
     std::unordered_map<uint32_t, std::shared_ptr<EventKlass> > get_klasses() const;
 
 private:
     KlassRegister();
+
+    void _add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field);
 
     using lock_guard = std::lock_guard<std::mutex>;
 

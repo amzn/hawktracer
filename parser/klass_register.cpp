@@ -66,7 +66,7 @@ void KlassRegister::handle_register_events(const Event& event)
                     event.get_value<char*>("field_type"),
                     get_type_id(event.get_value<uint64_t>("size"), static_cast<MKCREFLECT_Types>(event.get_value<uint8_t>("data_type"))));
 
-            KlassRegister::get().add_klass_field(klass_id, std::move(field));
+            KlassRegister::get()._add_klass_field(klass_id, std::move(field));
         }
         break;
     }
@@ -109,7 +109,7 @@ void KlassRegister::add_klass(std::unique_ptr<EventKlass> klass)
     }
 }
 
-void KlassRegister::add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field)
+void KlassRegister::_add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field)
 {
     lock_guard l(_register_mtx);
     _register.at(klass_id)->add_field(std::move(field));

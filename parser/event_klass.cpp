@@ -42,7 +42,10 @@ EventKlass::EventKlass(const std::string& name, uint32_t id) :
 void EventKlass::add_field(std::unique_ptr<EventKlassField> field)
 {
     std::lock_guard<std::mutex> l(_fields_mtx);
-    _fields.push_back(std::move(field));
+    if (!_get_field(field->get_name().c_str(), false))
+    {
+        _fields.push_back(std::move(field));
+    }
 }
 
 
@@ -79,6 +82,11 @@ std::shared_ptr<const EventKlassField> EventKlass::get_field(const char* name, b
 {
     std::lock_guard<std::mutex> l(_fields_mtx);
 
+    return _get_field(name, recursive);
+}
+
+std::shared_ptr<const EventKlassField> EventKlass::_get_field(const char* name, bool recursive) const
+{
     for (const auto& field : _fields)
     {
         if (strcmp(name, field->get_name().c_str()) == 0)

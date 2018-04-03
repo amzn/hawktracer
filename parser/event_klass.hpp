@@ -75,6 +75,8 @@ public:
     void add_field(std::unique_ptr<EventKlassField> field);
 
 private:
+    std::shared_ptr<const EventKlassField> _get_field(const char* name, bool recursive) const;
+
     mutable std::mutex _fields_mtx;
     std::vector<std::shared_ptr<EventKlassField>> _fields;
     const std::string _name;
