@@ -28,8 +28,8 @@ public:
         const EventKlassField* field;
     };
 
-    explicit Event(const EventKlass& klass) :
-        _klass(klass)
+    explicit Event(std::shared_ptr<const EventKlass> klass) :
+        _klass(std::move(klass))
     {
     }
     Event(const Event& other) = default;
@@ -59,7 +59,7 @@ public:
         return _values.at(key);
     }
 
-    const EventKlass& get_klass() const { return _klass; }
+    std::shared_ptr<const EventKlass> get_klass() const { return _klass; }
 
     const std::unordered_map<std::string, Value>& get_values() const { return _values; }
 
@@ -69,7 +69,7 @@ public:
 
 private:
     std::unordered_map<std::string, Value> _values;
-    const EventKlass& _klass;
+    std::shared_ptr<const EventKlass> _klass;
     HT_TimestampNs _timestamp = (HT_TimestampNs)-1;
 };
 

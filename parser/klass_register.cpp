@@ -13,24 +13,24 @@ KlassRegister& KlassRegister::get()
 
 KlassRegister::KlassRegister()
 {
-    EventKlass base_event("HT_Event", to_underlying(WellKnownKlasses::EventKlass));
-    base_event.add_field(make_unique<EventKlassField>("klass_id", "uint32_t", FieldTypeId::UINT32));
-    base_event.add_field(make_unique<EventKlassField>("timestamp", "uint64_t", FieldTypeId::UINT64));
-    base_event.add_field(make_unique<EventKlassField>("id", "uint64_t", FieldTypeId::UINT64));
+    auto base_event = make_unique<EventKlass>("HT_Event", to_underlying(WellKnownKlasses::EventKlass));
+    base_event->add_field(make_unique<EventKlassField>("klass_id", "uint32_t", FieldTypeId::UINT32));
+    base_event->add_field(make_unique<EventKlassField>("timestamp", "uint64_t", FieldTypeId::UINT64));
+    base_event->add_field(make_unique<EventKlassField>("id", "uint64_t", FieldTypeId::UINT64));
     add_klass(std::move(base_event));
 
-    EventKlass klass_info_event("HT_EventKlassInfoEvent", to_underlying(WellKnownKlasses::EventKlassInfoEventKlass));
-    klass_info_event.add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
-    klass_info_event.add_field(make_unique<EventKlassField>("event_klass_name", "const char*", FieldTypeId::STRING));
-    klass_info_event.add_field(make_unique<EventKlassField>("field_count", "uint8_t", FieldTypeId::UINT8));
+    auto klass_info_event = make_unique<EventKlass>("HT_EventKlassInfoEvent", to_underlying(WellKnownKlasses::EventKlassInfoEventKlass));
+    klass_info_event->add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
+    klass_info_event->add_field(make_unique<EventKlassField>("event_klass_name", "const char*", FieldTypeId::STRING));
+    klass_info_event->add_field(make_unique<EventKlassField>("field_count", "uint8_t", FieldTypeId::UINT8));
     add_klass(std::move(klass_info_event));
 
-    EventKlass klass_field_info_event("HT_EventKlassFieldInfoEvent", to_underlying(WellKnownKlasses::EventKlassFieldInfoEventKlass));
-    klass_field_info_event.add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
-    klass_field_info_event.add_field(make_unique<EventKlassField>("field_type", "const char*", FieldTypeId::STRING));
-    klass_field_info_event.add_field(make_unique<EventKlassField>("field_name", "const char*", FieldTypeId::STRING));
-    klass_field_info_event.add_field(make_unique<EventKlassField>("size", "uint64_t", FieldTypeId::UINT64));
-    klass_field_info_event.add_field(make_unique<EventKlassField>("data_type", "uint8_t", FieldTypeId::UINT8));
+    auto klass_field_info_event = make_unique<EventKlass>("HT_EventKlassFieldInfoEvent", to_underlying(WellKnownKlasses::EventKlassFieldInfoEventKlass));
+    klass_field_info_event->add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
+    klass_field_info_event->add_field(make_unique<EventKlassField>("field_type", "const char*", FieldTypeId::STRING));
+    klass_field_info_event->add_field(make_unique<EventKlassField>("field_name", "const char*", FieldTypeId::STRING));
+    klass_field_info_event->add_field(make_unique<EventKlassField>("size", "uint64_t", FieldTypeId::UINT64));
+    klass_field_info_event->add_field(make_unique<EventKlassField>("data_type", "uint8_t", FieldTypeId::UINT8));
     add_klass(std::move(klass_field_info_event));
 }
 
@@ -49,15 +49,12 @@ bool KlassRegister::is_well_known_klass(uint32_t klass_id)
 
 void KlassRegister::handle_register_events(const Event& event)
 {
-    switch (static_cast<WellKnownKlasses>(event.get_klass().get_id()))
+    switch (static_cast<WellKnownKlasses>(event.get_klass()->get_id()))
     {
     case WellKnownKlasses::EventKlassInfoEventKlass:
     {
         uint32_t klass_id = event.get_value<uint32_t>("info_klass_id");
-        if (!KlassRegister::get().klass_exists(klass_id))
-        {
-            KlassRegister::get().add_klass({event.get_value<char*>("event_klass_name"), klass_id});
-        }
+        KlassRegister::get().add_klass(make_unique<EventKlass>(event.get_value<char*>("event_klass_name"), klass_id));
         break;
     }
     case WellKnownKlasses::EventKlassFieldInfoEventKlass:
@@ -78,40 +75,56 @@ void KlassRegister::handle_register_events(const Event& event)
     }
 }
 
-const EventKlass& KlassRegister::get_klass(uint32_t klass_id) const
+std::shared_ptr<const EventKlass> KlassRegister::get_klass(uint32_t klass_id) const
 {
+    lock_guard l(_register_mtx);
     return _register.find(klass_id)->second;
 }
 
-const EventKlass& KlassRegister::get_klass(const std::string& name) const
+std::shared_ptr<const EventKlass> KlassRegister::get_klass(const std::string& name) const
 {
     return get_klass(get_klass_id(name));
 }
 
 uint32_t KlassRegister::get_klass_id(const std::string& name) const
 {
+    lock_guard l(_register_mtx);
     for (const auto& klass : _register)
     {
-        if (klass.second.get_name() == name)
+        if (klass.second->get_name() == name)
         {
-            return klass.second.get_id();
+            return klass.second->get_id();
         }
     }
 
     return 0;
 }
 
-void KlassRegister::add_klass(EventKlass klass)
+void KlassRegister::add_klass(std::unique_ptr<EventKlass> klass)
 {
-    if (_register.find(klass.get_id()) == _register.end())
+    lock_guard l(_register_mtx);
+    if (_register.find(klass->get_id()) == _register.end())
     {
-        _register.insert(std::make_pair(klass.get_id(), std::move(klass)));
+        _register.insert(std::make_pair(klass->get_id(), std::move(klass)));
     }
 }
 
 void KlassRegister::add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field)
 {
-    _register.at(klass_id).add_field(std::move(field));
+    lock_guard l(_register_mtx);
+    _register.at(klass_id)->add_field(std::move(field));
+}
+
+bool KlassRegister::klass_exists(uint32_t klass_id) const
+{
+    lock_guard l(_register_mtx);
+    return _register.find(klass_id) != _register.end();
+}
+
+std::unordered_map<uint32_t, std::shared_ptr<EventKlass>> KlassRegister::get_klasses() const
+{
+    lock_guard l(_register_mtx);
+    return _register;
 }
 
 } // namespace parser

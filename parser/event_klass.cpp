@@ -41,6 +41,7 @@ EventKlass::EventKlass(const std::string& name, uint32_t id) :
 
 void EventKlass::add_field(std::unique_ptr<EventKlassField> field)
 {
+    std::lock_guard<std::mutex> l(_fields_mtx);
     _fields.push_back(std::move(field));
 }
 
@@ -68,18 +69,26 @@ FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type)
     }
 }
 
-const EventKlassField* EventKlass::get_field(const char* name, bool recursive) const
+std::vector<std::shared_ptr<EventKlassField>> EventKlass::get_fields() const
 {
+    std::lock_guard<std::mutex> l(_fields_mtx);
+    return _fields;
+}
+
+std::shared_ptr<const EventKlassField> EventKlass::get_field(const char* name, bool recursive) const
+{
+    std::lock_guard<std::mutex> l(_fields_mtx);
+
     for (const auto& field : _fields)
     {
         if (strcmp(name, field->get_name().c_str()) == 0)
         {
-            return field.get();
+            return field;
         }
         else if (field->get_type_id() == FieldTypeId::STRUCT && recursive)
         {
             auto klass_id = KlassRegister::get().get_klass_id(field->get_type_name());
-            auto field = KlassRegister::get().get_klass(klass_id).get_field(name, recursive);
+            auto field = KlassRegister::get().get_klass(klass_id)->get_field(name, recursive);
             if (field)
             {
                 return field;

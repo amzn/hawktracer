@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <type_traits>
+#include <mutex>
 
 #include <hawktracer/mkcreflect.h>
 
@@ -56,10 +57,10 @@ public:
         return to_underlying(_type_id) <= to_underlying(FieldTypeId::INT64);
     }
 
-public:
-    std::string _name;
-    std::string _type_name;
-    FieldTypeId _type_id;
+private:
+    const std::string _name;
+    const std::string _type_name;
+    const FieldTypeId _type_id;
 };
 
 class EventKlass
@@ -69,14 +70,15 @@ public:
 
     std::string get_name() const { return _name; }
     uint32_t get_id() const { return _id; }
-    const std::vector<std::unique_ptr<EventKlassField>>& get_fields() const { return _fields; }
-    const EventKlassField* get_field(const char* name, bool recursive) const;
+    std::vector<std::shared_ptr<EventKlassField>> get_fields() const;
+    std::shared_ptr<const EventKlassField> get_field(const char* name, bool recursive) const;
     void add_field(std::unique_ptr<EventKlassField> field);
 
 private:
-    std::vector<std::unique_ptr<EventKlassField>> _fields;
-    std::string _name;
-    uint32_t _id;
+    mutable std::mutex _fields_mtx;
+    std::vector<std::shared_ptr<EventKlassField>> _fields;
+    const std::string _name;
+    const uint32_t _id;
 };
 
 } // namespace parser

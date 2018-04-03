@@ -101,7 +101,7 @@ void ProtocolReader::_read_events()
 
 void ProtocolReader::_read_event(bool& is_error, Event& event, Event* base_event)
 {
-    for (const auto& field : event.get_klass().get_fields())
+    for (const auto& field : event.get_klass()->get_fields())
     {
         FieldType value{};
         if (((field->is_numeric() || field->get_type_id() == FieldTypeId::POINTER) && !_read_numeric(value, *field)) || // read numeric or pointer

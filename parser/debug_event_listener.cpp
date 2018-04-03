@@ -49,10 +49,10 @@ static void print_event(const Event& event, size_t indent)
 
 void DebugEventListener::_process_event(const Event& event)
 {
-    std::cout << std::endl << event.get_klass().get_name() << std::endl;
+    std::cout << std::endl << event.get_klass()->get_name() << std::endl;
     print_event(event, 2);
 
-    _event_stats[event.get_klass().get_name()]++;
+    _event_stats[event.get_klass()->get_name()]++;
 }
 
 void DebugEventListener::print_statistics() const
