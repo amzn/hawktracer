@@ -1,0 +1,37 @@
+FROM JS TO NATIVE
+command: track_field {
+    klass: number
+    field: string
+} -> no response
+
+command: set_canvas_size {
+    value: number
+} -> no response
+
+command: get_total_ts_range {
+
+} -> response command: total_ts_range {
+    start: number
+    stop: number
+}
+
+cmmand: set_current_ts_range {
+    duration: number
+    stop: number
+} -> no response
+
+
+FROM NATIVE TO JS
+command: add_klass {
+    name: string
+    id: number
+} -> no response
+
+command: add_field {
+    name: string
+    klass: number
+} -> no response
+
+command: error {
+    message: string
+}
