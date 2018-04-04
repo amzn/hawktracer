@@ -11,6 +11,7 @@ option(ENABLE_EXAMPLES "Enable examples" OFF)
 option(ENABLE_STATIC_LIB "Build static hawktracer library" OFF)
 option(ENABLE_SHARED_LIB "Build shared hawktracer library" ON)
 option(ENABLE_DOC "Build documentation" ON)
+option(ENABLE_VIEWER "Enable HawkTracer GUI" ON)
 
 option(ENABLE_MAINTAINER_MODE "Enables maintainer mode. Overrides some flags
     (e.g. ENABLE_TESTS, ENABLE_CODE_COVERAGE, ENABLE_BENCHMARKS)")
@@ -76,6 +77,10 @@ endif(ENABLE_EXAMPLES)
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif(ENABLE_BENCHMARKS)
+
+if(ENABLE_VIEWER)
+    add_subdirectory(viewer)
+endif(ENABLE_VIEWER)
 
 include(packager)
 
