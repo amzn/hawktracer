@@ -9,6 +9,7 @@ option(ENABLE_CODE_COVERAGE "Enable code coverage" OFF)
 option(ENABLE_BENCHMARKS "Enable benchmarks" OFF)
 option(ENABLE_EXAMPLES "Enable examples" OFF)
 option(ENABLE_DOC "Build documentation" ON)
+option(ENABLE_VIEWER "Enable HawkTracer GUI" ON)
 
 option(BUILD_STATIC_LIB "Build static hawktracer library" OFF)
 
@@ -77,6 +78,10 @@ install(DIRECTORY examples DESTINATION .)
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif(ENABLE_BENCHMARKS)
+
+if(ENABLE_VIEWER)
+    add_subdirectory(viewer)
+endif(ENABLE_VIEWER)
 
 include(packager)
 
