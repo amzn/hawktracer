@@ -17,9 +17,6 @@ using namespace parser;
 
 JavaScriptUI::JavaScriptUI(int port)
 {
-    _graph_types.emplace(0, GraphInfo({"value"}, "XY Graph", 0));
-    _graph_types.emplace(1, GraphInfo({"label", "duration"}, "Callstack Graph", 1));
-
     // TODO error handling
     _server_th = std::thread([this, port] {
         _server.start(
@@ -53,14 +50,14 @@ void JavaScriptUI::_client_message_received(const std::string& message)
     auto command = obj.get<jsonxx::String>("command", "");
     if (command == "createGraph")
     {
-        if (!check_required_fields<jsonxx::Number, jsonxx::String, jsonxx::Number, jsonxx::Object>(obj, {"graphTypeId", "graphId", "klassId", "fieldMap"}))
+        if (!check_required_fields<jsonxx::String, jsonxx::String, jsonxx::Number, jsonxx::Object>(obj, {"graphTypeId", "graphId", "klassId", "fieldMap"}))
         {
             _send_missing_fields_error(message);
         }
         else
         {
             HT_EventKlassId klass_id = obj.get<jsonxx::Number>("klassId");
-            GraphType graph_type = static_cast<GraphType>(obj.get<jsonxx::Number>("graphTypeId"));
+            Graph::TypeId graph_type = obj.get<jsonxx::String>("graphTypeId");
             Graph::Id graph_id = obj.get<jsonxx::String>("graphId");
             jsonxx::Object field_map = obj.get<jsonxx::Object>("fieldMap");
 
@@ -75,7 +72,7 @@ void JavaScriptUI::_client_message_received(const std::string& message)
                 mapping[value.first] = value.second->get<jsonxx::String>();
             }
 
-            _graphs[graph_id] = Graph::create(graph_type, klass_id, graph_id, std::move(mapping));
+            _graphs[graph_id] = _graph_factory.create_graph(graph_type, klass_id, graph_id, std::move(mapping));
         }
     }
     else if (command == "setCanvasSize")
@@ -154,16 +151,15 @@ void JavaScriptUI::add_field(const parser::EventKlass* klass, const parser::Even
 void JavaScriptUI::_send_graphs_info()
 {
     jsonxx::Array graphs;
-    for (const auto& graph : _graph_types)
+    for (const auto& graph_info : _graph_factory.get_graphs_info())
     {
         jsonxx::Array fields;
-        for (const auto& field : graph.second.get_fields())
+        for (const auto& field : graph_info.second.fields)
         {
             fields << field;
         }
 
-        graphs << make_json_object("name", graph.second.get_name(),
-                                   "id", graph.second.get_id(),
+        graphs << make_json_object("id", graph_info.second.type_id,
                                    "fields", fields);
     }
     _send_json_object(make_json_object("command", "graphTypes", "graphs", graphs));

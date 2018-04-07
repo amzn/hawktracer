@@ -21,6 +21,9 @@ public:
         _field = parser::KlassRegister::get().get_klass(klass_id)->get_field(field_mapping.at("value").c_str(), true);
     }
 
+    static constexpr const char* get_type_id() { return "XY"; }
+    static std::vector<std::string> get_type_fields() { return {"value"}; }
+
     jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range, size_t canvas_size) override;
 
 private:
