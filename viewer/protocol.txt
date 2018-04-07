@@ -1,8 +1,10 @@
 FROM JS TO NATIVE
-command: track_field {
-    klass: number
-    field: string
-} -> no response
+command: create_graph {
+    graph_type: string/int?,
+    graph_id: string
+    klass: number,
+    field_mappings: array of {graphValue: string, field: string}
+} -> no response // TODO: response: graph
 
 command: set_canvas_size {
     value: number
@@ -34,4 +36,8 @@ command: add_field {
 
 command: error {
     message: string
+}
+
+command: graph_types {
+    array of {id, name, fields: array of strings}
 }

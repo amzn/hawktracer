@@ -36,14 +36,9 @@ public:
     virtual void add_klass(const parser::EventKlass* klass) = 0;
     virtual void add_field(const parser::EventKlass* klass, const parser::EventKlassField* field) = 0;
 
-    virtual void show_data(
-            HT_EventKlassId event_klass, const char* field_name,
-            const std::vector<EventRef>& events) = 0;
-
 protected:
     void _set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts);
-    bool _track_field(HT_EventKlassId klass_id, const char* field_name);
-    void _request_data();
+    std::vector<EventRef> _request_data(HT_EventKlassId klass_id);
     void _request_klass_register();
     TimeRange _get_total_ts_range() const;
     TimeRange _get_current_ts_range() const;
