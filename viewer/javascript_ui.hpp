@@ -20,25 +20,6 @@ namespace HawkTracer
 namespace viewer
 {
 
-class GraphInfo // TODO: remove this class
-{
-public:
-    using Id = uint32_t;
-
-    GraphInfo(std::vector<std::string> fields, std::string name, Id id):
-        _fields(std::move(fields)), _name(std::move(name)), _id(id)
-    {}
-
-    const std::string& get_name() const { return _name; }
-    const std::vector<std::string>& get_fields() const { return _fields; }
-    Id get_id() const { return _id; }
-
-private:
-    const std::vector<std::string> _fields;
-    const std::string _name;
-    const Id _id;
-};
-
 class JavaScriptUI : public BaseUI
 {
 public:
@@ -60,8 +41,9 @@ private:
 
     std::thread _server_th;
     WebSocket _server;
-    std::unordered_map<GraphInfo::Id, GraphInfo> _graph_types;
     std::unordered_map<Graph::Id, std::unique_ptr<Graph>> _graphs;
+
+    GraphFactory _graph_factory;
 
     size_t _canvas_size = 0;
 };
