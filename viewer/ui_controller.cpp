@@ -56,54 +56,6 @@ void UIController::_handle_field_info_event(const Event& event)
     }
 }
 
-bool UIController::track_field(HT_EventKlassId klass_id, const char* field_name)
-{
-    for (const auto& name : _tracked_fields[klass_id])
-    {
-        if (strcmp(name.c_str(), field_name) == 0)
-        {
-            Logger::log("Field '" + std::string(field_name) + "' is already tracked");
-            return true;
-        }
-    }
-
-    if (!KlassRegister::get().klass_exists(klass_id))
-    {
-        Logger::log("Klass '" + std::to_string(klass_id) + "' doesn't exist");
-        return false;
-    }
-    if (!KlassRegister::get().get_klass(klass_id)->get_field(field_name, true))
-    {
-        Logger::log("Field '" + std::string(field_name) + "' doesn't exist");
-        return false;
-    }
-
-    _tracked_fields[klass_id].emplace_back(field_name);
-
-    return true;
-}
-
-void UIController::stop_tracking_field(HT_EventKlassId klass_id, const char* field_name)
-{
-    auto it = _tracked_fields.find(klass_id);
-    if (it == _tracked_fields.end())
-    {
-        return;
-    }
-
-    auto& fields = it->second;
-    fields.erase(std::remove(fields.begin(), fields.end(), std::string(field_name)), fields.end());
-    if (fields.empty())
-    {
-        _tracked_fields.erase(it);
-    }
-}
-
-bool UIController::_is_event_klass_tracked(const EventKlass& klass)
-{
-    return _tracked_fields.find(klass.get_id()) != _tracked_fields.end();
-}
-
 void UIController::set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts)
 {
     if (duration > stop_ts)
@@ -129,17 +81,10 @@ void UIController::request_klass_register()
     }
 }
 
-void UIController::request_data()
+std::vector<EventRef> UIController::request_data(HT_EventKlassId klass_id)
 {
-    for (const auto& klass : _tracked_fields)
-    {
-        auto range = get_current_ts_range();
-        auto events = _model.get_data(range.start, range.stop, klass.first);
-        for (const auto& field : klass.second)
-        {
-            _ui->show_data(klass.first, field.c_str(), events);
-        }
-    }
+    auto range = get_current_ts_range();
+    return _model.get_data(range.start, range.stop, klass_id);
 }
 
 TimeRange UIController::get_total_ts_range() const
@@ -178,6 +123,8 @@ void UIController::_set_timestamp_diff(HT_TimestampNs event_ts)
 {
     if (!_sync_info_initialized)
     {
+        // TODO: this sync method is kind of a joke, but it works
+        // TODO: implement sync properly!
         _sync_info_initialized = true;
         HT_TimestampNs current_ts = ht_monotonic_clock_get_timestamp();
         if (current_ts > event_ts)

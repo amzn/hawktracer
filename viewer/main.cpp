@@ -18,8 +18,8 @@ int main(int argc, char** argv)
     }
 
     auto stream =
-            //make_unique<HawkTracer::parser::FileStream>(argv[1]);
-            HawkTracer::parser::make_unique<HawkTracer::client::TCPClientStream>("127.0.0.1", 8765);
+            HawkTracer::parser::make_unique<HawkTracer::parser::FileStream>(argv[1]);
+            //HawkTracer::parser::make_unique<HawkTracer::client::TCPClientStream>("127.0.0.1", 8765);
     HawkTracer::parser::ProtocolReader reader(std::move(stream), true);
     HawkTracer::viewer::UIController controller(HawkTracer::parser::make_unique<HawkTracer::viewer::JavaScriptUI>(4001));
 
