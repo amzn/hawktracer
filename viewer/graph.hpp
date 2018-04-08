@@ -24,31 +24,31 @@ public:
     using Id = std::string;
     using FieldMapping = std::unordered_map<std::string, std::string>;
 
-    Graph(HT_EventKlassId klass_id, std::string graph_id) :
-        _klass_id(klass_id), _graph_id(std::move(graph_id))
+    Graph(std::string graph_id) :
+        _graph_id(std::move(graph_id))
     {
     }
 
-    HT_EventKlassId get_klass_id() const { return _klass_id; }
     Id get_id() const { return _graph_id; }
+
+    HT_EventKlassId get_klass_id() const { return 6 ; } // TODO
 
     virtual jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range) = 0;
     virtual jsonxx::Object get_properties() = 0;
 
 protected:
-    const HT_EventKlassId _klass_id;
     const std::string _graph_id;
 };
 
 class GraphFactory
 {
 public:
-    using CreateFnc = std::unique_ptr<Graph>(*)(HT_EventKlassId klass_id, std::string graph_id, const Graph::FieldMapping& mapping);
+    using CreateFnc = std::unique_ptr<Graph>(*)(std::string, const jsonxx::Object&);
 
     template<typename T>
-    static std::unique_ptr<Graph> default_constructor(HT_EventKlassId klass_id, std::string graph_id, const Graph::FieldMapping& mapping)
+    static std::unique_ptr<Graph> default_constructor(std::string graph_id, const jsonxx::Object& graph_description)
     {
-        return parser::make_unique<T>(klass_id, std::move(graph_id), std::move(mapping));
+        return parser::make_unique<T>(std::move(graph_id), graph_description);
     }
 
     class Info
@@ -66,7 +66,7 @@ public:
     GraphFactory();
 
     void register_type(CreateFnc factory_method, Graph::TypeId type_id, std::vector<std::string> fields);
-    std::unique_ptr<Graph> create_graph(Graph::TypeId type_id, HT_EventKlassId klass_id, std::string graph_id, const Graph::FieldMapping& mapping);
+    std::unique_ptr<Graph> create_graph(Graph::TypeId type_id, std::string graph_id, const jsonxx::Object& graph_description);
     std::unordered_map<std::string, Info> get_graphs_info() const { std::lock_guard<std::mutex> l(_mtx); return _graph_types; }
 
 private:

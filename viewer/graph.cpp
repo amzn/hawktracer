@@ -11,8 +11,8 @@ namespace viewer
 class FakeGraph : public Graph
 {
 public:
-    FakeGraph(HT_EventKlassId klass_id, std::string graph_id, const FieldMapping&) :
-        Graph(klass_id, std::move(graph_id))
+    FakeGraph(std::string graph_id, const jsonxx::Object&) :
+        Graph(std::move(graph_id))
     {
     }
 
@@ -26,8 +26,8 @@ public:
 class StatsGraph : public Graph
 {
 public:
-    StatsGraph(HT_EventKlassId klass_id, std::string graph_id, const FieldMapping&) :
-        Graph(klass_id, std::move(graph_id))
+    StatsGraph(std::string graph_id, const jsonxx::Object&) :
+        Graph(std::move(graph_id))
     {
     }
 
@@ -73,13 +73,13 @@ void GraphFactory::register_type(CreateFnc factory_method, Graph::TypeId type_id
     _graph_types.emplace(type_id, Info(std::move(fields), type_id, factory_method));
 }
 
-std::unique_ptr<Graph> GraphFactory::create_graph(Graph::TypeId type_id, HT_EventKlassId klass_id, std::string graph_id, const Graph::FieldMapping& mapping)
+std::unique_ptr<Graph> GraphFactory::create_graph(Graph::TypeId type_id, std::string graph_id, const jsonxx::Object& graph_description)
 {
     std::lock_guard<std::mutex> l(_mtx);
 
     auto type_it = _graph_types.find(type_id);
     return (type_it != _graph_types.end()) ?
-                type_it->second.factory_method(klass_id, std::move(graph_id), mapping) :
+                type_it->second.factory_method(std::move(graph_id), graph_description) :
                 nullptr;
 }
 
