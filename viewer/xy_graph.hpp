@@ -24,16 +24,17 @@ public:
     static constexpr const char* get_type_id() { return "XY"; }
     static std::vector<std::string> get_type_fields() { return {"value"}; }
 
-    jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range, size_t canvas_size) override;
+    jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range) override;
+    jsonxx::Object get_properties() override;
 
 private:
     template<typename T>
     std::vector<std::pair<size_t, double>> _create_data_set(
             std::vector<EventRef> events,
-            TimeRange time_range,
-            size_t canvas_size);
+            TimeRange time_range);
 
     std::shared_ptr<const parser::EventKlassField> _field;
+    size_t _width = 500;
 };
 
 } // namespace viewer

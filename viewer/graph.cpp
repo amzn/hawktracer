@@ -19,7 +19,8 @@ public:
     static constexpr const char* get_type_id() { return "Fake"; }
     static std::vector<std::string> get_type_fields() { return {"value1", "value2"}; }
 
-    jsonxx::Object create_graph_data(const std::vector<EventRef>&, TimeRange, size_t) override{return jsonxx::Object{};}
+    jsonxx::Object create_graph_data(const std::vector<EventRef>&, TimeRange) override {return jsonxx::Object{};}
+    jsonxx::Object get_properties() {return jsonxx::Object{};}
 };
 
 

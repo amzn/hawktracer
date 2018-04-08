@@ -11,7 +11,7 @@ namespace viewer
 
 using namespace parser;
 
-jsonxx::Object XYGraph::create_graph_data(const std::vector<EventRef>& events, TimeRange time_range, size_t canvas_size)
+jsonxx::Object XYGraph::create_graph_data(const std::vector<EventRef>& events, TimeRange time_range)
 {
     jsonxx::Object obj;
 
@@ -20,7 +20,7 @@ jsonxx::Object XYGraph::create_graph_data(const std::vector<EventRef>& events, T
     switch(_field->get_type_id())
     {
 #define CREATE_DATASET(TYPE, C_TYPE) \
-    case FieldTypeId::TYPE: values = _create_data_set<C_TYPE>(events, time_range, canvas_size); break
+    case FieldTypeId::TYPE: values = _create_data_set<C_TYPE>(events, time_range); break
     CREATE_DATASET(UINT8, uint8_t);
     CREATE_DATASET(UINT16, uint16_t);
     CREATE_DATASET(UINT32, uint32_t);
@@ -48,11 +48,15 @@ jsonxx::Object XYGraph::create_graph_data(const std::vector<EventRef>& events, T
     return obj;
 }
 
+jsonxx::Object XYGraph::get_properties()
+{
+    return make_json_object("width", _width);
+}
+
 template<typename T>
 std::vector<std::pair<size_t, double>> XYGraph::_create_data_set(
         std::vector<EventRef> events,
-        TimeRange time_range,
-        size_t canvas_size)
+        TimeRange time_range)
 {
     std::vector<std::pair<size_t, double>> out;
     if (events.empty())
@@ -64,14 +68,14 @@ std::vector<std::pair<size_t, double>> XYGraph::_create_data_set(
         return e1.get().get_timestamp() < e2.get().get_timestamp();
     });
 
-    double step = static_cast<double>(time_range.get_duration()) / canvas_size;
+    double step = static_cast<double>(time_range.get_duration()) / _width;
 
     double current_sum = 0;
     size_t current_cnt = 0;
     auto event_it = events.begin();
     size_t pos_in_canvas = 0;
 
-    while (pos_in_canvas < canvas_size && event_it != events.end())
+    while (pos_in_canvas < _width && event_it != events.end())
     {
         if (event_it->get().get_timestamp() < time_range.start + step * (pos_in_canvas+1))
         {
