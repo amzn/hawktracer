@@ -23,10 +23,33 @@ public:
     jsonxx::Object get_properties() {return jsonxx::Object{};}
 };
 
+class StatsGraph : public Graph
+{
+public:
+    StatsGraph(HT_EventKlassId klass_id, std::string graph_id, const FieldMapping&) :
+        Graph(klass_id, std::move(graph_id))
+    {
+    }
+
+    static constexpr const char* get_type_id() { return "STATS"; }
+    static std::vector<std::string> get_type_fields() { return {}; }
+
+    jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange) override
+    {
+        jsonxx::Object response;
+
+        response << "rangeEventCount" << events.size();
+
+        return response;
+    }
+
+    jsonxx::Object get_properties() {return jsonxx::Object{};}
+};
 
 #define HT_VIEWER_EMBEDDED_GRAPH_TYPES \
     XYGraph, \
-    FakeGraph
+    FakeGraph, \
+    StatsGraph
 
 GraphFactory::GraphFactory()
 {
