@@ -66,17 +66,13 @@ void JavaScriptUI::_client_message_received(const std::string& message)
             }
 
             _graphs[graph_id] = _graph_factory.create_graph(graph_type, klass_id, graph_id, std::move(mapping));
-        }
-    }
-    else if (command == "setCanvasSize")
-    {
-        if (!check_required_fields<jsonxx::Number>(obj, {"value"}))
-        {
-            _send_missing_fields_error(message);
-        }
-        else
-        {
-            _canvas_size = obj.get<jsonxx::Number>("value");
+
+            jsonxx::Object response = make_json_object("command", "setGraphProperties",
+                                                       "graphTypeId", graph_type,
+                                                       "graphId", graph_id,
+                                                       "properties", _graphs[graph_id]->get_properties());
+
+            _send_json_object(response);
         }
     }
     else if (command == "getTotalTSRange")
@@ -106,10 +102,9 @@ void JavaScriptUI::_client_message_received(const std::string& message)
             const auto& graph = graph_p.second;
             jsonxx::Object data = graph->create_graph_data(
                         _request_data(graph->get_klass_id()),
-                        _get_current_ts_range(),
-                        _canvas_size);
+                        _get_current_ts_range());
 
-            auto obj = make_json_object("command", "data", "graph_id", graph->get_id());
+            auto obj = make_json_object("command", "data", "graphId", graph->get_id());
             append_to_json_object(obj, "data", data);
             _send_json_object(obj);
         }

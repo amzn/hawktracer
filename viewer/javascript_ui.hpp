@@ -46,7 +46,6 @@ private:
     GraphFactory _graph_factory;
 
     int _port;
-    size_t _canvas_size = 0;
 };
 
 } // viewer

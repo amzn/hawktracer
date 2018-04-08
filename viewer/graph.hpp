@@ -32,7 +32,8 @@ public:
     HT_EventKlassId get_klass_id() const { return _klass_id; }
     Id get_id() const { return _graph_id; }
 
-    virtual jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range, size_t canvas_size) = 0;
+    virtual jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range) = 0;
+    virtual jsonxx::Object get_properties() = 0;
 
 protected:
     const HT_EventKlassId _klass_id;
