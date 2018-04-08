@@ -1,4 +1,4 @@
-#define HAWKTRACER_DEFINE_EVENTS
+#include "hawktracer/event_macros_impl.h"
 #include "hawktracer/core_events.h"
 
 MKCREFLECT_TypeInfo* mkcreflect_get_HT_Event_type_info(void)

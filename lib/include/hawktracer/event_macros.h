@@ -2,12 +2,7 @@
 #define HAWKTRACER_EVENT_MACROS_H
 
 #include <hawktracer/events.h>
-
-#ifdef HAWKTRACER_DEFINE_EVENTS
-#define MKCREFLECT_IMPL
-#endif /* HAWKTRACER_DEFINE_EVENTS */
 #include <hawktracer/mkcreflect.h>
-
 #include <hawktracer/registry.h>
 
 #include <string.h>
@@ -103,11 +98,6 @@
     HT_EVENT_DECLARATIONS(TYPE_NAME, BASE_TYPE, __VA_ARGS__) \
     HT_EVENT_DEFINITIONS(TYPE_NAME, BASE_TYPE, __VA_ARGS__)
 
-#ifdef HAWKTRACER_DEFINE_EVENTS
-#define HT_EVENT_DEFINITIONS(TYPE_NAME, BASE_TYPE, ...) \
-    HT_EVENT_DEFINITIONS_(TYPE_NAME, BASE_TYPE, __VA_ARGS__)
-#else
 #define HT_EVENT_DEFINITIONS(TYPE_NAME, BASE_TYPE, ...)
-#endif
 
 #endif /* HAWKTRACER_EVENT_MACROS_H */

@@ -1,3 +1,4 @@
-/* TODO this doesn't work when we link to a static hawktracer library */
-#define HAWKTRACER_DEFINE_EVENTS
+#include <hawktracer/core_events.h>
+
+#include <hawktracer/event_macros_impl.h>
 #include "test_test_events.h"
