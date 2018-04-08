@@ -1,5 +1,5 @@
 #include "javascript_ui.hpp"
-
+#include "logger.hpp"
 #include "jsonxx_utils.hpp"
 
 #include <parser/klass_register.hpp>
@@ -15,21 +15,14 @@ namespace viewer
 using namespace parser;
 
 
-JavaScriptUI::JavaScriptUI(int port)
+JavaScriptUI::JavaScriptUI(int port) :
+    _port(port)
 {
-    // TODO error handling
-    _server_th = std::thread([this, port] {
-        _server.start(
-                    port,
-                    [this] { _client_connected(); },
-        [this] (const std::string& msg) { _client_message_received(msg); });
-    });
 }
 
 JavaScriptUI::~JavaScriptUI()
 {
     _server.stop();
-    _server_th.join();
 }
 
 void JavaScriptUI::_client_connected()
@@ -146,6 +139,23 @@ void JavaScriptUI::add_field(const parser::EventKlass* klass, const parser::Even
                               "command", "addField",
                               "name", field->get_name(), "klassId", klass->get_id()));
     }
+}
+
+int JavaScriptUI::run()
+{
+    try
+    {
+        _server.start(
+                    _port,
+                    [this] { _client_connected(); },
+                    [this] (const std::string& msg) { _client_message_received(msg); });
+    }
+    catch (const std::exception & e)
+    {
+        Logger::log("Error on starting websocket server: " + std::string(e.what()));
+        return -1;
+    }
+    return 0;
 }
 
 void JavaScriptUI::_send_graphs_info()

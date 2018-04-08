@@ -13,11 +13,33 @@ namespace viewer
 
 using namespace parser;
 
-UIController::UIController(std::unique_ptr<BaseUI> ui) :
+UIController::UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<ProtocolReader> reader) :
     _ui(std::move(ui)),
-    _total_ts_range((HT_TimestampNs)-1, 0)
+    _total_ts_range((HT_TimestampNs)-1, 0),
+    _reader(std::move(reader))
 {
     _ui->set_controller(this);
+
+    _reader->register_events_listener([this] (const HawkTracer::parser::Event& event) {
+        handle_event(event);
+    });
+}
+
+int UIController::run()
+{
+    if (!_reader->start())
+    {
+        Logger::log("Unable to start reader");
+        return -1;
+    }
+
+    if (!_ui->run())
+    {
+        Logger::log("Unable to start UI");
+        return -2;
+    }
+
+    return 0;
 }
 
 void UIController::handle_event(const Event& event)
