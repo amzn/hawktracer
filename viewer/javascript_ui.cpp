@@ -93,7 +93,7 @@ void JavaScriptUI::_client_message_received(const std::string& message)
         {
             const auto& graph = graph_p.second;
             jsonxx::Object data = graph->create_graph_data(
-                        _request_data(graph->get_klass_id()),
+                        _request_data(graph->get_query()),
                         _get_current_ts_range());
 
             auto obj = make_json_object("command", "data", "graphId", graph->get_id());

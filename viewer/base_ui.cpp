@@ -24,9 +24,9 @@ void BaseUI::_request_klass_register()
     _controller->request_klass_register();
 }
 
-std::vector<EventRef> BaseUI::_request_data(HT_EventKlassId klass_id)
+std::vector<EventRef> BaseUI::_request_data(const Query& query)
 {
-    return _controller->request_data(klass_id);
+    return _controller->request_data(query);
 }
 
 TimeRange BaseUI::_get_total_ts_range() const

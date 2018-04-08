@@ -31,7 +31,7 @@ public:
 
     Id get_id() const { return _graph_id; }
 
-    HT_EventKlassId get_klass_id() const { return 6 ; } // TODO
+    virtual Query get_query() = 0;
 
     virtual jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange time_range) = 0;
     virtual jsonxx::Object get_properties() = 0;

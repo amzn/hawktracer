@@ -7,6 +7,11 @@
 #include <unordered_map>
 #include <functional>
 
+struct Query
+{
+    size_t klass_id = (size_t)-1; // TODO: optional<>
+};
+
 namespace HawkTracer
 {
 namespace viewer
@@ -21,7 +26,7 @@ public:
 
     void insert(parser::Event event);
 
-    std::vector<EventRef> get_data(HT_TimestampNs start_ts, HT_TimestampNs stop_ts, HT_EventKlassId klass_id);
+    std::vector<EventRef> get_data(HT_TimestampNs start_ts, HT_TimestampNs stop_ts, const Query& query);
 
 private:
     std::vector<parser::Event> _events;

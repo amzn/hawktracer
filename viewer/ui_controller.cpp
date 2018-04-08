@@ -103,10 +103,10 @@ void UIController::request_klass_register()
     }
 }
 
-std::vector<EventRef> UIController::request_data(HT_EventKlassId klass_id)
+std::vector<EventRef> UIController::request_data(const Query& query)
 {
     auto range = get_current_ts_range();
-    return _model.get_data(range.start, range.stop, klass_id);
+    return _model.get_data(range.start, range.stop, query);
 }
 
 TimeRange UIController::get_total_ts_range() const
