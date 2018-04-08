@@ -21,6 +21,7 @@ public:
 
     jsonxx::Object create_graph_data(const std::vector<EventRef>&, TimeRange) override {return jsonxx::Object{};}
     jsonxx::Object get_properties() {return jsonxx::Object{};}
+    Query get_query() { return Query{}; }
 };
 
 class StatsGraph : public Graph
@@ -29,10 +30,12 @@ public:
     StatsGraph(std::string graph_id, const jsonxx::Object&) :
         Graph(std::move(graph_id))
     {
+        _query.klass_id = (HT_EventKlassId)-1;
     }
 
     static constexpr const char* get_type_id() { return "STATS"; }
     static std::vector<std::string> get_type_fields() { return {}; }
+    Query get_query() { return _query; }
 
     jsonxx::Object create_graph_data(const std::vector<EventRef>& events, TimeRange) override
     {
@@ -44,6 +47,9 @@ public:
     }
 
     jsonxx::Object get_properties() {return jsonxx::Object{};}
+
+private:
+    Query _query;
 };
 
 #define HT_VIEWER_EMBEDDED_GRAPH_TYPES \

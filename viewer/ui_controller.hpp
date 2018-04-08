@@ -23,7 +23,7 @@ public:
     void set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts);
     void request_klass_register();
 
-    std::vector<EventRef> request_data(HT_EventKlassId klass_id);
+    std::vector<EventRef> request_data(const Query& query);
 
     int run();
 

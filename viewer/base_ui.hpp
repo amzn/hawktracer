@@ -39,7 +39,7 @@ public:
 
 protected:
     void _set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts);
-    std::vector<EventRef> _request_data(HT_EventKlassId klass_id);
+    std::vector<EventRef> _request_data(const Query& query);
     void _request_klass_register();
     TimeRange _get_total_ts_range() const;
     TimeRange _get_current_ts_range() const;
