@@ -13,12 +13,20 @@ namespace viewer
 class XYGraph : public Graph
 {
 public:
-    XYGraph(HT_EventKlassId klass_id, std::string graph_id, const FieldMapping& field_mapping) :
-        Graph(klass_id, std::move(graph_id))
+    XYGraph(std::string graph_id, const jsonxx::Object& graph_description) :
+        Graph(std::move(graph_id))
     {
+        FieldMapping field_mapping = {};
+        for (const auto& value : graph_description.kv_map())
+        {
+            field_mapping[value.first] = value.second->get<jsonxx::String>();
+        }
+
         // TODO this might fail if klass/field doesn't exist
         // TODO do we really have to use klassregister here???
-        _field = parser::KlassRegister::get().get_klass(klass_id)->get_field(field_mapping.at("value").c_str(), true);
+        _klass_id = static_cast<HT_EventKlassId>(graph_description.get<jsonxx::Number>("klassId"));
+
+        _field = parser::KlassRegister::get().get_klass(_klass_id)->get_field(field_mapping.at("value").c_str(), true);
     }
 
     static constexpr const char* get_type_id() { return "XY"; }
@@ -35,6 +43,7 @@ private:
 
     std::shared_ptr<const parser::EventKlassField> _field;
     size_t _width = 500;
+    HT_EventKlassId _klass_id;
 };
 
 } // namespace viewer

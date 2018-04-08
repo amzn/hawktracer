@@ -43,29 +43,21 @@ void JavaScriptUI::_client_message_received(const std::string& message)
     auto command = obj.get<jsonxx::String>("command", "");
     if (command == "createGraph")
     {
-        if (!check_required_fields<jsonxx::String, jsonxx::String, jsonxx::Number, jsonxx::Object>(obj, {"graphTypeId", "graphId", "klassId", "fieldMap"}))
+        if (!check_required_fields<jsonxx::String, jsonxx::String, jsonxx::Object>(obj, {"graphTypeId", "graphId", "graphDescription"}))
         {
             _send_missing_fields_error(message);
         }
         else
         {
-            HT_EventKlassId klass_id = obj.get<jsonxx::Number>("klassId");
             Graph::TypeId graph_type = obj.get<jsonxx::String>("graphTypeId");
             Graph::Id graph_id = obj.get<jsonxx::String>("graphId");
-            jsonxx::Object field_map = obj.get<jsonxx::Object>("fieldMap");
 
             if (_graphs.find(graph_id) != _graphs.end())
             {
                 _send_request_error("Graph '" + graph_id + "' alread exists", message);
             }
 
-            Graph::FieldMapping mapping;
-            for (const auto& value : field_map.kv_map())
-            {
-                mapping[value.first] = value.second->get<jsonxx::String>();
-            }
-
-            _graphs[graph_id] = _graph_factory.create_graph(graph_type, klass_id, graph_id, std::move(mapping));
+            _graphs[graph_id] = _graph_factory.create_graph(graph_type, graph_id, obj.get<jsonxx::Object>("graphDescription"));
 
             jsonxx::Object response = make_json_object("command", "setGraphProperties",
                                                        "graphTypeId", graph_type,
