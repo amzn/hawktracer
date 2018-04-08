@@ -35,6 +35,7 @@ public:
 
     virtual void add_klass(const parser::EventKlass* klass) = 0;
     virtual void add_field(const parser::EventKlass* klass, const parser::EventKlassField* field) = 0;
+    virtual int run() = 0;
 
 protected:
     void _set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts);

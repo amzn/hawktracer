@@ -4,7 +4,7 @@
 #include "event_db.hpp"
 #include "base_ui.hpp"
 
-#include <parser/event.hpp>
+#include <parser/protocol_reader.hpp>
 
 #include <unordered_map>
 #include <vector>
@@ -17,13 +17,15 @@ namespace viewer
 class UIController
 {
 public:
-    UIController(std::unique_ptr<BaseUI> ui);
+    UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<parser::ProtocolReader> reader);
 
     void handle_event(const parser::Event& event);
     void set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts);
     void request_klass_register();
 
     std::vector<EventRef> request_data(HT_EventKlassId klass_id);
+
+    int run();
 
     TimeRange get_total_ts_range() const;
     TimeRange get_current_ts_range() const;
@@ -43,6 +45,8 @@ private:
     TimeRange _total_ts_range;
     bool _sync_info_initialized = false;
     std::pair<bool, HT_TimestampNs> _sync_info;
+
+    std::unique_ptr<parser::ProtocolReader> _reader;
 };
 
 } // namespace viewer

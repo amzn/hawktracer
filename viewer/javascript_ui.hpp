@@ -28,6 +28,7 @@ public:
 
     void add_klass(const parser::EventKlass* klass) override;
     void add_field(const parser::EventKlass* klass, const parser::EventKlassField* field) override;
+    int run() override;
 
 private:
     void _client_connected();
@@ -39,12 +40,12 @@ private:
     void _send_missing_fields_error(const std::string& raw_json);
     void _send_graphs_info();
 
-    std::thread _server_th;
     WebSocket _server;
     std::unordered_map<Graph::Id, std::unique_ptr<Graph>> _graphs;
 
     GraphFactory _graph_factory;
 
+    int _port;
     size_t _canvas_size = 0;
 };
 
