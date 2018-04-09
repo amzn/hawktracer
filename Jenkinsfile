@@ -144,10 +144,6 @@ abstract class HTBuild {
         return this
     }
 
-    def configure() {
-        context.sh 'cmake ' + this.cmakeArgs + ' .'
-    }
-
     def publishReports() {
         context.stage(name + ': publish reports') {
             if (testsEnabled) {
@@ -165,6 +161,8 @@ abstract class HTBuild {
     def stashBuildArtifacts(String stashName) {}
     def stashReports(String stashName) {}
 
+    abstract def configure()
+
     abstract def build()
 
     abstract def runTests()
@@ -174,6 +172,10 @@ abstract class HTBuild {
 
 @InheritConstructors
 class LinuxBuild extends HTBuild {
+    def configure() {
+        context.sh 'cmake ' + this.cmakeArgs + ' .'
+    }
+
     def build() {
         context.sh 'make -j 2'
     }
@@ -220,6 +222,10 @@ class LinuxBuild extends HTBuild {
 
 @InheritConstructors
 class MSVCBuild extends HTBuild {
+    def configure() {
+        context.bat 'cmake ' + this.cmakeArgs + ' .'
+    }
+
     def build() {
         context.bat 'msbuild /p:Configuration=Release HawkTracer.sln'
     }
