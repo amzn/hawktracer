@@ -8,7 +8,7 @@ function(create_doc_coverage_target TARGET_NAME COMMAND)
             COMMAND ${COMMAND_PATH} ${ARGN})
         add_dependencies(${TARGET_NAME} doc_doxygen_coverage)
     endif()
-endfunction(create_coverage_target)
+endfunction(create_doc_coverage_target)
 
 find_package(Doxygen)
 if (DOXYGEN_FOUND)
