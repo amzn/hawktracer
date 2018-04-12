@@ -36,8 +36,7 @@ void WebSocket::start(int port, std::function<void()> on_connected,
     try
     {
         _on_receive = on_receive;
-        _server->set_access_channels(websocketpp::log::alevel::all);
-        _server->clear_access_channels(websocketpp::log::alevel::frame_payload);
+        _server->clear_access_channels(websocketpp::log::alevel::all);
 
         _server->init_asio();
 
