@@ -12,7 +12,7 @@ _ht_file_dump_listener_flush(void* listener)
 }
 
 HT_Boolean
-ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename)
+ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename, size_t buffer_size)
 {
     listener->p_file = fopen(filename, "wb");
     if (listener->p_file == NULL)
@@ -22,7 +22,7 @@ ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename)
 
     listener->mtx = ht_mutex_create();
 
-    ht_listener_buffer_init(&listener->buffer, HT_FILE_DUMP_LISTENER_BUFFER_SIZE); /* TODO expose to constructor */
+    ht_listener_buffer_init(&listener->buffer, buffer_size);
 
     return HT_TRUE;
 }

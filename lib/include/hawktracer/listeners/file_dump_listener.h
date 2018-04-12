@@ -14,9 +14,7 @@ typedef struct
     struct _HT_Mutex* mtx;
 } HT_FileDumpListener;
 
-#define HT_FILE_DUMP_LISTENER_BUFFER_SIZE 4096u
-
-HT_API HT_Boolean ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename);
+HT_API HT_Boolean ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename, size_t buffer_size);
 
 HT_API void ht_file_dump_listener_deinit(HT_FileDumpListener* listener);
 

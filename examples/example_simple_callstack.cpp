@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     ht_init(argc, argv);
 
     HT_FileDumpListener file_dump_listener;
-    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump") != HT_FALSE)
+    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u) != HT_FALSE)
     {
         ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, &file_dump_listener);
     }

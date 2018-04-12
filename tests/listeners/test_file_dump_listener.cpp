@@ -11,7 +11,7 @@ TEST(TestFileDumpListener, InitShouldFailIfFileCanNotBeOpened)
     HT_FileDumpListener listener;
 
     // Act & Assert
-    ASSERT_FALSE(ht_file_dump_listener_init(&listener, "/non/existing/file"));
+    ASSERT_FALSE(ht_file_dump_listener_init(&listener, "/non/existing/file", 4096u));
 }
 
 TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
@@ -20,7 +20,7 @@ TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
     HT_FileDumpListener listener;
     HT_Timeline* timeline = ht_global_timeline_get();
 
-    ht_file_dump_listener_init(&listener, test_file);
+    ht_file_dump_listener_init(&listener, test_file, 4096u);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
 
     HT_DECL_EVENT(HT_Event, event);
@@ -44,7 +44,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
     HT_FileDumpListener listener;
     HT_Timeline* timeline = ht_global_timeline_get();
 
-    ht_file_dump_listener_init(&listener, test_file);
+    ht_file_dump_listener_init(&listener, test_file, 4096u);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
 
     HT_DECL_EVENT(HT_Event, event);
@@ -78,13 +78,14 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
     // Arrange
     HT_FileDumpListener listener;
     HT_Timeline* timeline = ht_global_timeline_get();
+    const size_t buffer_size = 4096u;
 
     remove(test_file);
-    ht_file_dump_listener_init(&listener, test_file);
+    ht_file_dump_listener_init(&listener, test_file, buffer_size);
     ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
 
     // Act
-    for (size_t i = 0; i < HT_FILE_DUMP_LISTENER_BUFFER_SIZE; i++)
+    for (size_t i = 0; i < buffer_size; i++)
     {
         HT_DECL_EVENT(HT_Event, event);
         event.id = 1;
@@ -103,7 +104,7 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
     fseek(fp, 0, SEEK_END);
     size_t file_size = ftell(fp);
     fclose(fp);
-    ASSERT_LT(HT_FILE_DUMP_LISTENER_BUFFER_SIZE, file_size);
+    ASSERT_LT(buffer_size, file_size);
 }
 
 TEST(TestFileDumpListener, NonSerializedTimeline)
@@ -113,7 +114,7 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
     HT_Timeline timeline;
     ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, NULL);
 
-    ht_file_dump_listener_init(&listener, test_file);
+    ht_file_dump_listener_init(&listener, test_file, 4096u);
     ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &listener);
 
     HT_DECL_EVENT(HT_Event, event);
