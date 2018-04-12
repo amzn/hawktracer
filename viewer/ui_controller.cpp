@@ -123,8 +123,6 @@ TimeRange UIController::get_current_ts_range() const
         stop_ts = _sync_info.first ? now_ts - _sync_info.second : now_ts + _sync_info.second;
     }
 
-    std::cout << "Current range: " << stop_ts - _duration << " " << stop_ts << std::endl;
-
     return TimeRange(stop_ts - _duration, stop_ts);
 }
 
