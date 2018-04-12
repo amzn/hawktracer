@@ -10,6 +10,7 @@ option(ENABLE_BENCHMARKS "Enable benchmarks" OFF)
 option(ENABLE_EXAMPLES "Enable examples" OFF)
 option(ENABLE_STATIC_LIB "Build static hawktracer library" OFF)
 option(ENABLE_SHARED_LIB "Build shared hawktracer library" ON)
+option(ENABLE_DOC "Build documentation" ON)
 
 option(ENABLE_MAINTAINER_MODE "Enables maintainer mode. Overrides some flags
     (e.g. ENABLE_TESTS, ENABLE_CODE_COVERAGE, ENABLE_BENCHMARKS)")
@@ -47,6 +48,10 @@ endif(ENABLE_ASAN)
 if(ENABLE_CODE_COVERAGE)
     include(coverage)
 endif(ENABLE_CODE_COVERAGE)
+
+if(ENABLE_DOC)
+    include(documentation)
+endif(ENABLE_DOC)
 
 add_subdirectory(lib)
 add_subdirectory(parser)
