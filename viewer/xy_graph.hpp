@@ -16,7 +16,7 @@ public:
     XYGraph(std::string graph_id, const jsonxx::Object& graph_description) :
         Graph(std::move(graph_id))
     {
-        FieldMapping field_mapping = {};
+        FieldMapping field_mapping;
         for (const auto& value : graph_description.get<jsonxx::Object>("fieldMap").kv_map())
         {
             field_mapping[value.first] = value.second->get<jsonxx::String>();
