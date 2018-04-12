@@ -9,12 +9,12 @@ _ht_bag_resize(HT_Bag* bag, size_t new_capacity)
 }
 
 void
-ht_bag_init(HT_Bag* bag, size_t capacity)
+ht_bag_init(HT_Bag* bag, size_t min_capacity)
 {
-    bag->min_capacity = capacity;
-    bag->capacity = capacity;
+    bag->min_capacity = min_capacity;
+    bag->capacity = min_capacity;
     bag->size = 0;
-    bag->data = ht_alloc(capacity * sizeof(void*));
+    bag->data = ht_alloc(min_capacity * sizeof(void*));
 }
 
 void
