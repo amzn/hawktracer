@@ -32,10 +32,12 @@ ht_file_dump_listener_deinit(HT_FileDumpListener* listener)
 {
     if (listener->p_file != NULL)
     {
+        ht_mutex_lock(listener->mtx);
         _ht_file_dump_listener_flush(listener);
         ht_listener_buffer_deinit(&listener->buffer);
         fclose(listener->p_file);
         listener->p_file = NULL;
+        ht_mutex_unlock(listener->mtx);
         ht_mutex_destroy(listener->mtx);
     }
 }
