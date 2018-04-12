@@ -43,7 +43,6 @@ ht_file_dump_listener_deinit(HT_FileDumpListener* listener)
 void
 ht_file_dump_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data)
 {
-    /* TODO: this method should be thread-safe (at least optionally) */
     HT_FileDumpListener* listener = (HT_FileDumpListener*)user_data;
 
     ht_mutex_lock(listener->mtx);
