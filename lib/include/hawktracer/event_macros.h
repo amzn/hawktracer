@@ -25,7 +25,7 @@
 #define HT_EVENT_RUNTIME_SERIALIZE_INTEGER(C_TYPE, FIELD) HT_EVENT_RUNTIME_SERIALIZE_BASE_TYPE_(C_TYPE, FIELD)
 #define HT_EVENT_RUNTIME_SERIALIZE_DOUBLE(C_TYPE, FIELD) HT_EVENT_RUNTIME_SERIALIZE_BASE_TYPE_(C_TYPE, FIELD)
 #define HT_EVENT_RUNTIME_SERIALIZE_STRING(C_TYPE, FIELD) do {\
-    size_t len = (VAR_NAME->FIELD) ? strlen(VAR_NAME->FIELD) + 1 : 0; /* TODO should not copy if zero */ \
+    size_t len = (VAR_NAME->FIELD) ? strlen(VAR_NAME->FIELD) + 1 : 0; \
     memcpy(buffer + offset, VAR_NAME->FIELD, len); \
     offset += len; \
 } while (0);
