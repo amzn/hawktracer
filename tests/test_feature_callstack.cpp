@@ -30,8 +30,6 @@ protected:
     HT_Timeline _timeline;
 };
 
-/* TODO: add test with threading */
-
 TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
 {
     // Arrange
