@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_PARSER_DEBUG_EVENT_LISTENER_HPP
 #define HAWKTRACER_PARSER_DEBUG_EVENT_LISTENER_HPP
 
-#include "parser/event.hpp"
+#include <hawktracer/parser/event.hpp>
 
 namespace HawkTracer
 {

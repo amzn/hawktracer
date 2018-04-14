@@ -1,6 +1,6 @@
-#include "klass_register.hpp"
-#include "event.hpp"
-#include "make_unique.hpp"
+#include "hawktracer/parser/klass_register.hpp"
+#include "hawktracer/parser/event.hpp"
+#include "hawktracer/parser/make_unique.hpp"
 
 namespace HawkTracer {
 namespace parser {

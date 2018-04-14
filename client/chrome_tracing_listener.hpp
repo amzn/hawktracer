@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_CLIENT_CHROME_TRACING_LISTENER_HPP
 #define HAWKTRACER_CLIENT_CHROME_TRACING_LISTENER_HPP
 
-#include "parser/event.hpp"
+#include <hawktracer/parser/event.hpp>
 #include "tracepoint_map.hpp"
 
 #include <fstream>

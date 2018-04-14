@@ -1,4 +1,4 @@
-include_directories(${CMAKE_SOURCE_DIR}/lib/include ..)
+include_directories(${CMAKE_SOURCE_DIR}/lib/include include)
 
 add_library(hawktracer_parser
     STATIC

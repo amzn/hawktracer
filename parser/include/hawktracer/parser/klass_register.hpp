@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_PARSER_KLASS_REGISTER_HPP
 #define HAWKTRACER_PARSER_KLASS_REGISTER_HPP
 
-#include "parser/event_klass.hpp"
+#include <hawktracer/parser/event_klass.hpp>
 
 #include <mutex>
 #include <unordered_map>

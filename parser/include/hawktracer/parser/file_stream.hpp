@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_PARSER_FILE_STREAM_HPP
 #define HAWKTRACER_PARSER_FILE_STREAM_HPP
 
-#include "parser/stream.hpp"
+#include <hawktracer/parser/stream.hpp>
 
 #include <cstdio>
 

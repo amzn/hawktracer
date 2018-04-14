@@ -1,9 +1,9 @@
 #include "chrome_tracing_listener.hpp"
 #include "tcp_client_stream.hpp"
 
-#include "parser/file_stream.hpp"
-#include "parser/protocol_reader.hpp"
-#include "parser/make_unique.hpp"
+#include <hawktracer/parser/file_stream.hpp>
+#include <hawktracer/parser/protocol_reader.hpp>
+#include <hawktracer/parser/make_unique.hpp>
 
 #include <iostream>
 #include <cstring>

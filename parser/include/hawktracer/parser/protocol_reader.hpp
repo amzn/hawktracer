@@ -1,8 +1,8 @@
 #ifndef HAWKTRACER_PARSER_PROTOCOL_READER_HPP
 #define HAWKTRACER_PARSER_PROTOCOL_READER_HPP
 
-#include "parser/event_klass.hpp"
-#include "parser/stream.hpp"
+#include <hawktracer/parser/event_klass.hpp>
+#include <hawktracer/parser//stream.hpp>
 
 #include <atomic>
 #include <thread>

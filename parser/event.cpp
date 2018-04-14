@@ -1,4 +1,4 @@
-#include "event.hpp"
+#include "hawktracer/parser/event.hpp"
 
 #include <cstring>
 #include <cstdlib>

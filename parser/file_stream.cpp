@@ -1,4 +1,4 @@
-#include "file_stream.hpp"
+#include "hawktracer/parser/file_stream.hpp"
 
 namespace HawkTracer {
 namespace parser {

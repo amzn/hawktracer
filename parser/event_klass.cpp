@@ -1,6 +1,6 @@
-#include "event_klass.hpp"
-#include "event.hpp"
-#include "klass_register.hpp"
+#include "hawktracer/parser/event_klass.hpp"
+#include "hawktracer/parser/event.hpp"
+#include "hawktracer/parser/klass_register.hpp"
 
 #include <cassert>
 #include <cstring>

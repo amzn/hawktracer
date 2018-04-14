@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_CLIENT_TCP_CLIENT_STREAM_HPP
 #define HAWKTRACER_CLIENT_TCP_CLIENT_STREAM_HPP
 
-#include "parser/stream.hpp"
+#include <hawktracer/parser/stream.hpp>
 
 #include <queue>
 #include <mutex>

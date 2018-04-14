@@ -1,6 +1,6 @@
-#include "protocol_reader.hpp"
-#include "klass_register.hpp"
-#include "event.hpp"
+#include "hawktracer/parser/protocol_reader.hpp"
+#include "hawktracer/parser/klass_register.hpp"
+#include "hawktracer/parser/event.hpp"
 
 #include <cassert>
 #include <cstring>
