@@ -48,3 +48,4 @@ function(DEFINE_HT_TEST)
 endfunction(DEFINE_HT_TEST)
 
 add_subdirectory(lib)
+add_subdirectory(parser)
