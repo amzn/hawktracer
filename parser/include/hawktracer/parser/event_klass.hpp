@@ -43,10 +43,12 @@ enum class FieldTypeId
 
 FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type);
 
+class EventKlass;
+
 class EventKlassField
 {
 public:
-    EventKlassField(std::string name, std::string type_name, FieldTypeId type_id);
+    EventKlassField(std::string name, std::string type_name, FieldTypeId type_id, std::shared_ptr<const EventKlass> klass = nullptr);
 
     std::string get_name() const { return _name; }
     std::string get_type_name() const { return _type_name; }
@@ -57,9 +59,12 @@ public:
         return to_underlying(_type_id) <= to_underlying(FieldTypeId::INT64);
     }
 
+    std::shared_ptr<const EventKlass> get_klass() const { return _klass; }
+
 private:
     const std::string _name;
     const std::string _type_name;
+    const std::shared_ptr<const EventKlass> _klass;
     const FieldTypeId _type_id;
 };
 

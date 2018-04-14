@@ -62,9 +62,18 @@ void KlassRegister::handle_register_events(const Event& event)
         auto klass_id = event.get_value<uint32_t>("info_klass_id");
         if (!KlassRegister::is_well_known_klass(klass_id))
         {
+            auto type = static_cast<MKCREFLECT_Types>(event.get_value<uint8_t>("data_type"));
+            const char* field_type = event.get_value<char*>("field_type");
+            std::shared_ptr<const EventKlass> type_klass;
+            if (type == MKCREFLECT_TYPES_STRUCT)
+            {
+                type_klass = KlassRegister::get().get_klass(field_type);
+            }
+
             auto field = make_unique<EventKlassField>(event.get_value<char*>("field_name"),
-                    event.get_value<char*>("field_type"),
-                    get_type_id(event.get_value<uint64_t>("size"), static_cast<MKCREFLECT_Types>(event.get_value<uint8_t>("data_type"))));
+                                                      field_type,
+                                                      get_type_id(event.get_value<uint64_t>("size"), type),
+                                                      std::move(type_klass));
 
             KlassRegister::get()._add_klass_field(klass_id, std::move(field));
         }

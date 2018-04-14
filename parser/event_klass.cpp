@@ -9,8 +9,8 @@
 namespace HawkTracer {
 namespace parser {
 
-EventKlassField::EventKlassField(std::string name, std::string type_name, FieldTypeId type_id) :
-    _name(name), _type_name(type_name), _type_id(type_id)
+EventKlassField::EventKlassField(std::string name, std::string type_name, FieldTypeId type_id, std::shared_ptr<const EventKlass> klass) :
+    _name(name), _type_name(type_name), _klass(std::move(klass)), _type_id(type_id)
 {
 }
 
@@ -47,7 +47,6 @@ void EventKlass::add_field(std::unique_ptr<EventKlassField> field)
         _fields.push_back(std::move(field));
     }
 }
-
 
 FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type)
 {
@@ -95,11 +94,10 @@ std::shared_ptr<const EventKlassField> EventKlass::_get_field(const char* name, 
         }
         else if (field->get_type_id() == FieldTypeId::STRUCT && recursive)
         {
-            auto klass_id = KlassRegister::get().get_klass_id(field->get_type_name());
-            auto field = KlassRegister::get().get_klass(klass_id)->get_field(name, recursive);
-            if (field)
+            auto base_field = field->get_klass()->get_field(name, recursive);
+            if (base_field)
             {
-                return field;
+                return base_field;
             }
         }
     }
