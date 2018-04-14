@@ -31,8 +31,6 @@ set_target_properties(${GTEST_LIBRARY} PROPERTIES
   IMPORTED_LOCATION ${GTEST_LIBRARY_PATH})
 add_dependencies(${GTEST_LIBRARY} googletest)
 
-include_directories(../lib/include "${GTEST_INCLUDE_DIRS}")
-
 function(DEFINE_HT_TEST)
     set(MULTI_PARAM SOURCES LINK_LIBS RUN_PARAMS)
     cmake_parse_arguments(ht "" "NAME" "${MULTI_PARAM}" ${ARGN})
@@ -40,6 +38,7 @@ function(DEFINE_HT_TEST)
     set(EXE_NAME hawktracer_test_${ht_NAME})
     add_executable(${EXE_NAME} ${ht_SOURCES})
     target_link_libraries(${EXE_NAME} ${ht_LINK_LIBS} hawktracer ${CMAKE_THREAD_LIBS_INIT})
+    target_include_directories(${EXE_NAME} PRIVATE ${GTEST_INCLUDE_DIRS})
     target_compile_definitions(${EXE_NAME} PRIVATE -DHT_COMPILE_SHARED_EXPORT)
     if ("${ht_RUN_PARAMS}" STREQUAL "")
         add_test(${ht_NAME} ${EXE_NAME})

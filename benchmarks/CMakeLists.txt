@@ -35,12 +35,11 @@ set_target_properties(${BENCHMARK_LIBRARY} PROPERTIES
     IMPORTED_LOCATION ${BENCHMARK_LIBRARY_PATH})
 add_dependencies(${BENCHMARK_LIBRARY} googlebenchmark)
 
-include_directories(../lib/include "${BENCHMARK_INCLUDE_DIRS}")
-
 add_executable(hawktracer_benchmarks
     benchmark_main.cpp
     benchmark_timeline.cpp)
 
+target_include_directories(hawktracer_benchmarks PRIVATE ${BENCHMARK_INCLUDE_DIRS})
 target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")

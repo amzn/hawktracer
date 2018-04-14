@@ -1,5 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/lib/include include)
-
 add_library(hawktracer_parser
     STATIC
     debug_event_listener.cpp
@@ -8,3 +6,6 @@ add_library(hawktracer_parser
     file_stream.cpp
     klass_register.cpp
     protocol_reader.cpp)
+
+target_link_libraries(hawktracer_parser hawktracer)
+target_include_directories(hawktracer_parser PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)

@@ -54,19 +54,19 @@ set(HAWKTRACER_CORE_SOURCES
 
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})
 
-include_directories(include)
-
 # We need to compile sources 2 times - the reason why we can't re-use object files
 # is because for shared lib they'll be compiled with -fPIC, which is not needed
 # (and might affect a performance) for static libraries.
 set(HAWKTRACER_LIB_INSTALL_TARGETS)
 if(ENABLE_SHARED_LIB)
     add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
+    target_include_directories(hawktracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
 endif(ENABLE_SHARED_LIB)
 if(ENABLE_STATIC_LIB)
     add_library(hawktracer_static STATIC ${HAWKTRACER_LIB_SOURCES})
+    target_include_directories(hawktracer_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer_static)
 endif(ENABLE_STATIC_LIB)
 

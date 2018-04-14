@@ -1,4 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/lib/include ${CMAKE_SOURCE_DIR}/parser/include)
 add_executable(hawktracer-to-json
     main.cpp
     chrome_tracing_listener.cpp
