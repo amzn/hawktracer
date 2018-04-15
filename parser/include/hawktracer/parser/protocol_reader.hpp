@@ -1,8 +1,9 @@
 #ifndef HAWKTRACER_PARSER_PROTOCOL_READER_HPP
 #define HAWKTRACER_PARSER_PROTOCOL_READER_HPP
 
+#include <hawktracer/parser/klass_register.hpp>
 #include <hawktracer/parser/event_klass.hpp>
-#include <hawktracer/parser//stream.hpp>
+#include <hawktracer/parser/stream.hpp>
 
 #include <atomic>
 #include <thread>
@@ -20,7 +21,7 @@ class ProtocolReader
 public:
     using OnNewEventCallback = std::function<void(const Event&)>;
 
-    ProtocolReader(std::unique_ptr<Stream> stream, bool flat_events);
+    ProtocolReader(KlassRegister* klass_register, std::unique_ptr<Stream> stream, bool flat_events);
     ~ProtocolReader();
 
     void register_events_listener(OnNewEventCallback callback);
@@ -39,6 +40,7 @@ private:
 
     void _call_callbacks(const Event& event);
 
+    KlassRegister* _klass_register;
     std::vector<OnNewEventCallback> _on_new_event_callbacks;
     std::unique_ptr<Stream> _stream;
     std::thread _thread;

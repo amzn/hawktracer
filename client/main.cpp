@@ -120,7 +120,8 @@ int main(int argc, char** argv)
         tracepoint_map->load_maps(map_files);
     }
 
-    parser::ProtocolReader reader(std::move(stream), true);
+    parser::KlassRegister klass_register;
+    parser::ProtocolReader reader(&klass_register, std::move(stream), true);
     client::ChromeTraceListener chrome_listener(std::move(tracepoint_map));
     std::string out_file = create_output_path(output_path.c_str());
     chrome_listener.init(out_file);

@@ -19,14 +19,14 @@ enum class WellKnownKlasses : uint32_t
 class KlassRegister
 {
 public:
-    static KlassRegister& get();
+    KlassRegister();
 
     KlassRegister(const KlassRegister&) = delete;
     KlassRegister& operator=(const KlassRegister&) = delete;
 
     static bool is_well_known_klass(uint32_t klass_id);
 
-    static void handle_register_events(const Event& event);
+    void handle_register_events(const Event& event);
 
     std::shared_ptr<const EventKlass> get_klass(uint32_t klass_id) const;
     std::shared_ptr<const EventKlass> get_klass(const std::string& name) const;
@@ -36,8 +36,6 @@ public:
     std::unordered_map<uint32_t, std::shared_ptr<EventKlass> > get_klasses() const;
 
 private:
-    KlassRegister();
-
     void _add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field);
 
     using lock_guard = std::lock_guard<std::mutex>;

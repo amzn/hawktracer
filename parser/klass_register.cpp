@@ -5,12 +5,6 @@
 namespace HawkTracer {
 namespace parser {
 
-KlassRegister& KlassRegister::get()
-{
-    static KlassRegister klass_register;
-    return klass_register;
-}
-
 KlassRegister::KlassRegister()
 {
     auto base_event = make_unique<EventKlass>("HT_Event", to_underlying(WellKnownKlasses::EventKlass));
@@ -54,7 +48,7 @@ void KlassRegister::handle_register_events(const Event& event)
     case WellKnownKlasses::EventKlassInfoEventKlass:
     {
         uint32_t klass_id = event.get_value<uint32_t>("info_klass_id");
-        KlassRegister::get().add_klass(make_unique<EventKlass>(event.get_value<char*>("event_klass_name"), klass_id));
+        add_klass(make_unique<EventKlass>(event.get_value<char*>("event_klass_name"), klass_id));
         break;
     }
     case WellKnownKlasses::EventKlassFieldInfoEventKlass:
@@ -67,15 +61,16 @@ void KlassRegister::handle_register_events(const Event& event)
             std::shared_ptr<const EventKlass> type_klass;
             if (type == MKCREFLECT_TYPES_STRUCT)
             {
-                type_klass = KlassRegister::get().get_klass(field_type);
+                type_klass = get_klass(field_type);
             }
 
-            auto field = make_unique<EventKlassField>(event.get_value<char*>("field_name"),
-                                                      field_type,
-                                                      get_type_id(event.get_value<uint64_t>("size"), type),
-                                                      std::move(type_klass));
+            auto field = make_unique<EventKlassField>(
+                        event.get_value<char*>("field_name"),
+                        field_type,
+                        get_type_id(event.get_value<uint64_t>("size"), type),
+                        std::move(type_klass));
 
-            KlassRegister::get()._add_klass_field(klass_id, std::move(field));
+            _add_klass_field(klass_id, std::move(field));
         }
         break;
     }

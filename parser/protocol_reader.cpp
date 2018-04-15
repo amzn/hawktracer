@@ -10,11 +10,14 @@ namespace HawkTracer
 namespace parser
 {
 
-ProtocolReader::ProtocolReader(std::unique_ptr<Stream> stream, bool flat_events) :
+ProtocolReader::ProtocolReader(KlassRegister* klass_register, std::unique_ptr<Stream> stream, bool flat_events) :
+    _klass_register(klass_register),
     _stream(std::move(stream)),
     _flat_events(flat_events)
 {
-    register_events_listener(KlassRegister::handle_register_events);
+    register_events_listener([this] (const Event& event) {
+        _klass_register->handle_register_events(event);
+    });
 }
 
 ProtocolReader::~ProtocolReader()
@@ -60,7 +63,7 @@ void ProtocolReader::_read_events()
     while (_is_running)
     {
         bool is_error = false;
-        Event base_event(KlassRegister::get().get_klass(to_underlying(WellKnownKlasses::EventKlass)));
+        Event base_event(_klass_register->get_klass(to_underlying(WellKnownKlasses::EventKlass)));
         _read_event(is_error, base_event, nullptr);
 
         if (is_error)
@@ -76,7 +79,7 @@ void ProtocolReader::_read_events()
             continue;
         }
 
-        Event event(KlassRegister::get().get_klass(base_event.get_value<uint32_t>("klass_id")));
+        Event event(_klass_register->get_klass(base_event.get_value<uint32_t>("klass_id")));
         if (_flat_events)
         {
             _read_event(is_error, event, nullptr);
@@ -195,7 +198,7 @@ bool ProtocolReader::_read_struct(FieldType& value, const EventKlassField& field
     else
     {
         bool is_error;
-        Event sub_event(KlassRegister::get().get_klass(KlassRegister::get().get_klass_id(field.get_type_name())));
+        Event sub_event(_klass_register->get_klass(_klass_register->get_klass_id(field.get_type_name())));
         _read_event(is_error, sub_event, base_event);
         if (_flat_events)
         {
