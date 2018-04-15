@@ -28,7 +28,7 @@ KlassRegister::KlassRegister()
     add_klass(std::move(klass_field_info_event));
 }
 
-bool KlassRegister::is_well_known_klass(uint32_t klass_id)
+bool KlassRegister::is_well_known_klass(HT_EventKlassId klass_id)
 {
     switch ((WellKnownKlasses)klass_id)
     {
@@ -47,13 +47,13 @@ void KlassRegister::handle_register_events(const Event& event)
     {
     case WellKnownKlasses::EventKlassInfoEventKlass:
     {
-        uint32_t klass_id = event.get_value<uint32_t>("info_klass_id");
+        auto klass_id = event.get_value<HT_EventKlassId>("info_klass_id");
         add_klass(make_unique<EventKlass>(event.get_value<char*>("event_klass_name"), klass_id));
         break;
     }
     case WellKnownKlasses::EventKlassFieldInfoEventKlass:
     {
-        auto klass_id = event.get_value<uint32_t>("info_klass_id");
+        auto klass_id = event.get_value<HT_EventKlassId>("info_klass_id");
         if (!KlassRegister::is_well_known_klass(klass_id))
         {
             auto type = static_cast<MKCREFLECT_Types>(event.get_value<uint8_t>("data_type"));
@@ -79,7 +79,7 @@ void KlassRegister::handle_register_events(const Event& event)
     }
 }
 
-std::shared_ptr<const EventKlass> KlassRegister::get_klass(uint32_t klass_id) const
+std::shared_ptr<const EventKlass> KlassRegister::get_klass(HT_EventKlassId klass_id) const
 {
     lock_guard l(_register_mtx);
     return _register.find(klass_id)->second;
@@ -90,7 +90,7 @@ std::shared_ptr<const EventKlass> KlassRegister::get_klass(const std::string& na
     return get_klass(get_klass_id(name));
 }
 
-uint32_t KlassRegister::get_klass_id(const std::string& name) const
+HT_EventKlassId KlassRegister::get_klass_id(const std::string& name) const
 {
     lock_guard l(_register_mtx);
     for (const auto& klass : _register)
@@ -113,19 +113,19 @@ void KlassRegister::add_klass(std::unique_ptr<EventKlass> klass)
     }
 }
 
-void KlassRegister::_add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field)
+void KlassRegister::_add_klass_field(HT_EventKlassId klass_id, std::unique_ptr<EventKlassField> field)
 {
     lock_guard l(_register_mtx);
     _register.at(klass_id)->add_field(std::move(field));
 }
 
-bool KlassRegister::klass_exists(uint32_t klass_id) const
+bool KlassRegister::klass_exists(HT_EventKlassId klass_id) const
 {
     lock_guard l(_register_mtx);
     return _register.find(klass_id) != _register.end();
 }
 
-std::unordered_map<uint32_t, std::shared_ptr<EventKlass>> KlassRegister::get_klasses() const
+std::unordered_map<HT_EventKlassId, std::shared_ptr<EventKlass>> KlassRegister::get_klasses() const
 {
     lock_guard l(_register_mtx);
     return _register;

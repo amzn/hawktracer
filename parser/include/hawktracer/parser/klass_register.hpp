@@ -1,6 +1,7 @@
 #ifndef HAWKTRACER_PARSER_KLASS_REGISTER_HPP
 #define HAWKTRACER_PARSER_KLASS_REGISTER_HPP
 
+#include <hawktracer/base_types.h>
 #include <hawktracer/parser/event_klass.hpp>
 
 #include <mutex>
@@ -9,7 +10,7 @@
 namespace HawkTracer {
 namespace parser {
 
-enum class WellKnownKlasses : uint32_t
+enum class WellKnownKlasses : HT_EventKlassId
 {
     EventKlass = 1,
     EventKlassInfoEventKlass = 2,
@@ -24,24 +25,24 @@ public:
     KlassRegister(const KlassRegister&) = delete;
     KlassRegister& operator=(const KlassRegister&) = delete;
 
-    static bool is_well_known_klass(uint32_t klass_id);
+    static bool is_well_known_klass(HT_EventKlassId klass_id);
 
     void handle_register_events(const Event& event);
 
-    std::shared_ptr<const EventKlass> get_klass(uint32_t klass_id) const;
+    std::shared_ptr<const EventKlass> get_klass(HT_EventKlassId klass_id) const;
     std::shared_ptr<const EventKlass> get_klass(const std::string& name) const;
-    uint32_t get_klass_id(const std::string& name) const;
+    HT_EventKlassId get_klass_id(const std::string& name) const;
     void add_klass(std::unique_ptr<EventKlass> klass);
-    bool klass_exists(uint32_t klass_id) const;
-    std::unordered_map<uint32_t, std::shared_ptr<EventKlass> > get_klasses() const;
+    bool klass_exists(HT_EventKlassId klass_id) const;
+    std::unordered_map<HT_EventKlassId, std::shared_ptr<EventKlass> > get_klasses() const;
 
 private:
-    void _add_klass_field(uint32_t klass_id, std::unique_ptr<EventKlassField> field);
+    void _add_klass_field(HT_EventKlassId klass_id, std::unique_ptr<EventKlassField> field);
 
     using lock_guard = std::lock_guard<std::mutex>;
 
     mutable std::mutex _register_mtx;
-    std::unordered_map<uint32_t, std::shared_ptr<EventKlass>> _register;
+    std::unordered_map<HT_EventKlassId, std::shared_ptr<EventKlass>> _register;
 };
 
 } // namespace parser
