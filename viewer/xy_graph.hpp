@@ -3,7 +3,7 @@
 
 #include "graph.hpp"
 
-#include <parser/klass_register.hpp>
+#include <hawktracer/parser/klass_register.hpp>
 
 namespace HawkTracer
 {
@@ -13,21 +13,7 @@ namespace viewer
 class XYGraph : public Graph
 {
 public:
-    XYGraph(std::string graph_id, const jsonxx::Object& graph_description) :
-        Graph(std::move(graph_id))
-    {
-        FieldMapping field_mapping;
-        for (const auto& value : graph_description.get<jsonxx::Object>("fieldMap").kv_map())
-        {
-            field_mapping[value.first] = value.second->get<jsonxx::String>();
-        }
-
-        // TODO this might fail if klass/field doesn't exist
-        // TODO do we really have to use klassregister here???
-        _query.klass_id = static_cast<HT_EventKlassId>(graph_description.get<jsonxx::Number>("klassId"));
-
-        _field = parser::KlassRegister::get().get_klass(_query.klass_id)->get_field(field_mapping.at("value").c_str(), true);
-    }
+    XYGraph(parser::KlassRegister* klass_register, std::string graph_id, const jsonxx::Object& graph_description);
 
     static constexpr const char* get_type_id() { return "XY"; }
     static std::vector<std::string> get_type_fields() { return {"value"}; }

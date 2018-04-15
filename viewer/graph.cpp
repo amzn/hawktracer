@@ -1,7 +1,7 @@
 #include "graph.hpp"
 #include "xy_graph.hpp"
 
-#include <parser/make_unique.hpp>
+#include <hawktracer/parser/make_unique.hpp>
 
 namespace HawkTracer
 {
@@ -11,7 +11,7 @@ namespace viewer
 class FakeGraph : public Graph
 {
 public:
-    FakeGraph(std::string graph_id, const jsonxx::Object&) :
+    FakeGraph(parser::KlassRegister*, std::string graph_id, const jsonxx::Object&) :
         Graph(std::move(graph_id))
     {
     }
@@ -27,7 +27,7 @@ public:
 class StatsGraph : public Graph
 {
 public:
-    StatsGraph(std::string graph_id, const jsonxx::Object&) :
+    StatsGraph(parser::KlassRegister*, std::string graph_id, const jsonxx::Object&) :
         Graph(std::move(graph_id))
     {
         _query.klass_id = (HT_EventKlassId)-1;
@@ -79,13 +79,13 @@ void GraphFactory::register_type(CreateFnc factory_method, Graph::TypeId type_id
     _graph_types.emplace(type_id, Info(std::move(fields), type_id, factory_method));
 }
 
-std::unique_ptr<Graph> GraphFactory::create_graph(Graph::TypeId type_id, std::string graph_id, const jsonxx::Object& graph_description)
+std::unique_ptr<Graph> GraphFactory::create_graph(parser::KlassRegister* klass_register, Graph::TypeId type_id, std::string graph_id, const jsonxx::Object& graph_description)
 {
     std::lock_guard<std::mutex> l(_mtx);
 
     auto type_it = _graph_types.find(type_id);
     return (type_it != _graph_types.end()) ?
-                type_it->second.factory_method(std::move(graph_id), graph_description) :
+                type_it->second.factory_method(klass_register, std::move(graph_id), graph_description) :
                 nullptr;
 }
 

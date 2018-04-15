@@ -2,7 +2,7 @@
 #include "logger.hpp"
 #include "jsonxx_utils.hpp"
 
-#include <parser/klass_register.hpp>
+#include <hawktracer/parser/klass_register.hpp>
 
 #include <limits>
 #include <algorithm>
@@ -57,7 +57,7 @@ void JavaScriptUI::_client_message_received(const std::string& message)
                 _send_request_error("Graph '" + graph_id + "' alread exists", message);
             }
 
-            _graphs[graph_id] = _graph_factory.create_graph(graph_type, graph_id, obj.get<jsonxx::Object>("graphDescription"));
+            _graphs[graph_id] = _graph_factory.create_graph(_get_klass_register(), graph_type, graph_id, obj.get<jsonxx::Object>("graphDescription"));
 
             jsonxx::Object response = make_json_object("command", "setGraphProperties",
                                                        "graphTypeId", graph_type,
@@ -114,8 +114,8 @@ void JavaScriptUI::add_field(const parser::EventKlass* klass, const parser::Even
 {
     if (field->get_type_id() == FieldTypeId::STRUCT)
     {
-        auto klass_id = KlassRegister::get().get_klass_id(field->get_type_name());
-        for (const auto& klass_field : KlassRegister::get().get_klass(klass_id)->get_fields())
+        auto klass_id = _get_klass_register()->get_klass_id(field->get_type_name());
+        for (const auto& klass_field : _get_klass_register()->get_klass(klass_id)->get_fields())
         {
             add_field(klass, klass_field.get());
         }

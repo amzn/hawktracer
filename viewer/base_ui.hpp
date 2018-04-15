@@ -3,7 +3,8 @@
 
 #include "event_db.hpp"
 
-#include <parser/event.hpp>
+#include <hawktracer/parser/event.hpp>
+#include <hawktracer/parser/klass_register.hpp>
 #include <hawktracer/base_types.h>
 
 namespace HawkTracer
@@ -43,6 +44,7 @@ protected:
     void _request_klass_register();
     TimeRange _get_total_ts_range() const;
     TimeRange _get_current_ts_range() const;
+    parser::KlassRegister* _get_klass_register() const;
 
 private:
     UIController* _controller;

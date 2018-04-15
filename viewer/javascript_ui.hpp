@@ -5,8 +5,8 @@
 #include "websocket.hpp"
 #include "graph.hpp"
 
-#include <parser/event_klass.hpp>
-#include <parser/klass_register.hpp>
+#include <hawktracer/parser/event_klass.hpp>
+#include <hawktracer/parser/klass_register.hpp>
 
 #include <thread>
 
