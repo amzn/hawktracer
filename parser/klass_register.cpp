@@ -11,13 +11,13 @@ KlassRegister::KlassRegister()
     base_event->add_field(make_unique<EventKlassField>("klass_id", "uint32_t", FieldTypeId::UINT32));
     base_event->add_field(make_unique<EventKlassField>("timestamp", "uint64_t", FieldTypeId::UINT64));
     base_event->add_field(make_unique<EventKlassField>("id", "uint64_t", FieldTypeId::UINT64));
-    add_klass(std::move(base_event));
+    _add_klass(std::move(base_event));
 
     auto klass_info_event = make_unique<EventKlass>("HT_EventKlassInfoEvent", to_underlying(WellKnownKlasses::EventKlassInfoEventKlass));
     klass_info_event->add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
     klass_info_event->add_field(make_unique<EventKlassField>("event_klass_name", "const char*", FieldTypeId::STRING));
     klass_info_event->add_field(make_unique<EventKlassField>("field_count", "uint8_t", FieldTypeId::UINT8));
-    add_klass(std::move(klass_info_event));
+    _add_klass(std::move(klass_info_event));
 
     auto klass_field_info_event = make_unique<EventKlass>("HT_EventKlassFieldInfoEvent", to_underlying(WellKnownKlasses::EventKlassFieldInfoEventKlass));
     klass_field_info_event->add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
@@ -25,7 +25,7 @@ KlassRegister::KlassRegister()
     klass_field_info_event->add_field(make_unique<EventKlassField>("field_name", "const char*", FieldTypeId::STRING));
     klass_field_info_event->add_field(make_unique<EventKlassField>("size", "uint64_t", FieldTypeId::UINT64));
     klass_field_info_event->add_field(make_unique<EventKlassField>("data_type", "uint8_t", FieldTypeId::UINT8));
-    add_klass(std::move(klass_field_info_event));
+    _add_klass(std::move(klass_field_info_event));
 }
 
 bool KlassRegister::is_well_known_klass(HT_EventKlassId klass_id)
@@ -48,7 +48,7 @@ void KlassRegister::handle_register_events(const Event& event)
     case WellKnownKlasses::EventKlassInfoEventKlass:
     {
         auto klass_id = event.get_value<HT_EventKlassId>("info_klass_id");
-        add_klass(make_unique<EventKlass>(event.get_value<char*>("event_klass_name"), klass_id));
+        _add_klass(make_unique<EventKlass>(event.get_value<char*>("event_klass_name"), klass_id));
         break;
     }
     case WellKnownKlasses::EventKlassFieldInfoEventKlass:
@@ -82,7 +82,8 @@ void KlassRegister::handle_register_events(const Event& event)
 std::shared_ptr<const EventKlass> KlassRegister::get_klass(HT_EventKlassId klass_id) const
 {
     lock_guard l(_register_mtx);
-    return _register.find(klass_id)->second;
+    auto klass_it = _register.find(klass_id);
+    return klass_it != _register.end() ? klass_it->second : nullptr;
 }
 
 std::shared_ptr<const EventKlass> KlassRegister::get_klass(const std::string& name) const
@@ -104,7 +105,7 @@ HT_EventKlassId KlassRegister::get_klass_id(const std::string& name) const
     return 0;
 }
 
-void KlassRegister::add_klass(std::unique_ptr<EventKlass> klass)
+void KlassRegister::_add_klass(std::unique_ptr<EventKlass> klass)
 {
     lock_guard l(_register_mtx);
     if (_register.find(klass->get_id()) == _register.end())
