@@ -87,16 +87,25 @@ void Event::set_value(const EventKlassField* field, FieldType value)
 }
 
 template<typename T>
+void Event::set_value(const EventKlassField* field, T value)
+{
+    FieldType field_value = {};
+    *(T*)&field_value = value;
+    set_value(field, field_value);
+}
+
+template<typename T>
 T Event::get_value(const std::string& key) const
 {
     return *(T*)&_values.at(key).value;
 }
 
-#define EVENT_GET_VALUE(C_TYPE, _UNUSED) \
-    template C_TYPE Event::get_value<C_TYPE>(const std::string& key) const;
+#define EVENT_GET_SET_VALUE(C_TYPE, _UNUSED) \
+    template C_TYPE Event::get_value<C_TYPE>(const std::string& key) const; \
+    template void Event::set_value<C_TYPE>(const EventKlassField* field, C_TYPE value);
 
-MKCREFLECT_FOREACH(EVENT_GET_VALUE, 0, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t)
-MKCREFLECT_FOREACH(EVENT_GET_VALUE, 0, uint64_t, int64_t, void*, char*, Event*)
+#define C_TYPE_LIST uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t, void*, char*, Event*
+MKCREFLECT_FOREACH(EVENT_GET_SET_VALUE, 0, C_TYPE_LIST)
 
 } // namespace parser
 } // namespace HawkTracer

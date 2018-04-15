@@ -65,6 +65,8 @@ public:
     HT_TimestampNs get_timestamp() const { return _timestamp; }
 
     void set_value(const EventKlassField* field, FieldType value);
+    template<typename T>
+    void set_value(const EventKlassField* field, T value);
 
 private:
     std::unordered_map<std::string, Value> _values;
