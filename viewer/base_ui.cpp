@@ -39,5 +39,10 @@ TimeRange BaseUI::_get_current_ts_range() const
     return _controller->get_current_ts_range();
 }
 
+parser::KlassRegister* BaseUI::_get_klass_register() const
+{
+    return _controller->get_klass_register();
+}
+
 } // namespace viewer
 } // namespace HawkTracer

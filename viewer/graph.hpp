@@ -4,7 +4,7 @@
 #include "base_ui.hpp" // TODO For TimeRange, should be moved somewhere else
 #include "jsonxx.h" // TODO don't like it :(
 
-#include <parser/make_unique.hpp>
+#include <hawktracer/parser/make_unique.hpp>
 
 #include <hawktracer/base_types.h>
 
@@ -43,12 +43,12 @@ protected:
 class GraphFactory
 {
 public:
-    using CreateFnc = std::unique_ptr<Graph>(*)(std::string, const jsonxx::Object&);
+    using CreateFnc = std::unique_ptr<Graph>(*)(parser::KlassRegister*, std::string, const jsonxx::Object&);
 
     template<typename T>
-    static std::unique_ptr<Graph> default_constructor(std::string graph_id, const jsonxx::Object& graph_description)
+    static std::unique_ptr<Graph> default_constructor(parser::KlassRegister* klass_register, std::string graph_id, const jsonxx::Object& graph_description)
     {
-        return parser::make_unique<T>(std::move(graph_id), graph_description);
+        return parser::make_unique<T>(klass_register, std::move(graph_id), graph_description);
     }
 
     class Info
@@ -66,7 +66,7 @@ public:
     GraphFactory();
 
     void register_type(CreateFnc factory_method, Graph::TypeId type_id, std::vector<std::string> fields);
-    std::unique_ptr<Graph> create_graph(Graph::TypeId type_id, std::string graph_id, const jsonxx::Object& graph_description);
+    std::unique_ptr<Graph> create_graph(parser::KlassRegister* klass_register, Graph::TypeId type_id, std::string graph_id, const jsonxx::Object& graph_description);
     std::unordered_map<std::string, Info> get_graphs_info() const { std::lock_guard<std::mutex> l(_mtx); return _graph_types; }
 
 private:

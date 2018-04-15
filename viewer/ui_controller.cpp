@@ -2,7 +2,8 @@
 #include "logger.hpp"
 
 #include <hawktracer/monotonic_clock.h>
-#include <parser/klass_register.hpp>
+#include <hawktracer/parser/klass_register.hpp>
+#include <hawktracer/parser/make_unique.hpp>
 #include <cstring>
 #include <algorithm>
 
@@ -13,11 +14,11 @@ namespace viewer
 
 using namespace parser;
 
-UIController::UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<ProtocolReader> reader) :
+UIController::UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<Stream> stream) :
     _ui(std::move(ui)),
-    _total_ts_range((HT_TimestampNs)-1, 0),
-    _reader(std::move(reader))
+    _total_ts_range((HT_TimestampNs)-1, 0)
 {
+    _reader = make_unique<HawkTracer::parser::ProtocolReader>(&_klass_register, std::move(stream), true);
     _ui->set_controller(this);
 
     _reader->register_events_listener([this] (const HawkTracer::parser::Event& event) {
@@ -49,7 +50,7 @@ void UIController::handle_event(const Event& event)
     switch (static_cast<WellKnownKlasses>(klass->get_id()))
     {
     case WellKnownKlasses::EventKlassInfoEventKlass:
-        _ui->add_klass(KlassRegister::get().get_klass(event.get_value<uint32_t>("info_klass_id")).get());
+        _ui->add_klass(_klass_register.get_klass(event.get_value<uint32_t>("info_klass_id")).get());
         _set_timestamp_diff(event.get_timestamp());
         break;
     case WellKnownKlasses::EventKlassFieldInfoEventKlass:
@@ -64,7 +65,7 @@ void UIController::handle_event(const Event& event)
 
 void UIController::_handle_field_info_event(const Event& event)
 {
-    const auto& klass = KlassRegister::get().get_klass(event.get_value<uint32_t>("info_klass_id"));
+    const auto& klass = _klass_register.get_klass(event.get_value<uint32_t>("info_klass_id"));
     const char* field_name = event.get_value<char*>("field_name");
     std::shared_ptr<const EventKlassField> field = klass->get_field(field_name, true);
 
@@ -92,7 +93,7 @@ void UIController::set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts
 
 void UIController::request_klass_register()
 {
-    for (const auto& klass_it : KlassRegister::get().get_klasses())
+    for (const auto& klass_it : _klass_register.get_klasses())
     {
         const auto& klass = klass_it.second;
         _ui->add_klass(klass.get());

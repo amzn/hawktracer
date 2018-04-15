@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_VIEWER_EVENT_DB_HPP
 #define HAWKTRACER_VIEWER_EVENT_DB_HPP
 
-#include <parser/event.hpp>
+#include <hawktracer/parser/event.hpp>
 #include <hawktracer/base_types.h>
 
 #include <unordered_map>

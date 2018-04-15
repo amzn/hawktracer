@@ -4,7 +4,7 @@
 #include "event_db.hpp"
 #include "base_ui.hpp"
 
-#include <parser/protocol_reader.hpp>
+#include <hawktracer/parser/protocol_reader.hpp>
 
 #include <unordered_map>
 #include <vector>
@@ -17,7 +17,7 @@ namespace viewer
 class UIController
 {
 public:
-    UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<parser::ProtocolReader> reader);
+    UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<parser::Stream> stream);
 
     void handle_event(const parser::Event& event);
     void set_time_range(HT_DurationNs duration, HT_TimestampNs stop_ts);
@@ -29,6 +29,7 @@ public:
 
     TimeRange get_total_ts_range() const;
     TimeRange get_current_ts_range() const;
+    parser::KlassRegister* get_klass_register() { return &_klass_register; }
 
 private:
     void _handle_field_info_event(const parser::Event& event);
@@ -46,6 +47,7 @@ private:
     bool _sync_info_initialized = false;
     std::pair<bool, HT_TimestampNs> _sync_info;
 
+    parser::KlassRegister _klass_register;
     std::unique_ptr<parser::ProtocolReader> _reader;
 };
 
