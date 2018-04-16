@@ -1,5 +1,8 @@
 import groovy.transform.InheritConstructors
 
+String libTestOutFile = 'tests/lib/hawktracer_tests.xml'
+String parserTestOutFile = 'tests/parser/hawktracer_parser_tests.xml'
+
 stage('Linux') {
     def linuxBuild = new LinuxBuild(this, 'Linux')
         .withDebugBuild()
@@ -147,7 +150,7 @@ abstract class HTBuild {
     def publishReports() {
         context.stage(name + ': publish reports') {
             if (testsEnabled) {
-                context.junit 'tests/hawktracer_tests.xml'
+                context.junit 'tests/**/*.xml'
             }
             if (coverageEnabled) {
                 context.step([$class: 'CoberturaPublisher', coberturaReportFile: 'coverage.xml'])
@@ -198,8 +201,9 @@ class LinuxBuild extends HTBuild {
             buildArtifacts += 'benchmarks/hawktracer_benchmarks,'
         }
         if (testsEnabled) {
-            buildArtifacts += 'tests/hawktracer_tests,'
-            buildArtifacts += 'tests/hawktracer_test_destroy_timeline_after_uninit,'
+            buildArtifacts += 'tests/lib/hawktracer_test_gtest,'
+            buildArtifacts += 'tests/lib/hawktracer_test_destroy_timeline_after_uninit,'
+            buildArtifacts += 'tests/parser/hawktracer_test_parser,'
         }
 
         context.stash includes: buildArtifacts, name: stashName
@@ -213,7 +217,7 @@ class LinuxBuild extends HTBuild {
         }
 
         if (testsEnabled) {
-            reports += 'tests/hawktracer_tests.xml'
+            reports += context.libTestOutFile + ',' + context.parserTestOutFile
         }
 
         context.stash includes: reports, name: stashName
@@ -247,7 +251,8 @@ class MSVCBuild extends HTBuild {
 class RaspberryBuild extends LinuxBuild {
     @Override
     def runTests() {
-        context.sh 'LD_LIBRARY_PATH=./lib ./tests/hawktracer_tests --gtest_output=xml:tests/hawktracer_tests.xml'
-        context.sh 'LD_LIBRARY_PATH=./lib ./tests/hawktracer_test_destroy_timeline_after_uninit'
+        context.sh 'LD_LIBRARY_PATH=./lib ./tests/lib/hawktracer_test_gtest --gtest_output=xml:' + context.libTestOutFile
+        context.sh 'LD_LIBRARY_PATH=./lib ./tests/parser/hawktracer_test_parser --gtest_output=xml:' + context.parserTestOutFile
+        context.sh 'LD_LIBRARY_PATH=./lib ./tests/lib/hawktracer_test_destroy_timeline_after_uninit'
     }
 }
