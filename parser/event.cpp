@@ -16,7 +16,7 @@ Event::Value::Value(const Value& other) :
     case FieldTypeId::STRING:
         if (other.value.f_STRING)
         {
-            value.f_STRING = (char*)malloc(strlen(other.value.f_STRING));
+            value.f_STRING = (char*)malloc(strlen(other.value.f_STRING) + 1);
             strcpy(value.f_STRING, other.value.f_STRING);
         }
         else
