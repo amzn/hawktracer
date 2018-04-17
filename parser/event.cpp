@@ -25,7 +25,7 @@ Event::Value::Value(const Value& other) :
         }
         break;
     case FieldTypeId::STRUCT:
-        if (value.f_EVENT)
+        if (other.value.f_EVENT)
         {
             value.f_EVENT = new Event(*other.value.f_EVENT);
         }
