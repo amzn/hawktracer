@@ -31,6 +31,7 @@ static void BenchmarkTimelinePushBaseEventNoListener(benchmark::State& state)
 
     ht_timeline_deinit(&timeline);
 }
+// Passing the capacity of the timeline's buffer as the first argument
 BENCHMARK(BenchmarkTimelinePushBaseEventNoListener)->Arg(1024)->Arg(10);
 
 static void BenchmarkTimelineFlushNoListener(benchmark::State& state)
