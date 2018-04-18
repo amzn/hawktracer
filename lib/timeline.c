@@ -9,24 +9,13 @@
 #include <assert.h>
 
 static inline void
-_ht_timeline_notify_listeners(HT_Timeline* timeline)
+_ht_timeline_notify_listeners(HT_Timeline* timeline, TEventPtr events, size_t size)
 {
     size_t i;
     for (i = 0; i < timeline->listeners->user_datas.size; i++)
     {
         (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
-                (timeline->buffer, timeline->buffer_usage, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
-    }
-}
-
-static inline void
-_ht_timeline_push_event_to_listeners(HT_Timeline* timeline, HT_Event* event, size_t event_size)
-{
-    size_t i;
-    for (i = 0; i < timeline->listeners->user_datas.size; i++)
-    {
-        (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
-                ((TEventPtr)event, event_size, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
+                (events, size, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
     }
 }
 
@@ -60,7 +49,7 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 
         if (timeline->buffer_capacity < size)
         {
-            _ht_timeline_push_event_to_listeners(timeline, event, size);
+            _ht_timeline_notify_listeners(timeline, (TEventPtr)event, size);
         }
         else
         {
@@ -77,7 +66,7 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 
         if (timeline->buffer_capacity < klass->type_info->size) 
         {
-            _ht_timeline_push_event_to_listeners(timeline, event, klass->type_info->size);
+            _ht_timeline_notify_listeners(timeline, (TEventPtr)event, klass->type_info->size);
         }
         else
         {
@@ -97,7 +86,7 @@ ht_timeline_flush(HT_Timeline* timeline)
 {
     if (timeline->buffer_usage)
     {
-        _ht_timeline_notify_listeners(timeline);
+        _ht_timeline_notify_listeners(timeline, timeline->buffer, timeline->buffer_usage);
         timeline->buffer_usage = 0;
     }
 }
