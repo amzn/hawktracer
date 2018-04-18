@@ -19,6 +19,17 @@ _ht_timeline_notify_listeners(HT_Timeline* timeline)
     }
 }
 
+static inline void
+_ht_timeline_push_event_to_listeners(HT_Timeline* timeline, HT_Event* event, size_t event_size)
+{
+    size_t i;
+    for (i = 0; i < timeline->listeners->user_datas.size; i++)
+    {
+        (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
+                ((TEventPtr)event, event_size, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
+    }
+}
+
 void
 ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event)
 {
@@ -47,9 +58,15 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
             ht_timeline_flush(timeline);
         }
 
-        event->klass->serialize(event, timeline->buffer + timeline->buffer_usage);
-
-        timeline->buffer_usage += size;
+        if (timeline->buffer_capacity < size)
+        {
+            _ht_timeline_push_event_to_listeners(timeline, event, size);
+        }
+        else
+        {
+            event->klass->serialize(event, timeline->buffer + timeline->buffer_usage);
+            timeline->buffer_usage += size;
+        }
     }
     else
     {
@@ -58,8 +75,15 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
             ht_timeline_flush(timeline);
         }
 
-        memcpy(timeline->buffer + timeline->buffer_usage, event, klass->type_info->size);
-        timeline->buffer_usage += klass->type_info->size;
+        if (timeline->buffer_capacity < klass->type_info->size) 
+        {
+            _ht_timeline_push_event_to_listeners(timeline, event, klass->type_info->size);
+        }
+        else
+        {
+            memcpy(timeline->buffer + timeline->buffer_usage, event, klass->type_info->size);
+            timeline->buffer_usage += klass->type_info->size;
+        }
     }
 
     if (timeline->locking_policy != NULL)
@@ -71,8 +95,11 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 void
 ht_timeline_flush(HT_Timeline* timeline)
 {
-    _ht_timeline_notify_listeners(timeline);
-    timeline->buffer_usage = 0;
+    if (timeline->buffer_usage)
+    {
+        _ht_timeline_notify_listeners(timeline);
+        timeline->buffer_usage = 0;
+    }
 }
 
 void
