@@ -1,6 +1,7 @@
 #include <hawktracer/timeline.h>
 #include <hawktracer/events.h>
 
+#include "test_test_events.h"
 #include "test_common.h"
 
 #include <gtest/gtest.h>
@@ -199,4 +200,38 @@ TEST_F(TestTimeline, SharedListener)
 
     ht_timeline_deinit(&timeline1);
     ht_timeline_deinit(&timeline2);
+}
+
+TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners)
+{
+    // Arrange
+    HT_Timeline timeline_serialize_false;
+    ht_timeline_init(&timeline_serialize_false, sizeof(HT_Event), HT_TRUE, HT_FALSE, nullptr);
+    NotifyInfo<HT_EventKlass> info_serialize_false;
+    ht_timeline_register_listener(&timeline_serialize_false, test_listener<HT_EventKlass>, &info_serialize_false);
+
+
+    HT_Timeline timeline_serialize_true;
+    ht_timeline_init(&timeline_serialize_true, sizeof(HT_Event), HT_TRUE, HT_TRUE, nullptr);
+    NotifyInfo<HT_EventKlass> info_serialize_true;
+    ht_timeline_register_listener(&timeline_serialize_true, test_listener<HT_EventKlass>, &info_serialize_true);
+
+    // Act
+    ht_DoubleTestEvent_register_event_klass();
+    HT_DECL_EVENT(DoubleTestEvent, event);
+    ht_timeline_push_event(&timeline_serialize_false, ((HT_Event*)(&event)));
+    ht_timeline_push_event(&timeline_serialize_true, ((HT_Event*)(&event)));
+
+    // Assert
+    ASSERT_EQ(1, info_serialize_false.notify_count);
+    ASSERT_EQ(sizeof(DoubleTestEvent), info_serialize_false.notified_events);
+
+    ASSERT_EQ(1, info_serialize_true.notify_count);
+    ASSERT_EQ(HT_EVENT_GET_CLASS((HT_Event*)(&event))->get_size((HT_Event*)(&event)), info_serialize_true.notified_events);
+
+
+    ht_timeline_unregister_all_listeners(&timeline_serialize_false);
+    ht_timeline_unregister_all_listeners(&timeline_serialize_true);
+    ht_timeline_deinit(&timeline_serialize_false);
+    ht_timeline_deinit(&timeline_serialize_true);
 }

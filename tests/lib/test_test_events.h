@@ -13,6 +13,8 @@ HT_DECLARE_EVENT_KLASS(RegistryTestEvent_ID_ONE, HT_Event, (INTEGER, int, field)
 
 HT_DECLARE_EVENT_KLASS(RegistryTestEvent_ID_TWO, HT_Event, (INTEGER, int, field))
 
+HT_DECLARE_EVENT_KLASS(DoubleTestEvent, HT_Event, (DOUBLE, double, field))
+
 HT_DECLS_END
 
 #endif /* HAWKTRACER_TEST_TEST_EVENTS_H */
