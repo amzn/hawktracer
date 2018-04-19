@@ -184,7 +184,7 @@ class LinuxBuild extends HTBuild {
         context.sh 'make test CTEST_OUTPUT_ON_FAILURE=1'
 
         if (coverageEnabled) {
-            context.sh 'gcovr -r . --exclude-directories tests --exclude-directories benchmarks --exclude-directories examples --xml -o coverage.xml'
+            context.sh 'gcovr -r . --exclude=examples/* --exclude=tests/* --exclude=benchmarks/* --html --xml -o coverage.xml'
         }
     }
 
