@@ -235,8 +235,10 @@ class MSVCBuild extends HTBuild {
     }
 
     def runTests() {
-        context.bat 'copy tests\\googletest\\googlemock\\gtest\\Release\\gtest.dll tests\\Release\\'
-        context.bat 'copy lib\\Release\\hawktracer.dll tests\\Release\\'
+        context.bat 'copy tests\\googletest\\googlemock\\gtest\\Release\\gtest.dll tests\\lib\\Release\\'
+        context.bat 'copy lib\\Release\\hawktracer.dll tests\\lib\\Release\\'
+        context.bat 'copy tests\\googletest\\googlemock\\gtest\\Release\\gtest.dll tests\\parser\\Release\\'
+        context.bat 'copy lib\\Release\\hawktracer.dll tests\\parser\\Release\\'
         context.bat 'ctest --verbose'
     }
 

@@ -64,7 +64,7 @@ void KlassRegister::handle_register_events(const Event& event)
                 type_klass = get_klass(field_type);
             }
 
-            auto field = make_unique<EventKlassField>(
+            auto field = HawkTracer::parser::make_unique<EventKlassField>(
                         event.get_value<char*>("field_name"),
                         field_type,
                         get_type_id(event.get_value<uint64_t>("size"), type),

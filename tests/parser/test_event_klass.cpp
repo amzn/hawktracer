@@ -22,9 +22,9 @@ TEST(TestEventKlass, AddFieldShouldNotAddTheSameFieldTwice)
     EventKlass klass("test_klass", 1);
     const std::string field_name = "field1";
     const std::string type_name = "field_type";
-    auto first_field = make_unique<EventKlassField>(field_name, type_name, FieldTypeId::INT8);
+    auto first_field = HawkTracer::parser::make_unique<EventKlassField>(field_name, type_name, FieldTypeId::INT8);
     klass.add_field(std::move(first_field));
-    auto second_field = make_unique<EventKlassField>(field_name, "field_type_2", FieldTypeId::INT8);
+    auto second_field = HawkTracer::parser::make_unique<EventKlassField>(field_name, "field_type_2", FieldTypeId::INT8);
 
     // Act
     klass.add_field(std::move(second_field));
@@ -51,9 +51,9 @@ TEST(TestEventKlass, GetFieldShouldReturnEmptyPointerIfFieldExistInSubKlass_NonR
     // Arrange
     const std::string base_field_name = "base_field_name";
     auto base_klass = std::make_shared<EventKlass>("base_klass", 0);
-    base_klass->add_field(make_unique<EventKlassField>(base_field_name.c_str(), "type", FieldTypeId::INT8));
+    base_klass->add_field(HawkTracer::parser::make_unique<EventKlassField>(base_field_name.c_str(), "type", FieldTypeId::INT8));
     EventKlass klass("test_klass", 1);
-    klass.add_field(make_unique<EventKlassField>("parent", "type", FieldTypeId::INT8, base_klass));
+    klass.add_field(HawkTracer::parser::make_unique<EventKlassField>("parent", "type", FieldTypeId::INT8, base_klass));
 
     // Act
     auto field = klass.get_field(base_field_name.c_str(), false);
@@ -67,7 +67,7 @@ TEST(TestEventKlass, GetFieldShouldReturnFieldIfFieldExists_NonRecursive)
     // Arrange
     EventKlass klass("test_klass", 1);
     const std::string field_name = "test_field";
-    klass.add_field(make_unique<EventKlassField>(field_name, "type", FieldTypeId::INT8));
+    klass.add_field(HawkTracer::parser::make_unique<EventKlassField>(field_name, "type", FieldTypeId::INT8));
 
     // Act
     auto field = klass.get_field(field_name.c_str(), false);
@@ -84,7 +84,7 @@ TEST(TestEventKlass, GetFieldShouldReturnFieldIfFieldExistInSubKlass_Recursive)
     auto base_klass = std::make_shared<EventKlass>("base_klass", 0);
     base_klass->add_field(make_unique<EventKlassField>(base_field_name.c_str(), "type", FieldTypeId::INT8));
     EventKlass klass("test_klass", 1);
-    klass.add_field(make_unique<EventKlassField>("base", "type", FieldTypeId::STRUCT, base_klass));
+    klass.add_field(HawkTracer::parser::make_unique<EventKlassField>("base", "type", FieldTypeId::STRUCT, base_klass));
 
     // Act
     auto field = klass.get_field(base_field_name.c_str(), true);
