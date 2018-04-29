@@ -2,6 +2,7 @@
 #define HAWKTRACER_BAG_H
 
 #include <hawktracer/macros.h>
+#include <hawktracer/base_types.h>
 
 #include <stddef.h>
 
@@ -24,8 +25,12 @@ typedef struct
  *
  * @param bag a pointer to the container.
  * @param min_capacity minimal capacity of the container.
+ *
+ * @returns #HT_TRUE, if initialization completed successfully; otherwise, #HT_FALSE.
+ *
+ * Initialization might fail, if the process can't allocate enough memory.
  */
-HT_API void ht_bag_init(HT_Bag* bag, size_t min_capacity);
+HT_API HT_Boolean ht_bag_init(HT_Bag* bag, size_t min_capacity);
 
 /**
  * Uninitializes bag structure.
@@ -63,8 +68,14 @@ HT_API void ht_bag_remove_nth(HT_Bag* bag, size_t n);
  *
  * @param bag a pointer to the container.
  * @param data a value to be added to the container.
+ *
+ * @returns  #HT_TRUE, if element was successfully added to the container; otherwise, #HT_FALSE.
+ *
+ * The function might fail, if the process can't allocate enough memory to extend internal data
+ * buffer. The function never fails, if ht_bag_init() doesn't fail and number of elements in the bag is
+ * less than @a min_capacity.
  */
-HT_API void ht_bag_add(HT_Bag* bag, void* data);
+HT_API HT_Boolean ht_bag_add(HT_Bag* bag, void* data);
 
 /**
  * Removes all elements from the container.

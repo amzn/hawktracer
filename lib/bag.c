@@ -1,20 +1,37 @@
 #include "hawktracer/bag.h"
 #include "hawktracer/alloc.h"
 
-static inline void
+static inline HT_Boolean
 _ht_bag_resize(HT_Bag* bag, size_t new_capacity)
 {
+    void** ptr = (void**)ht_realloc(bag->data, new_capacity * sizeof(void*));
+
+    if (ptr == NULL)
+    {
+        return HT_FALSE;
+    }
+
+    bag->data = ptr;
     bag->capacity = new_capacity;
-    bag->data = ht_realloc(bag->data, bag->capacity * sizeof(void*));
+
+    return HT_TRUE;
 }
 
-void
+HT_Boolean
 ht_bag_init(HT_Bag* bag, size_t min_capacity)
 {
+    bag->data = ht_alloc(min_capacity * sizeof(void*));
+
+    if (bag->data == NULL)
+    {
+        return HT_FALSE;
+    }
+
     bag->min_capacity = min_capacity;
     bag->capacity = min_capacity;
     bag->size = 0;
-    bag->data = ht_alloc(min_capacity * sizeof(void*));
+
+    return HT_TRUE;
 }
 
 void
@@ -45,15 +62,20 @@ ht_bag_remove_nth(HT_Bag* bag, size_t n)
     }
 }
 
-void
+HT_Boolean
 ht_bag_add(HT_Bag* bag, void* data)
 {
     if (bag->capacity == bag->size)
     {
-        _ht_bag_resize(bag, bag->capacity * 2);
+        if (_ht_bag_resize(bag, bag->capacity * 2) == HT_FALSE)
+        {
+            return HT_FALSE;
+        }
     }
 
     bag->data[bag->size++] = data;
+
+    return HT_TRUE;
 }
 
 void
