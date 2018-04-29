@@ -6,7 +6,7 @@
 HT_DECLS_BEGIN
 
 /**
- * @brief Initializes HawkTracer library.
+ * Initializes HawkTracer library.
  *
  * This function must be called before any other function
  * from this library. The only exception is ht_allocator_set(),
@@ -18,7 +18,7 @@ HT_DECLS_BEGIN
 HT_API void ht_init(int argc, char** argv); /* TODO: consider passing allocator here */
 
 /**
- * @brief Uninitializes HawkTracer library.
+ * Uninitializes HawkTracer library.
  *
  * This function must be called as a last function
  * of the library in the program. The only exception is

@@ -6,7 +6,7 @@
 HT_DECLS_BEGIN
 
 /**
- * @brief Gets a current timestamp of a monotonic clock.
+ * Gets a current timestamp of a monotonic clock.
  *
  * The timestamp of this clock can not decrease as physical
  * time moves forward. Although the timestamp doesn't represent wall

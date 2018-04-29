@@ -8,14 +8,14 @@
 HT_DECLS_BEGIN
 
 /**
- * @brief Callback function for a custom allocator.
+ * Callback function for a custom allocator.
  *
  * HawkTracer requires only one function, which depending on
  * parameter values, performs: alloc, free, and realloc operations.
  *
- * To allocate memory, @a ptr must be NULL.
- * To free memory, @a size must be equal to 0.
- * To realloc memory, @size must be greater than 0, and @a ptr must not
+ * To allocate memory, @p ptr must be NULL.
+ * To free memory, @p size must be equal to 0.
+ * To realloc memory, @p size must be greater than 0, and @p ptr must not
  * be NULL.
  *
  * @param ptr a pointer to a memory block for alloc/realloc/free operations.
@@ -27,7 +27,7 @@ HT_DECLS_BEGIN
 typedef void* (*realloc_function)(void* ptr, size_t size, void* user_data);
 
 /**
- * @brief Sets a global allocator for HawkTracer library.
+ * Sets a global allocator for HawkTracer library.
  *
  * The allocator is used for every allocation in the library. The function
  * must be called before ht_init() function call.
@@ -39,7 +39,7 @@ typedef void* (*realloc_function)(void* ptr, size_t size, void* user_data);
 HT_API void ht_allocator_set(realloc_function func, void* user_data);
 
 /**
- * @brief Allocates memory using HawkTracer allocator.
+ * Allocates memory using HawkTracer allocator.
  *
  * @param size a number of bytes to allocate.
  *
@@ -48,7 +48,7 @@ HT_API void ht_allocator_set(realloc_function func, void* user_data);
 HT_API void* ht_alloc(size_t size);
 
 /**
- * @brief Changes the size of the memory block.
+ * Changes the size of the memory block.
  *
  * @param ptr a pointer to the memory block.
  * @param size new size of the memory block.
@@ -58,14 +58,14 @@ HT_API void* ht_alloc(size_t size);
 HT_API void* ht_realloc(void* ptr, size_t size);
 
 /**
- * @brief Releases memory allocated by ht_alloc.
+ * Releases memory allocated by ht_alloc.
  *
  * @param ptr a pointer to the memory block to release.
  */
 HT_API void ht_free(void* ptr);
 
 /**
- * @brief Allocates memory for a specific @a Type.
+ * Allocates memory for a specific @a Type.
  *
  * @param Type a type of an object to allocate memory for.
  *

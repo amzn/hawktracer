@@ -1,14 +1,14 @@
 #ifndef HAWKTRACER_MACROS_H
 #define HAWKTRACER_MACROS_H
 
-/** @brief Helper macro for suppressing unused value warnings. */
+/** Helper macro for suppressing unused value warnings. */
 #define HT_UNUSED(x) (void)(x)
 
 /** @def HT_DECLS_BEGIN
- * @brief Defines a beginning of C linkage block.
+ * Defines a beginning of C linkage block.
  */
 /** @def HT_DECLS_END
- * @brief Defines an end of C linkage block.
+ * Defines an end of C linkage block.
  */
 #ifdef __cplusplus
 #  define HT_DECLS_BEGIN  extern "C" {
@@ -24,13 +24,13 @@
 
 /**
  * @def HT_LIKELY
- * @brief Hints a compiler that the expression is likely to evaluate to true.
+ * Hints a compiler that the expression is likely to evaluate to true.
  *
  * This information may be used for compiler optimizations.
  */
 /**
  * @def HT_UNLIKELY
- * @brief Hints a compiler that the expression is likely to evaluate to false.
+ * Hints a compiler that the expression is likely to evaluate to false.
  *
  * This information may be used for compiler optimizations.
  */
@@ -43,7 +43,7 @@
 #endif
 
 /** @def inline
- * @brief Defines an inline directive for inlining functions.
+ * Defines an inline directive for inlining functions.
  */
 #ifndef __cplusplus
 #  ifdef _MSC_VER
@@ -60,7 +60,7 @@
 #endif
 
 /** @def HT_API
- * @brief Defines a directive for exporting/importing symbols from DLL.
+ * Defines a directive for exporting/importing symbols from DLL.
  */
 #ifdef HT_PLATFORM_WIN32
 #  if defined(HT_COMPILE_SHARED_EXPORT)

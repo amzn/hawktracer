@@ -7,7 +7,7 @@
 HT_DECLS_BEGIN
 
 /**
- * @brief Gets a unique identifier of the current thread.
+ * Gets a unique identifier of the current thread.
  *
  * @return an identifier of the current thread.
  */

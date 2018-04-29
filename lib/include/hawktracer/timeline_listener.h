@@ -27,7 +27,7 @@ HT_API HT_TimelineListenerContainer* ht_timeline_listener_container_create(void)
 HT_API void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);
 
 /**
- * @brief Registers new listener to a container.
+ * Registers new listener to a container.
  *
  * @param container a pointer to the container.
  * @param callback a timeline listener callback.
@@ -39,7 +39,7 @@ HT_API void ht_timeline_listener_container_register_listener(
         void* user_data);
 
 /**
- * @brief Removes all timeline listeners from the container.
+ * Removes all timeline listeners from the container.
  *
  * @param container a pointer to the container.
  */
@@ -47,7 +47,7 @@ HT_API void ht_timeline_listener_container_unregister_all_listeners(
         HT_TimelineListenerContainer* container);
 
 /**
- * @brief Finds an container in a global registry or create one if container doesn't exist.
+ * Finds an container in a global registry or create one if container doesn't exist.
  *
  * If @a name is NULL, this method always returns new container.
  *
