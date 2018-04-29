@@ -47,6 +47,7 @@ set(HAWKTRACER_CORE_SOURCES
     mutex.cpp
     registry.c
     stack.c
+    task_scheduler.c
     tcp_server.cpp
     thread.cpp
     timeline.c

@@ -21,6 +21,7 @@
 #include <hawktracer/monotonic_clock.h>
 #include <hawktracer/registry.h>
 #include <hawktracer/stack.h>
+#include <hawktracer/task_scheduler.h>
 #include <hawktracer/thread.h>
 #include <hawktracer/timeline.h>
 #include <hawktracer/timeline_listener.h>

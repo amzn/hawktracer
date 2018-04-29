@@ -12,6 +12,7 @@ set(hawktracer_gtest_tests_SOURCE
     test_global_timeline.cpp
     test_registry.cpp
     test_stack.cpp
+    test_task_scheduler.cpp
     test_test_events.c
     test_thread.cpp
     test_timeline.cpp)
