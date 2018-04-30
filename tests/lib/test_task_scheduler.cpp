@@ -1,4 +1,5 @@
 #include <hawktracer/task_scheduler.h>
+#include <hawktracer/monotonic_clock.h>
 
 #include <gtest/gtest.h>
 
@@ -147,21 +148,27 @@ TEST_F(TestTaskScheduler, SchedulerShouldExecuteAllTasks)
     // Arrange
     int value1 = 0;
     int value2 = 0;
+    const HT_DurationNs timeout = 10 * 1000 * 1000; // 10ms
     const HT_DurationNs period1 = 1 * 1000 * 1000; // 1ms
     const HT_DurationNs period2 = 2 * 1000 * 1000; // 2ms
+    auto timestamp_start = ht_monotonic_clock_get_timestamp();
     ht_task_scheduler_schedule_task(&_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, period1, test_callback, &value1);
     ht_task_scheduler_schedule_task(&_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, period2, test_callback, &value2);
 
     // Act
-    for (int i = 0; i < 5; i++)
+    HT_TimestampNs timestamp_now = timestamp_start;
+
+    while ((value1 < 5 || value2 < 2) && timestamp_now < timestamp_start + timeout)
     {
-        std::this_thread::sleep_for(std::chrono::microseconds(1100));
+        std::this_thread::sleep_for(std::chrono::microseconds(200));
+
         ht_task_scheduler_tick(&_scheduler);
+        timestamp_now = ht_monotonic_clock_get_timestamp();
     }
 
     // Assert
-    ASSERT_EQ(5, value1);
-    ASSERT_EQ(2, value2);
+    ASSERT_GE(timestamp_now, timestamp_start + 5000000); // check if we spent at least 5 ms executing tasks
+    ASSERT_LE(timestamp_now, timestamp_start + timeout); // check timeout
 }
 
 TEST_F(TestTaskScheduler, SchedulerShouldExecuteDelayedTasks_IgnoreDelays)
@@ -180,7 +187,7 @@ TEST_F(TestTaskScheduler, SchedulerShouldExecuteDelayedTasks_IgnoreDelays)
     }
 
     // Assert
-    ASSERT_EQ(3, value);
+    ASSERT_LE(3, value);
 }
 
 TEST_F(TestTaskScheduler, SchedulerShouldNotExecuteDelayedTasks_RestartTimer)

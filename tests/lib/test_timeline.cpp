@@ -127,7 +127,7 @@ TEST_F(TestTimeline, InitEventShouldSetMonotonicTimestamp)
     ht_timeline_init_event(&_timeline, &event);
 
     // Assert
-    ASSERT_LT(ts, event.timestamp);
+    ASSERT_LE(ts, event.timestamp);
 }
 
 TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
