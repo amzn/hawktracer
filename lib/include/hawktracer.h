@@ -1,6 +1,7 @@
 #ifndef HAWKTRACER_HAWKTRACER_H
 #define HAWKTRACER_HAWKTRACER_H
 
+#include <hawktracer/config.h>
 #include <hawktracer/alloc.h>
 #include <hawktracer/bag.h>
 #include <hawktracer/base_types.h>
@@ -25,5 +26,9 @@
 #include <hawktracer/thread.h>
 #include <hawktracer/timeline.h>
 #include <hawktracer/timeline_listener.h>
+
+#ifdef HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED
+#include <hawktracer/cpu_usage.h>
+#endif /* HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED */
 
 #endif /* HAWKTRACER_HAWKTRACER_H */

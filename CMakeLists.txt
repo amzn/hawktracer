@@ -19,6 +19,11 @@ option(ENABLE_RELEASE_MODE "Enables release mode. This flag should be used
     to compile and release product.")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+# PLATFORM FEATURES
+include(platform_features)
+define_platform_feature(CPU_USAGE "cpu_usage.c")
+
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -70,4 +75,4 @@ if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif(ENABLE_BENCHMARKS)
 
-include(cmake/packager.cmake)
+include(packager)

@@ -53,6 +53,13 @@ set(HAWKTRACER_CORE_SOURCES
     timeline.c
     timeline_listener.c)
 
+if (HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED)
+    list(APPEND HAWKTRACER_CORE_HEADERS include/hawktracer/cpu_usage.h)
+    list(APPEND HAWKTRACER_CORE_SOURCES "${HT_PLATFORM_FEATURE_CPU_USAGE_SOURCE}")
+endif()
+
+configure_file(include/hawktracer/config.h.in include/hawktracer/config.h)
+
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})
 
 # We need to compile sources 2 times - the reason why we can't re-use object files
@@ -61,13 +68,13 @@ set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOU
 set(HAWKTRACER_LIB_INSTALL_TARGETS)
 if(ENABLE_SHARED_LIB)
     add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_include_directories(hawktracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
     target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
 endif(ENABLE_SHARED_LIB)
 if(ENABLE_STATIC_LIB)
     add_library(hawktracer_static STATIC ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    target_include_directories(hawktracer_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer_static)
 endif(ENABLE_STATIC_LIB)
 
@@ -76,4 +83,9 @@ install(TARGETS ${HAWKTRACER_LIB_INSTALL_TARGETS}
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)
 
-install(DIRECTORY include/hawktracer DESTINATION include)
+install(DIRECTORY include/hawktracer
+    DESTINATION include
+    PATTERN "config.h.in" EXCLUDE)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/hawktracer/config.h
+    DESTINATION include/hawktracer/)
