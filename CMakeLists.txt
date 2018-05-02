@@ -63,7 +63,9 @@ add_subdirectory(lib)
 add_subdirectory(parser)
 add_subdirectory(client)
 
-add_subdirectory(tools_integration)
+if(ENABLE_VIEWER)
+    add_subdirectory(viewer)
+endif(ENABLE_VIEWER)
 
 if(ENABLE_TESTS)
     enable_testing()
@@ -79,9 +81,7 @@ if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
 endif(ENABLE_BENCHMARKS)
 
-if(ENABLE_VIEWER)
-    add_subdirectory(viewer)
-endif(ENABLE_VIEWER)
+add_subdirectory(tools_integration)
 
 include(packager)
 
