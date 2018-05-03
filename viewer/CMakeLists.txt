@@ -1,5 +1,5 @@
 add_library(hawktracer_viewer
-    SHARED
+    STATIC
     base_ui.cpp
     event_db.cpp
     graph.cpp
