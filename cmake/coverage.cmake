@@ -8,7 +8,8 @@ IS_COMPILER_OK_FOR_COVERAGE(${CMAKE_C_COMPILER_ID} COV_C_OK)
 IS_COMPILER_OK_FOR_COVERAGE(${CMAKE_CXX_COMPILER_ID} COV_CXX_OK)
 
 if(NOT COV_C_OK OR NOT COV_CXX_OK)
-    message(FATAL_ERROR "Can't calculate coverage due to compiler incompatibility")
+    message(WARNING "Can't calculate coverage due to compiler incompatibility")
+    return()
 endif()
 
 set(COVERAGE_COMPILER_FLAGS "-ftest-coverage -fprofile-arcs")

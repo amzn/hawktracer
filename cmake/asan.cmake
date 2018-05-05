@@ -11,7 +11,7 @@ macro(CHECK_ASAN COMPILER_ID ASAN_FLAGS)
         set(${ASAN_FLAGS})
         link_libraries(asan)
     else()
-        message(FATAL_ERROR "Asan not supported for ${CMAKE_CXX_COMPILER_ID} compiler")
+        message(WARNING "Asan not supported for ${CMAKE_CXX_COMPILER_ID} compiler")
     endif()
 endmacro()
 
