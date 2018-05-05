@@ -141,7 +141,7 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
     ht_timeline_register_listener(&timeline, test_listener<HT_Event>, &info);
 
     // Act
-    std::thread th = std::thread([&timeline, event_count] {
+    std::thread th = std::thread([&timeline] {
         for (size_t i = event_count / 2; i < event_count; i++)
         {
             HT_DECL_EVENT(HT_Event, event);

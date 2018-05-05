@@ -38,10 +38,10 @@ TEST_F(TestEvent, ValidateSetValueMethod)
 TEST_F(TestEvent, SetTimestampValueShouldUpdateTimestampField)
 {
    // Arrange
+    auto timestamp_field = std::make_shared<EventKlassField>("timestamp", "field_type", FieldTypeId::UINT64);
     Event event(_klass);
     FieldType value{};
     value.f_UINT64 = 987;
-    auto timestamp_field = std::make_shared<EventKlassField>("timestamp", "field_type", FieldTypeId::UINT64);
 
     // Act
     event.set_value(timestamp_field.get(), value);
@@ -128,8 +128,8 @@ TEST_F(TestEvent, CopyEventWithNullStringShouldSetFieldValueToNull)
 TEST_F(TestEvent, CopyEventWithNullEventShouldSetFieldValueToNull)
 {
     // Arrange
-    Event event(_klass);
     auto field = std::make_shared<EventKlassField>("base_field3", "klass_name", FieldTypeId::STRUCT);
+    Event event(_klass);
     event.set_value<Event*>(field.get(), nullptr);
 
     // Act

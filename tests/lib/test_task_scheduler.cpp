@@ -20,7 +20,7 @@ protected:
         ht_task_scheduler_init(&_scheduler);
     }
 
-    void TearDown()
+    void TearDown() override
     {
         ht_task_scheduler_deinit(&_scheduler);
     }
