@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/amzn/hawktracer.svg?branch=master)](https://travis-ci.org/amzn/hawktracer)
+[![Gitter chat](https://img.shields.io/gitter/room/amzn/hawktracer.svg)](https://gitter.im/amzn/hawktracer)
+
 # HawkTracer
 
 HawkTracer is a highly portable, low-overhead, configurable profiling tool built in Amazon Video for getting performance metrics from low-end devices.

@@ -1,0 +1,47 @@
+sudo: required # to run ASAN 
+
+language:
+  - c
+  - cpp
+
+compiler:
+  - clang
+  - gcc
+os:
+  - osx
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - lcov
+            - python
+            - doxygen
+
+      before_install:
+        # - pip install --user codecov
+
+      after_script:
+        - make coverage_base
+        - make doc_doxygen_coverage
+        # - codecov --file coverage.info -F unittests
+        # - codecov --file doc-coverage.info -F documentation
+
+    - os: linux
+      compiler: clang
+
+script:
+  - cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_ASAN=ON -DENABLE_BENCHMARKS=ON -DENABLE_CODE_COVERAGE=ON ENABLE_EXAMPLES=ON -DENABLE_SHARED_LIB=ON -DENABLE_STATIC_LIB=ON -DENABLE_TESTS=ON .
+  - make
+  - make test CTEST_OUTPUT_ON_FAILURE=TRUE
+  - ./benchmarks/hawktracer_benchmarks
+
+branches:
+  only:
+    - master
+
+notifications:
+  email: false

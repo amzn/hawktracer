@@ -30,8 +30,11 @@ if(NOT XDG_OPEN_PATH)
     set(XDG_OPEN_PATH cmake -E echo Coverage report generated. Open )
 endif()
 
-add_custom_target(coverage
+add_custom_target(coverage_base
     COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
-    COMMAND ${LCOV_PATH} -r coverage.info /usr/\\*include/\\* \\*tests/\\* -o coverage.info
+    COMMAND ${LCOV_PATH} -r coverage.info /usr/\\*include/\\* \\*tests/\\* \\*benchmarks/\\* -o coverage.info)
+
+add_custom_target(coverage
     COMMAND ${GENHTML_PATH} coverage.info --output-directory coverage_report
-    COMMAND ${XDG_OPEN_PATH} coverage_report/index.html)
+    COMMAND ${XDG_OPEN_PATH} coverage_report/index.html
+    DEPENDS coverage_base)
