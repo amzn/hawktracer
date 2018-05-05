@@ -1,3 +1,15 @@
+0.5.0 (unstable) - 5.05.2018:
+  * make parser library thread-safe
+  * fix bug which was preventing from event multilevel inheritance
+  * integrate Doxygen with a project
+  * add library API documentation (current documentation coverage: 17%)
+  * add license file for a project (MIT)
+  * add parser tests (current parser code coverage: 96%)
+  * fix buffer overflow in a ht_timeline_push_event()
+  * add task scheduler
+  * add CPU usage feature for Linux-based platforms
+  * many small bug fixes and minor improvements
+
 0.4.0 (unstable) - 22.03.2018:
   * port HawkTracer to Windows
   * setup continuous integration service (Jenkins)
