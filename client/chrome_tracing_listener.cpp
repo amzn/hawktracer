@@ -1,11 +1,14 @@
 #include "chrome_tracing_listener.hpp"
 
+#include "hawktracer/parser/klass_register.hpp"
+
 namespace HawkTracer
 {
 namespace client
 {
 
 ChromeTraceListener::ChromeTraceListener(std::unique_ptr<TracepointMap> tracepoint_map) :
+    _mapping_klass_name("HT_StringMappingEvent"),
     _tracepoint_map(std::move(tracepoint_map))
 {
 }
@@ -38,6 +41,21 @@ void ChromeTraceListener::uninit()
 void ChromeTraceListener::process_event(const parser::Event& event)
 {
     std::string label;
+
+    if (_mapping_klass_id == 0 &&
+            event.get_klass()->get_id() == HawkTracer::parser::to_underlying(HawkTracer::parser::WellKnownKlasses::EventKlassInfoEventKlass))
+    {
+        if (event.get_value<char*>("event_klass_name") == _mapping_klass_name)
+        {
+            _mapping_klass_id = event.get_value<HT_EventKlassId>("info_klass_id");
+        }
+    }
+    if (event.get_klass()->get_id() == _mapping_klass_id)
+    {
+        _tracepoint_map->add_map_entry(event.get_value<uint64_t>("identifier"), event.get_value<char*>("label"));
+        return;
+    }
+
     if (event.has_value("label"))
     {
         const parser::Event::Value& value = event.get_raw_value("label");

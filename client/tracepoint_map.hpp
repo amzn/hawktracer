@@ -30,6 +30,8 @@ public:
     bool load_map(const std::string& map_file);
     void load_maps(const std::string& map_files);
 
+    void add_map_entry(uint64_t id, std::string label);
+
 private:
     std::unordered_map<uint64_t, MapInfo> _input_map;
     static std::string category_to_string(Category category);
