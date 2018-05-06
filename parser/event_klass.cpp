@@ -16,7 +16,7 @@ EventKlassField::EventKlassField(std::string name, std::string type_name, FieldT
 
 size_t EventKlassField::get_sizeof() const
 {
-    assert(is_numeric());
+    assert(is_numeric() || _type_id == FieldTypeId::POINTER);
     FieldType v;
 #define GET_SIZE_VARIANT(type_id) case FieldTypeId::type_id: return sizeof(v.f_##type_id)
     switch (_type_id)
@@ -29,6 +29,7 @@ size_t EventKlassField::get_sizeof() const
     GET_SIZE_VARIANT(UINT32);
     GET_SIZE_VARIANT(INT64);
     GET_SIZE_VARIANT(UINT64);
+    GET_SIZE_VARIANT(POINTER);
     default: assert(0); return 0;
     }
 #undef GET_SIZE_VARIANT
