@@ -59,6 +59,11 @@ if (HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED)
     list(APPEND HAWKTRACER_CORE_SOURCES "${HT_PLATFORM_FEATURE_CPU_USAGE_SOURCE}")
 endif()
 
+if (CMAKE_USE_PTHREADS_INIT)
+    set(HT_USE_PTHREADS ON)
+    list(APPEND HAWKTRACER_CORE_SOURCES posix_mapped_tracepoint.c)
+endif()
+
 configure_file(include/hawktracer/config.h.in include/hawktracer/config.h)
 
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})

@@ -4,7 +4,7 @@
 #include <hawktracer/feature_callstack.h>
 
 #if defined (__cplusplus)
-#define HT_HAS_SCOPED_TRACEPOINT
+#define HT_SCOPED_TRACEPOINT_MACRO_ENABLED
 
 #include <hawktracer/scoped_tracepoint.hpp>
 
@@ -12,7 +12,7 @@
     HawkTracer::ScopedTracepoint<c_type> HT_UNIQUE_VAR_NAME(ht_tp_scoped_tracepoint)(timeline, ht_feature_callstack_start_##type, label)
 
 #elif defined(__GNUC__)
-#define HT_HAS_SCOPED_TRACEPOINT
+#define HT_SCOPED_TRACEPOINT_MACRO_ENABLED
 
 HT_DECLS_BEGIN
 void _ht_callstack_timeline_scoped_cleanup(HT_Timeline** timeline);
@@ -26,7 +26,7 @@ HT_DECLS_END
 
 #endif
 
-#ifdef HT_HAS_SCOPED_TRACEPOINT
+#ifdef HT_SCOPED_TRACEPOINT_MACRO_ENABLED
 
 #define HT_TP_SCOPED_INT(timeline, label) _HT_TP_SCOPED_GENERIC(int, HT_CallstackEventLabel, timeline, label)
 #define HT_TP_SCOPED_STRING(timeline, label) _HT_TP_SCOPED_GENERIC(string, const char*, timeline, label)
