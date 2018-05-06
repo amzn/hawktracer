@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 project(HawkTracer
-    VERSION 0.4.0)
+    VERSION 0.5.0)
 
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_TESTS "Enable unit tests" OFF)
