@@ -1,3 +1,5 @@
+#include "test_allocator.h"
+
 #include <hawktracer/bag.h>
 
 #include <gtest/gtest.h>
@@ -95,4 +97,17 @@ TEST(TestBag, ShouldResizeIfRemoveManyItems)
     ASSERT_EQ(4u, bag.min_capacity);
 
     ht_bag_deinit(&bag);
+}
+
+TEST(TestBag, InitShouldFailIfMallocReturnsNull)
+{
+    // Arrange
+    HT_Bag bag;
+    ScopedSetAlloc allocator(ht_test_null_realloc);
+
+    // Act
+    HT_ErrorCode error_code = ht_bag_init(&bag, 8);
+
+    // Assert
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
 }
