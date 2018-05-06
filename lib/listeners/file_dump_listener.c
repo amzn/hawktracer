@@ -11,20 +11,38 @@ _ht_file_dump_listener_flush(void* listener)
     fd_listener->buffer.usage = 0;
 }
 
-HT_Boolean
+HT_ErrorCode
 ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename, size_t buffer_size)
 {
+    HT_ErrorCode error_code = HT_ERR_OK;
+
     listener->p_file = fopen(filename, "wb");
     if (listener->p_file == NULL)
     {
-        return HT_FALSE;
+        error_code = HT_ERR_CANT_OPEN_FILE;
+        goto done;
     }
 
     listener->mtx = ht_mutex_create();
+    if (listener->mtx == NULL)
+    {
+        error_code = HT_ERR_OUT_OF_MEMORY;
+        goto error_create_mutex;
+    }
 
-    ht_listener_buffer_init(&listener->buffer, buffer_size);
+    error_code = ht_listener_buffer_init(&listener->buffer, buffer_size);
+    if (error_code == HT_ERR_OK)
+    {
+        goto done;
+    }
 
-    return HT_TRUE;
+    ht_mutex_destroy(listener->mtx);
+
+error_create_mutex:
+    fclose(listener->p_file);
+
+done:
+    return error_code;
 }
 
 void

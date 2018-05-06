@@ -27,15 +27,15 @@ typedef struct
     HT_Boolean serialize_events;
 } HT_Timeline;
 
-HT_API void ht_timeline_init(HT_Timeline* timeline,
-                             size_t buffer_capacity,
-                             HT_Boolean thread_safe,
-                             HT_Boolean serialize_events,
-                             const char* listeners);
+HT_API HT_ErrorCode ht_timeline_init(HT_Timeline* timeline,
+                                     size_t buffer_capacity,
+                                     HT_Boolean thread_safe,
+                                     HT_Boolean serialize_events,
+                                     const char* listeners);
 
 HT_API void ht_timeline_deinit(HT_Timeline* timeline);
 
-HT_API void ht_timeline_register_listener(
+HT_API HT_ErrorCode ht_timeline_register_listener(
         HT_Timeline* timeline,
         HT_TimelineListenerCallback callback,
         void* user_data);

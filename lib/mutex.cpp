@@ -15,6 +15,11 @@ ht_mutex_create(void)
 {
     HT_Mutex* mtx = HT_CREATE_TYPE(HT_Mutex);
 
+    if (mtx == NULL)
+    {
+        return NULL;
+    }
+
     new (&mtx->mtx) std::mutex();
 
     return mtx;

@@ -16,7 +16,7 @@ typedef struct
 
 typedef void(*HT_ListenerFlushCallback)(void*);
 
-HT_API void ht_listener_buffer_init(HT_ListenerBuffer* buffer, size_t max_size);
+HT_API HT_ErrorCode ht_listener_buffer_init(HT_ListenerBuffer* buffer, size_t max_size);
 
 HT_API void ht_listener_buffer_deinit(HT_ListenerBuffer* buffer);
 

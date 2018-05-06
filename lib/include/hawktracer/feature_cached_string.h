@@ -13,7 +13,7 @@ typedef struct
 
 #define HT_FEATURE_CACHED_STRING 1
 
-HT_API void ht_feature_cached_string_enable(HT_Timeline* timeline);
+HT_API HT_ErrorCode ht_feature_cached_string_enable(HT_Timeline* timeline);
 
 HT_API void ht_feature_cached_string_disable(HT_Timeline* timeline);
 

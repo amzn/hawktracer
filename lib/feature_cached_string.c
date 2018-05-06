@@ -5,11 +5,28 @@
 
 #include <assert.h>
 
-void
+HT_ErrorCode
 ht_feature_cached_string_enable(HT_Timeline* timeline)
 {
-    timeline->features[HT_FEATURE_CACHED_STRING] = ht_alloc(sizeof(HT_FeatureCachedString));
-    ht_bag_init(&((HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING])->cached_data, 1024);
+    HT_FeatureCachedString* feature = HT_CREATE_TYPE(HT_FeatureCachedString);
+    HT_ErrorCode error_code;
+
+    if (feature == NULL)
+    {
+        return HT_ERR_OUT_OF_MEMORY;
+    }
+
+    error_code = ht_bag_init(&feature->cached_data, 1024);
+
+    if (error_code != HT_ERR_OK)
+    {
+        ht_free(feature);
+        return error_code;
+    }
+
+    timeline->features[HT_FEATURE_CACHED_STRING] = feature;
+
+    return error_code;
 }
 
 void

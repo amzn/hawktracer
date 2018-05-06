@@ -32,8 +32,10 @@ HT_API void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* c
  * @param container a pointer to the container.
  * @param callback a timeline listener callback.
  * @param user_data a user data passed to a @a callback when gets called.
+ *
+ * @returns #HT_ERR_OK, if registration completed successfully; otherwise, appropriate error code.
  */
-HT_API void ht_timeline_listener_container_register_listener(
+HT_API HT_ErrorCode ht_timeline_listener_container_register_listener(
         HT_TimelineListenerContainer* container,
         HT_TimelineListenerCallback callback,
         void* user_data);

@@ -3,21 +3,45 @@
 
 #include <string.h>
 
-static void
+static HT_Boolean
 _ht_stack_resize(HT_Stack* stack, size_t new_capacity)
 {
+    void* new_data = ht_realloc(stack->data, new_capacity);
+
+    if (new_data == NULL)
+    {
+        return HT_FALSE;
+    }
+
+    stack->data = new_data;
     stack->capacity = new_capacity;
-    stack->data = ht_realloc(stack->data, stack->capacity);
+
+    return HT_TRUE;
 }
 
-void
-ht_stack_init(HT_Stack* stack, size_t capacity, size_t n_capacity)
+HT_ErrorCode ht_stack_init(HT_Stack* stack, size_t capacity, size_t n_capacity)
 {
+    HT_ErrorCode bag_init_err = HT_ERR_OK;
+
     stack->data = ht_alloc(capacity);
+
+    if (stack->data == NULL)
+    {
+        return HT_ERR_OUT_OF_MEMORY;
+    }
+
+    bag_init_err = ht_bag_init(&stack->sizes_stack, n_capacity);
+    if (bag_init_err != HT_ERR_OK)
+    {
+        ht_free(stack->data);
+        return bag_init_err;
+    }
+
     stack->size = 0;
     stack->capacity = capacity;
     stack->min_capacity = capacity;
-    ht_bag_init(&stack->sizes_stack, n_capacity);
+
+    return HT_ERR_OK;
 }
 
 void
@@ -29,9 +53,11 @@ ht_stack_deinit(HT_Stack* stack)
     ht_free(stack->data);
 }
 
-void
+HT_ErrorCode
 ht_stack_push(HT_Stack* stack, void* data, size_t size)
 {
+    HT_ErrorCode bag_err_code = HT_ERR_OK;
+
     if (stack->capacity - stack->size < size)
     {
         size_t factor = 2;
@@ -39,12 +65,22 @@ ht_stack_push(HT_Stack* stack, void* data, size_t size)
         {
             factor *= 2;
         }
-        _ht_stack_resize(stack, stack->capacity * factor);
+        if (!_ht_stack_resize(stack, stack->capacity * factor))
+        {
+            return HT_ERR_OUT_OF_MEMORY;
+        }
     }
 
-    ht_bag_add(&stack->sizes_stack, (void*)stack->size);
+    bag_err_code = ht_bag_add(&stack->sizes_stack, (void*)stack->size);
+    if (bag_err_code != HT_ERR_OK)
+    {
+        return bag_err_code;
+    }
+
     memcpy(HT_PTR_ADD(stack->data, stack->size), data, size);
     stack->size += size;
+
+    return HT_ERR_OK;
 }
 
 void

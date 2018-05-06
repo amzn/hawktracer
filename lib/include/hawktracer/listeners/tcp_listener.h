@@ -18,7 +18,7 @@ typedef struct
     HT_TCPListenerPimpl *pimpl;
 } HT_TCPListener;
 
-HT_API HT_Boolean ht_tcp_listener_init(HT_TCPListener* listener, int port);
+HT_API HT_ErrorCode ht_tcp_listener_init(HT_TCPListener* listener, int port);
 
 HT_API void ht_tcp_listener_deinit(HT_TCPListener* listener);
 

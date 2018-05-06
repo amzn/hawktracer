@@ -6,12 +6,20 @@
 
 #define HT_MIN(a, b) (((a) > (b)) ? (b) : (a))
 
-void
+HT_ErrorCode
 ht_listener_buffer_init(HT_ListenerBuffer* buffer, size_t max_size)
 {
     buffer->data = ht_alloc(max_size);
+
+    if (buffer->data == NULL)
+    {
+        return HT_ERR_OUT_OF_MEMORY;
+    }
+
     buffer->max_size = max_size;
     buffer->usage = 0;
+
+    return HT_ERR_OK;
 }
 
 void

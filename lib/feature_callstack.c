@@ -2,11 +2,28 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/thread.h"
 
-void
+HT_ErrorCode
 ht_feature_callstack_enable(HT_Timeline* timeline)
 {
-    timeline->features[HT_FEATURE_CALLSTACK] = ht_alloc(sizeof(HT_FeatureCallstack));
-    ht_stack_init(&((HT_FeatureCallstack*)timeline->features[HT_FEATURE_CALLSTACK])->stack, 1024, 32);
+    HT_FeatureCallstack* feature = HT_CREATE_TYPE(HT_FeatureCallstack);
+    HT_ErrorCode error_code;
+
+    if (feature == NULL)
+    {
+        return HT_ERR_OUT_OF_MEMORY;
+    }
+
+    error_code = ht_stack_init(&feature->stack, 1024, 32);
+
+    if (error_code != HT_ERR_OK)
+    {
+        ht_free(feature);
+        return error_code;
+    }
+
+    timeline->features[HT_FEATURE_CALLSTACK] = feature;
+
+    return HT_ERR_OK;
 }
 
 void
@@ -22,6 +39,7 @@ void ht_feature_callstack_start(HT_Timeline* timeline, HT_CallstackBaseEvent* ev
     HT_FeatureCallstack* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CALLSTACK, HT_FeatureCallstack);
 
     ht_timeline_init_event(timeline, HT_EVENT(event));
+    /* TODO: handle ht_stack_push() error */
     ht_stack_push(&f->stack, event, event->base.klass->type_info->size);
 }
 

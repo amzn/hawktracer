@@ -17,8 +17,17 @@ static HT_Mutex* listeners_register_mutex;
 static HT_Mutex* features_register_mutex;
 static HT_Mutex* event_klass_registry_register_mutex;
 
-HT_Boolean
-ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback)
+#define _HT_CREATE_MUTEX(mutex_var, error_code_var, label_if_fails) \
+    do { \
+        mutex_var = ht_mutex_create(); \
+        if (!mutex_var) \
+        { \
+            error_code_var = HT_ERR_OUT_OF_MEMORY; \
+            goto label_if_fails; \
+        } \
+    } while(0)
+
+HT_ErrorCode ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback)
 {
     assert(disable_callback);
     assert(feature_id < HT_TIMELINE_MAX_FEATURES);
@@ -29,21 +38,46 @@ ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disa
     {
         feature_disable_callback[feature_id] = disable_callback;
         ht_mutex_unlock(features_register_mutex);
-        return HT_TRUE;
+        return HT_ERR_OK;
     }
 
     ht_mutex_unlock(features_register_mutex);
-    return HT_FALSE;
+    return HT_ERR_FEATURE_ALREADY_REGISTERED;
 }
 
-void
+HT_ErrorCode
 ht_registry_init(void)
 {
-    ht_bag_init(&event_klass_register, 8);
-    ht_bag_init(&listeners_register, 8);
-    listeners_register_mutex = ht_mutex_create();
-    features_register_mutex = ht_mutex_create();
-    event_klass_registry_register_mutex = ht_mutex_create();
+    HT_ErrorCode error_code;
+
+    error_code = ht_bag_init(&event_klass_register, 8);
+    if (error_code != HT_ERR_OK)
+    {
+        goto done;
+    }
+
+    error_code = ht_bag_init(&listeners_register, 8);
+    if (error_code != HT_ERR_OK)
+    {
+        goto error_listeners_register;
+    }
+
+    _HT_CREATE_MUTEX(listeners_register_mutex, error_code, error_listeners_mutex);
+    _HT_CREATE_MUTEX(features_register_mutex, error_code, error_features_mutex);
+    _HT_CREATE_MUTEX(event_klass_registry_register_mutex, error_code, error_event_klass_registry_mutex);
+
+    goto done;
+
+error_event_klass_registry_mutex:
+    ht_mutex_destroy(features_register_mutex);
+error_features_mutex:
+    ht_mutex_destroy(listeners_register_mutex);
+error_listeners_mutex:
+    ht_bag_deinit(&listeners_register);
+error_listeners_register:
+    ht_bag_deinit(&event_klass_register);
+done:
+    return error_code;
 }
 
 HT_EventKlassId
@@ -52,6 +86,7 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
     if (event_klass->klass_id == 0)
     {
         ht_mutex_lock(event_klass_registry_register_mutex);
+        /* TODO: handle error code */
         ht_bag_add(&event_klass_register, event_klass);
         event_klass->klass_id = event_klass_register.size;
         ht_mutex_unlock(event_klass_registry_register_mutex);
@@ -150,21 +185,30 @@ ht_registry_find_listener_container(const char* name)
     return NULL;
 }
 
-HT_Boolean
+HT_ErrorCode
 ht_registry_register_listener_container(const char* name, HT_TimelineListenerContainer* container)
 {
+    HT_ErrorCode error_code;
+
     if (ht_registry_find_listener_container(name) != NULL)
     {
-        return HT_FALSE;
+        return HT_ERR_LISTENER_CONTAINER_ALREADY_REGISTERED;
     }
 
     ht_mutex_lock(listeners_register_mutex);
     container->id = djb2_hash(name);
     container->refcount++;
-    ht_bag_add(&listeners_register, container);
+
+    error_code = ht_bag_add(&listeners_register, container);
+    if (error_code != HT_ERR_OK)
+    {
+        ht_mutex_unlock(listeners_register_mutex);
+        return error_code;
+    }
+
     ht_mutex_unlock(listeners_register_mutex);
 
-    return HT_TRUE;
+    return HT_ERR_OK;
 }
 
 void

@@ -41,9 +41,9 @@ typedef struct
  *
  * @param task_scheduler a pointer to the scheduler.
  *
- * @return #HT_TRUE, if initialization completed succesfully; otherwise, #HT_FALSE.
+ * @return #HT_ERR_OK, if initialization completed succesfully; otherwise, appropriate error code.
  */
-HT_API HT_Boolean ht_task_scheduler_init(HT_TaskScheduler* task_scheduler);
+HT_API HT_ErrorCode ht_task_scheduler_init(HT_TaskScheduler* task_scheduler);
 
 /**
  * Uninitializes task scheduler data structure.

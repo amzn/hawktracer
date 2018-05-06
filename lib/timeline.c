@@ -91,13 +91,13 @@ ht_timeline_flush(HT_Timeline* timeline)
     }
 }
 
-void
+HT_ErrorCode
 ht_timeline_register_listener(
         HT_Timeline* timeline,
         HT_TimelineListenerCallback callback,
         void* user_data)
 {
-    ht_timeline_listener_container_register_listener(
+    return ht_timeline_listener_container_register_listener(
                 timeline->listeners, callback, user_data);
 }
 
@@ -108,24 +108,58 @@ ht_timeline_unregister_all_listeners(HT_Timeline* timeline)
                 timeline->listeners);
 }
 
-void
+HT_ErrorCode
 ht_timeline_init(HT_Timeline* timeline,
-                     size_t buffer_capacity,
-                     HT_Boolean thread_safe,
-                     HT_Boolean serialize_events,
-                     const char* listeners)
+                 size_t buffer_capacity,
+                 HT_Boolean thread_safe,
+                 HT_Boolean serialize_events,
+                 const char* listeners)
 {
-    timeline->buffer_usage = 0;
-    timeline->buffer_capacity = buffer_capacity;
+    HT_ErrorCode error_code = HT_ERR_OK;
     timeline->buffer = (HT_Byte*)ht_alloc(buffer_capacity);
-    timeline->id_provider = ht_event_id_provider_get_default();
-    timeline->serialize_events = serialize_events;
+
+    if (timeline->buffer == NULL)
+    {
+        error_code = HT_ERR_OUT_OF_MEMORY;
+        goto done;
+    }
 
     timeline->listeners = ht_find_or_create_listener(listeners);
+    if (timeline->listeners == NULL)
+    {
+        error_code = HT_ERR_CANT_CREATE_LISTENER_CONTAINER;
+        goto error_create_listener;
+    }
 
-    timeline->locking_policy = thread_safe ? ht_mutex_create() : NULL;
+    if (thread_safe)
+    {
+        timeline->locking_policy = ht_mutex_create();
+        if (timeline->locking_policy == NULL)
+        {
+            error_code = HT_ERR_OUT_OF_MEMORY;
+            goto error_locking_policy;
+        }
+    }
+    else
+    {
+        timeline->locking_policy = NULL;
+    }
 
+    timeline->buffer_usage = 0;
+    timeline->buffer_capacity = buffer_capacity;
+    timeline->id_provider = ht_event_id_provider_get_default();
+    timeline->serialize_events = serialize_events;
     memset(timeline->features, 0, sizeof(timeline->features));
+
+    goto done;
+
+error_locking_policy:
+    ht_timeline_listener_container_unref(timeline->listeners);
+error_create_listener:
+    ht_free(timeline->buffer);
+
+done:
+    return error_code;
 }
 
 void

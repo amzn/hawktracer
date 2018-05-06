@@ -11,7 +11,7 @@ TEST(TestFileDumpListener, InitShouldFailIfFileCanNotBeOpened)
     HT_FileDumpListener listener;
 
     // Act & Assert
-    ASSERT_FALSE(ht_file_dump_listener_init(&listener, "/non/existing/file", 4096u));
+    ASSERT_EQ(HT_ERR_CANT_OPEN_FILE, ht_file_dump_listener_init(&listener, "/non/existing/file", 4096u));
 }
 
 TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)

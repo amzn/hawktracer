@@ -29,6 +29,31 @@ typedef uint8_t HT_Byte;
 /** Defines @b false value for the HT_Boolean type. */
 #define HT_FALSE 0
 
+/** Defines list of possible errors returned by library functions. */
+typedef enum
+{
+    /** No error */
+    HT_ERR_OK = 0,
+    /** Memory allocation failed. This is very serious error, and
+     * most likely your entire application is broken at this point of time. */
+    HT_ERR_OUT_OF_MEMORY,
+    /** Try to register a timeline feature using ID which is already taken
+     * by some other feature. */
+    HT_ERR_FEATURE_ALREADY_REGISTERED,
+    /** Try to register container with name already used in registry.
+     * This error is used internally, and is never returned by public
+     * API. TODO: consider removing it from public enum. */
+    HT_ERR_LISTENER_CONTAINER_ALREADY_REGISTERED,
+    /** Cannot open file. */
+    HT_ERR_CANT_OPEN_FILE,
+    /** Cannot start tcp server. This error might have many root causes,
+     * some of them are: socket can't be open, library is not able to bind to a port. */
+    HT_ERR_CANT_START_TCP_SERVER,
+    /** Unable to create listener container. This is most likely caused by
+     * #HT_ERR_OUT_OF_MEMORY occured internally in the library. */
+    HT_ERR_CANT_CREATE_LISTENER_CONTAINER
+} HT_ErrorCode;
+
 HT_DECLS_END
 
 #endif /* HAWKTRACER_BASE_TYPES_H */

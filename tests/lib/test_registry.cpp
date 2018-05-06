@@ -60,11 +60,11 @@ TEST(TestRegistry, RegisterListenerTwiceShouldFail)
     // Arrange
     const char* container_name = "conatiner_name_RegisterListenerTwiceShouldFail";
     HT_TimelineListenerContainer* container = ht_timeline_listener_container_create();
-    ASSERT_TRUE(ht_registry_register_listener_container(container_name, container));
+    ASSERT_EQ(HT_ERR_OK, ht_registry_register_listener_container(container_name, container));
 
     // Act & Assert
     HT_TimelineListenerContainer* container2 = ht_timeline_listener_container_create();
-    ASSERT_FALSE(ht_registry_register_listener_container(container_name, container2));
+    ASSERT_EQ(HT_ERR_LISTENER_CONTAINER_ALREADY_REGISTERED, ht_registry_register_listener_container(container_name, container2));
     ht_timeline_listener_container_unref(container2);
     ht_timeline_listener_container_unref(container);
 }
@@ -75,6 +75,6 @@ TEST(TestRegistry, RegisterTheSameFeatureTwiceShouldFail)
     uint32_t feature_id = HT_TIMELINE_MAX_FEATURES - 1;
 
     // Act & Assert
-    ASSERT_EQ(HT_TRUE, ht_registry_register_feature(feature_id, (HT_FeatureDisableCallback)1));
-    ASSERT_EQ(HT_FALSE, ht_registry_register_feature(feature_id, (HT_FeatureDisableCallback)1));
+    ASSERT_EQ(HT_ERR_OK, ht_registry_register_feature(feature_id, (HT_FeatureDisableCallback)1));
+    ASSERT_EQ(HT_ERR_FEATURE_ALREADY_REGISTERED, ht_registry_register_feature(feature_id, (HT_FeatureDisableCallback)1));
 }

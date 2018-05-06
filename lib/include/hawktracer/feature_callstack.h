@@ -14,7 +14,7 @@ typedef struct
 
 #define HT_FEATURE_CALLSTACK 0
 
-HT_API void ht_feature_callstack_enable(HT_Timeline* timeline);
+HT_API HT_ErrorCode ht_feature_callstack_enable(HT_Timeline* timeline);
 
 HT_API void ht_feature_callstack_disable(HT_Timeline* timeline);
 

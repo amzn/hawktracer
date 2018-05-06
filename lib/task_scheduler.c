@@ -31,17 +31,18 @@ _greatest_common_divisor(HT_DurationNs a, HT_DurationNs b)
     return a;
 }
 
-HT_Boolean
+HT_ErrorCode
 ht_task_scheduler_init(HT_TaskScheduler* task_scheduler)
 {
-    if (ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT) == HT_FALSE)
+    HT_ErrorCode error_code = ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT);
+    if (error_code != HT_ERR_OK)
     {
-        return HT_FALSE;
+        return error_code;
     }
 
     task_scheduler->next_task_id = 0;
 
-    return HT_TRUE;
+    return HT_ERR_OK;
 }
 
 void
@@ -83,7 +84,7 @@ ht_task_scheduler_schedule_task(HT_TaskScheduler* task_scheduler,
     task->id = task_scheduler->next_task_id++;
     task->mode = mode;
 
-    if (ht_bag_add(&task_scheduler->tasks, task) == HT_FALSE)
+    if (ht_bag_add(&task_scheduler->tasks, task) != HT_ERR_OK)
     {
         return HT_TASK_SCHEDULER_INVALID_TASK_ID;
     }

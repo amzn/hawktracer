@@ -26,11 +26,12 @@ typedef struct
  * @param bag a pointer to the container.
  * @param min_capacity minimal capacity of the container.
  *
- * @returns #HT_TRUE, if initialization completed successfully; otherwise, #HT_FALSE.
+ * @returns #HT_ERR_OK, if initialization completed successfully; otherwise, appropriate error code.
  *
  * Initialization might fail, if the process can't allocate enough memory.
+ * In that case, #HT_ERR_OUT_OF_MEMORY is returned.
  */
-HT_API HT_Boolean ht_bag_init(HT_Bag* bag, size_t min_capacity);
+HT_API HT_ErrorCode ht_bag_init(HT_Bag* bag, size_t min_capacity);
 
 /**
  * Uninitializes bag structure.
@@ -69,13 +70,13 @@ HT_API void ht_bag_remove_nth(HT_Bag* bag, size_t n);
  * @param bag a pointer to the container.
  * @param data a value to be added to the container.
  *
- * @returns  #HT_TRUE, if element was successfully added to the container; otherwise, #HT_FALSE.
+ * @returns #HT_ERR_OK, if element was successfully added to the container; otherwise, appropriate error code.
  *
  * The function might fail, if the process can't allocate enough memory to extend internal data
- * buffer. The function never fails, if ht_bag_init() doesn't fail and number of elements in the bag is
- * less than @a min_capacity.
+ * buffer (#HT_ERR_OUT_OF_MEMORY). The function never fails, if ht_bag_init() doesn't fail
+ * and number of elements in the bag is less than @a min_capacity.
  */
-HT_API HT_Boolean ht_bag_add(HT_Bag* bag, void* data);
+HT_API HT_ErrorCode ht_bag_add(HT_Bag* bag, void* data);
 
 /**
  * Removes all elements from the container.
