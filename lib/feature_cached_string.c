@@ -2,6 +2,7 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/core_events.h"
 #include "internal/hash.h"
+#include "internal/mutex.h"
 
 #include <assert.h>
 
@@ -16,10 +17,18 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
         return HT_ERR_OUT_OF_MEMORY;
     }
 
+    feature->lock = ht_mutex_create();
+    if (feature->lock == NULL)
+    {
+        ht_free(feature);
+        return HT_ERR_OK;
+    }
+
     error_code = ht_bag_init(&feature->cached_data, 1024);
 
     if (error_code != HT_ERR_OK)
     {
+        ht_mutex_destroy(feature->lock);
         ht_free(feature);
         return error_code;
     }
@@ -32,29 +41,49 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
 void
 ht_feature_cached_string_disable(HT_Timeline* timeline)
 {
-    ht_bag_deinit(&((HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING])->cached_data);
-    ht_free(timeline->features[HT_FEATURE_CACHED_STRING]);
+    HT_FeatureCachedString* feature = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
+
+    ht_bag_deinit(&feature->cached_data);
+    ht_mutex_destroy(feature->lock);
+    ht_free(feature);
     timeline->features[HT_FEATURE_CACHED_STRING] = NULL;
 }
 
-uintptr_t
-ht_feature_cached_string_push(HT_Timeline* timeline, const char* label)
+const char*
+ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
 {
     HT_FeatureCachedString* f = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
+    HT_ErrorCode error_code;
+
     assert(f);
+
+    ht_mutex_lock(f->lock);
+    error_code = ht_bag_add(&f->cached_data, (void*)label);
+    ht_mutex_unlock(f->lock);
+    if (error_code != HT_ERR_OK)
+    {
+        return NULL;
+    }
+
+    HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, (uintptr_t)label, label);
+
+    return label;
+}
+
+void
+ht_feature_cached_string_push_map(HT_Timeline* timeline)
+{
+    HT_FeatureCachedString* f = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
     size_t i;
-    uintptr_t id = djb2_hash(label);
+
+    assert(f);
+
+    ht_mutex_lock(f->lock);
 
     for (i = 0; i < f->cached_data.size; i++)
     {
-        if ((uintptr_t)f->cached_data.data[i] == id)
-        {
-            return id;
-        }
+        HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, (uintptr_t)f->cached_data.data[i], f->cached_data.data[i]);
     }
 
-    ht_bag_add(&f->cached_data, (void*)id);
-    HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, id, label);
-
-    return id;
+    ht_mutex_unlock(f->lock);
 }

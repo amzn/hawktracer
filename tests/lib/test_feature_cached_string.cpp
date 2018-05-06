@@ -3,7 +3,7 @@
 #include "test_common.h"
 #include <gtest/gtest.h>
 
-TEST(TestFeatureCachedString, PushingEventTwiceShouldEmitOnlyOneEventToListener)
+TEST(TestFeatureCachedString, AddMappingShouldEmitStringMappingEvent)
 {
     // Arrange
     const char* label = "label";
@@ -15,17 +15,14 @@ TEST(TestFeatureCachedString, PushingEventTwiceShouldEmitOnlyOneEventToListener)
 
     ht_timeline_register_listener(&timeline, test_listener<HT_StringMappingEvent>, &string_map_info);
 
-    uintptr_t id1 = ht_feature_cached_string_push(&timeline, label);
-
     // Act
-    uintptr_t id2 = ht_feature_cached_string_push(&timeline, label);
+    const char* new_label = ht_feature_cached_string_add_mapping(&timeline, label);
     ht_timeline_flush(&timeline);
 
     // Assert
-    ASSERT_EQ(id1, id2);
+    ASSERT_EQ(label, new_label);
     ASSERT_EQ(1u, string_map_info.values.size());
     ASSERT_STREQ(label, string_map_info.values.front().label);
-    ASSERT_EQ(id1, string_map_info.values.front().hash);
 
     ht_timeline_deinit(&timeline);
 }

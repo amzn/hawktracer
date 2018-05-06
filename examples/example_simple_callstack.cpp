@@ -2,22 +2,23 @@
 
 static void fnc_bar()
 {
-    HT_TP_GLOBAL_SCOPED_STRING("bar");
+    HT_TP_G_FUNCTION()
 }
 
 static void fnc_foo()
 {
-    HT_TP_GLOBAL_SCOPED_STRING("foo");
+    HT_TP_G_FUNCTION()
 
     for (int i = 0; i < 16; i++)
     {
+        HT_TP_G_STRACEPOINT("Custom scope")
         fnc_bar();
     }
 }
 
 static void fnc_start()
 {
-    HT_TP_GLOBAL_SCOPED_STRING("start");
+    HT_TP_G_FUNCTION()
 
     for (int i = 0; i < 32; i++)
     {
@@ -27,10 +28,11 @@ static void fnc_start()
 
 int main(int argc, char** argv)
 {
+
     ht_init(argc, argv);
 
     HT_FileDumpListener file_dump_listener;
-    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u) != HT_FALSE)
+    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u) == HT_ERR_OK)
     {
         ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, &file_dump_listener);
     }

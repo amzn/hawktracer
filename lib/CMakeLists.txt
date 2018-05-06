@@ -6,8 +6,8 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/alloc.h
     include/hawktracer/bag.h
     include/hawktracer/base_types.h
-    include/hawktracer/callstack_scoped_tracepoint.h
-    include/hawktracer/callstack_scoped_tracepoint.hpp
+    include/hawktracer/scoped_tracepoint.h
+    include/hawktracer/scoped_tracepoint.hpp
     include/hawktracer/core_events.h
     include/hawktracer/event_id_provider.h
     include/hawktracer/event_macros.h
@@ -46,6 +46,7 @@ set(HAWKTRACER_CORE_SOURCES
     monotonic_clock.cpp
     mutex.cpp
     registry.c
+    scoped_tracepoint.c
     stack.c
     task_scheduler.c
     tcp_server.cpp

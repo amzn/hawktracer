@@ -1,5 +1,5 @@
 #include "hawktracer/init.h"
-#include "hawktracer/callstack_scoped_tracepoint.h"
+#include "hawktracer/scoped_tracepoint.h"
 #include "internal/registry.h"
 #include "internal/feature.h"
 

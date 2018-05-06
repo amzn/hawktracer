@@ -72,4 +72,12 @@
 #  define HT_API
 #endif
 
+#define HT_MACRO_CONCAT_(x, y) x ## y
+
+/** Concatenates two values */
+#define HT_MACRO_CONCAT(x, y) HT_MACRO_CONCAT_(x, y)
+
+/** Creates unique variable name by appending a line number to a base name. */
+#define HT_UNIQUE_VAR_NAME(BASE_VAR_NAME) HT_MACRO_CONCAT(BASE_VAR_NAME, __LINE__)
+
 #endif /* HAWKTRACER_MACROS_H */

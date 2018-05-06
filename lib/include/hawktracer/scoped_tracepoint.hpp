@@ -1,5 +1,5 @@
-#ifndef HAWKTRACER_CALLSTACK_SCOPED_TRACEPOINT_HPP
-#define HAWKTRACER_CALLSTACK_SCOPED_TRACEPOINT_HPP
+#ifndef HAWKTRACER_SCOPED_TRACEPOINT_HPP
+#define HAWKTRACER_SCOPED_TRACEPOINT_HPP
 
 #include <hawktracer/feature_callstack.h>
 
@@ -11,10 +11,10 @@ template<typename ...T>
 #else
 template<typename T>
 #endif
-class CallstackScopedTracepoint
+class ScopedTracepoint
 {
 public:
-    CallstackScopedTracepoint(
+    ScopedTracepoint(
             HT_Timeline* timeline,
 #ifdef HT_CPP11
             void (*start_fnc)(HT_Timeline*, T...), T... label
@@ -31,7 +31,7 @@ public:
 #endif
     }
 
-    ~CallstackScopedTracepoint()
+    ~ScopedTracepoint()
     {
         ht_feature_callstack_stop(_timeline);
     }
@@ -42,4 +42,4 @@ private:
 
 } /* namespace HawkTracer */
 
-#endif /* HAWKTRACER_CALLSTACK_SCOPED_TRACEPOINT_HPP */
+#endif /* HAWKTRACER_SCOPED_TRACEPOINT_HPP */

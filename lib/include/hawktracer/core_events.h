@@ -29,7 +29,7 @@ HT_DECLARE_EVENT_KLASS(HT_CallstackStringEvent, HT_CallstackBaseEvent,
                        (STRING, const char*, label))
 
 HT_DECLARE_EVENT_KLASS(HT_StringMappingEvent, HT_Event,
-                       (INTEGER, uintptr_t, hash),
+                       (INTEGER, uint64_t, identifier),
                        (STRING, const char*, label))
 
 HT_DECLS_END
