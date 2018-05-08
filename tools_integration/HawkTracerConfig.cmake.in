@@ -1,0 +1,7 @@
+@PACKAGE_INIT@
+
+get_filename_component(HawkTracer_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include("${HawkTracer_CMAKE_DIR}/HawkTracerTargets.cmake")
+
+set_and_check(HawkTracer_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set(HawkTracer_LIBRARIES HawkTracer::hawktracer)

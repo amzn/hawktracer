@@ -68,17 +68,22 @@ set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOU
 set(HAWKTRACER_LIB_INSTALL_TARGETS)
 if(ENABLE_SHARED_LIB)
     add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
+    target_include_directories(hawktracer PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
     target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
 endif(ENABLE_SHARED_LIB)
 if(ENABLE_STATIC_LIB)
     add_library(hawktracer_static STATIC ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer_static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
+    target_include_directories(hawktracer_static PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer_static)
 endif(ENABLE_STATIC_LIB)
 
 install(TARGETS ${HAWKTRACER_LIB_INSTALL_TARGETS}
+    EXPORT HawkTracerTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)
@@ -87,5 +92,9 @@ install(DIRECTORY include/hawktracer
     DESTINATION include
     PATTERN "config.h.in" EXCLUDE)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/include/hawktracer/config.h
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/include/hawktracer/config.h
     DESTINATION include/hawktracer/)
+install(FILES
+    include/hawktracer.h
+    DESTINATION include/)
