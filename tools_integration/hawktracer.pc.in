@@ -1,0 +1,9 @@
+prefix=@INSTALL_PREFIX@
+libdir=@INSTALL_LIB_DIR@
+includedir=@INSTALL_INCLUDE_DIR@
+
+Name: HawkTracer
+Description: Highly portable, low-overhead user-space profiling tool
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lhawktracer @CMAKE_THREAD_LIBS_INIT@
+Cflags: -I${includedir} @CMAKE_THREAD_LIBS_INIT@

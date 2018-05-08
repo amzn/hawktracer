@@ -62,6 +62,8 @@ add_subdirectory(lib)
 add_subdirectory(parser)
 add_subdirectory(client)
 
+add_subdirectory(tools_integration)
+
 if(ENABLE_TESTS)
     enable_testing()
     add_subdirectory(tests)
@@ -76,3 +78,4 @@ if(ENABLE_BENCHMARKS)
 endif(ENABLE_BENCHMARKS)
 
 include(packager)
+
