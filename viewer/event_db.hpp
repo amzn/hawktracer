@@ -9,7 +9,7 @@
 
 struct Query
 {
-    size_t klass_id = (size_t)-1; // TODO: optional<>
+    HT_EventKlassId klass_id = (HT_EventKlassId)-1; // TODO: optional<>
 };
 
 namespace HawkTracer
