@@ -61,6 +61,7 @@ endif()
 configure_file(include/hawktracer/config.h.in include/hawktracer/config.h)
 
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})
+set(HAWKTRACER_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # We need to compile sources 2 times - the reason why we can't re-use object files
 # is because for shared lib they'll be compiled with -fPIC, which is not needed
@@ -69,7 +70,7 @@ set(HAWKTRACER_LIB_INSTALL_TARGETS)
 if(ENABLE_SHARED_LIB)
     add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
     target_include_directories(hawktracer PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
         $<INSTALL_INTERFACE:include>)
     target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
@@ -77,7 +78,7 @@ endif(ENABLE_SHARED_LIB)
 if(ENABLE_STATIC_LIB)
     add_library(hawktracer_static STATIC ${HAWKTRACER_LIB_SOURCES})
     target_include_directories(hawktracer_static PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
         $<INSTALL_INTERFACE:include>)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer_static)
 endif(ENABLE_STATIC_LIB)

@@ -16,7 +16,6 @@ include(CMakePackageConfigHelpers)
 
 function(configure_hawktracer_config_file INCLUDE_PATH FILE_NAME)
     set(INCLUDE_INSTALL_DIR ${INCLUDE_PATH})
-    message("${INCLUDE_INSTALL_DIR}")
     configure_package_config_file(HawkTracerConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${FILE_NAME}
         INSTALL_DESTINATION ${INSTALL_CMAKE_DIR}
