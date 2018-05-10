@@ -29,7 +29,16 @@ public:
     std::vector<EventRef> get_data(HT_TimestampNs start_ts, HT_TimestampNs stop_ts, const Query& query);
 
 private:
-    std::vector<parser::Event> _events;
+    std::unordered_map<HT_EventKlassId, std::vector<parser::Event>> _events;
+
+    class DummyEvent : public parser::Event
+    {
+    public:
+        DummyEvent(HT_TimestampNs timestamp)
+        {
+            _timestamp = timestamp;
+        }
+    };
 };
 
 } // namespace viewer
