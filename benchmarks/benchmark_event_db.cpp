@@ -21,7 +21,7 @@ static void handle_event(const HawkTracer::parser::Event& event, HawkTracer::vie
 {
     const auto& klass = event.get_klass();
 
-    switch(static_cast<WellKnownKlasses>(klass->get_id()))
+    switch (static_cast<WellKnownKlasses>(klass->get_id()))
     {
         case WellKnownKlasses::EventKlassInfoEventKlass:
         case WellKnownKlasses::EventKlassFieldInfoEventKlass:
@@ -47,11 +47,12 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
     ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, nullptr);
 
     HT_FileDumpListener file_dump_listener;
-    HT_ErrorCode error_code = ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u);
+    const char* filename = "test_output.htdump";
+    HT_ErrorCode error_code = ht_file_dump_listener_init(&file_dump_listener, filename, 4096u);
     if (error_code != HT_ERR_OK)
     {
         char buffer[100];
-        sprintf(buffer, "Failed to initialize file dump listener! Error code: %d", error_code);
+        snprintf(buffer, 100, "Failed to initialize file dump listener! Error code: %d", error_code);
         state.SkipWithError(buffer);
         return;
     }
@@ -65,7 +66,7 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
     ht_file_dump_listener_deinit(&file_dump_listener);
 
     // Arrange
-    auto stream = HawkTracer::parser::make_unique<HawkTracer::parser::FileStream>("test_output.htdump");
+    auto stream = HawkTracer::parser::make_unique<HawkTracer::parser::FileStream>(filename);
     HawkTracer::parser::KlassRegister klass_register;
     auto reader = HawkTracer::parser::make_unique<HawkTracer::parser::ProtocolReader>(&klass_register, std::move(stream), true);
     HawkTracer::viewer::EventDB event_db;
@@ -87,7 +88,7 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
         auto result = event_db.get_data(start_ts, stop_ts, query);
     }
 
-    remove("test_output.htdump");
+    remove(filename);
 }
 // Passing the number of tracepoints to generate as the first argument
 BENCHMARK(BenchmarkEventDbGetData)->Arg(100);
