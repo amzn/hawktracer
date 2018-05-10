@@ -25,7 +25,7 @@ static void fnc_foo(HT_Timeline* timeline)
 static void fnc_start(HT_Timeline* timeline)
 {
     HT_TP_SCOPED_STRING(timeline, "start");
-   for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 100; i++)
     {
         fnc_foo(timeline);
     }
@@ -58,7 +58,7 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
 {
     HawkTracer::viewer::TimeRange total_ts_range(0, 0);
 
-    //Insert events
+    // Create timeline
     HT_Timeline timeline;
     ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, nullptr);
     ht_feature_callstack_enable(&timeline);
@@ -68,14 +68,15 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
     {
         ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &file_dump_listener);
     }
-    ht_registry_push_all_klass_info_events(&timeline);
 
+    // Add events
+    ht_registry_push_all_klass_info_events(&timeline);
     fnc_start(&timeline);
 
     ht_timeline_flush(&timeline);
     ht_timeline_unregister_all_listeners(&timeline);
     ht_file_dump_listener_deinit(&file_dump_listener);
-    
+
     // Arrange
     auto stream = HawkTracer::parser::make_unique<HawkTracer::parser::FileStream>("test_output.htdump");
     HawkTracer::parser::KlassRegister klass_register;
