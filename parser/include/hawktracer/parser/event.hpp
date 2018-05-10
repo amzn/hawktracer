@@ -32,6 +32,7 @@ public:
     {
     }
     Event(const Event& other) = default;
+    Event& operator=(const Event& other) = default;
     Event(Event&&) = default;
 
     ~Event();
@@ -71,7 +72,12 @@ public:
 private:
     std::unordered_map<std::string, Value> _values;
     std::shared_ptr<const EventKlass> _klass;
+
+protected:
     HT_TimestampNs _timestamp = (HT_TimestampNs)-1;
+    Event()
+    {
+    }
 };
 
 } // namespace parser
