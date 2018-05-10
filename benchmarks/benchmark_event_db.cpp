@@ -6,28 +6,14 @@
 #include <hawktracer/parser/protocol_reader.hpp>
 #include <hawktracer/parser/make_unique.hpp>
 
-using WellKnownKlasses = HawkTracer::parser::WellKnownKlasses;
+using HawkTracer::parser::WellKnownKlasses;
 
-static void fnc_bar(HT_Timeline* timeline)
+static void generate_test_tracepoints(HT_Timeline* timeline, int tracepoints)
 {
-    HT_TP_SCOPED_STRING(timeline, "bar");
-}
-
-static void fnc_foo(HT_Timeline* timeline)
-{
-    HT_TP_SCOPED_STRING(timeline, "foo");
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < tracepoints; i++)
     {
-        fnc_bar(timeline);
-    }
-}
-
-static void fnc_start(HT_Timeline* timeline)
-{
-    HT_TP_SCOPED_STRING(timeline, "start");
-    for (int i = 0; i < 100; i++)
-    {
-        fnc_foo(timeline);
+        HT_DECL_EVENT(HT_Event, event);
+        ht_timeline_push_event(timeline, &event);
     }
 }
 
@@ -56,25 +42,26 @@ static void handle_event(const HawkTracer::parser::Event& event, HawkTracer::vie
 
 static void BenchmarkEventDbGetData(benchmark::State& state)
 {
-    HawkTracer::viewer::TimeRange total_ts_range(0, 0);
-
     // Create timeline
     HT_Timeline timeline;
     ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, nullptr);
-    ht_feature_callstack_enable(&timeline);
 
     HT_FileDumpListener file_dump_listener;
-    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u) != HT_FALSE)
+    HT_ErrorCode error_code = ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u);
+    if (error_code != HT_ERR_OK)
     {
-        ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &file_dump_listener);
+        char buffer[100];
+        sprintf(buffer, "Failed to initialize file dump listener! Error code: %d", error_code);
+        state.SkipWithError(buffer);
+        return;
     }
+    ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &file_dump_listener);
 
     // Add events
     ht_registry_push_all_klass_info_events(&timeline);
-    fnc_start(&timeline);
+    generate_test_tracepoints(&timeline, state.range(0));
 
-    ht_timeline_flush(&timeline);
-    ht_timeline_unregister_all_listeners(&timeline);
+    ht_timeline_deinit(&timeline);
     ht_file_dump_listener_deinit(&file_dump_listener);
 
     // Arrange
@@ -82,6 +69,7 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
     HawkTracer::parser::KlassRegister klass_register;
     auto reader = HawkTracer::parser::make_unique<HawkTracer::parser::ProtocolReader>(&klass_register, std::move(stream), true);
     HawkTracer::viewer::EventDB event_db;
+    HawkTracer::viewer::TimeRange total_ts_range(0, 0);
     reader->register_events_listener([&event_db, &total_ts_range](const HawkTracer::parser::Event& event) {
             handle_event(event, event_db, total_ts_range);
             });
@@ -98,7 +86,9 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
         Query query;
         auto result = event_db.get_data(start_ts, stop_ts, query);
     }
-    ht_timeline_deinit(&timeline);
+
+    remove("test_output.htdump");
 }
-BENCHMARK(BenchmarkEventDbGetData);
+// Passing the number of tracepoints to generate as the first argument
+BENCHMARK(BenchmarkEventDbGetData)->Arg(100);
 
