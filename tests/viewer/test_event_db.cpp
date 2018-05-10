@@ -6,7 +6,7 @@ using HawkTracer::parser::Event;
 using HawkTracer::parser::EventKlass;
 using HawkTracer::parser::EventKlassField;
 using HawkTracer::parser::FieldTypeId;
-using  HawkTracer::parser::FieldType;
+using HawkTracer::parser::FieldType;
 
 class TestEventDB : public ::testing::Test
 {
