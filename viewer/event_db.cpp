@@ -31,7 +31,7 @@ void EventDB::insert(parser::Event event)
         }
         _events[klass_id].insert(it.base(), std::move(event));
     }
-}
+
 
 std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
                                         HT_TimestampNs stop_ts,
