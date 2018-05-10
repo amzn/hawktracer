@@ -35,10 +35,11 @@ add_dependencies(${BENCHMARK_LIBRARY} googlebenchmark)
 
 add_executable(hawktracer_benchmarks
     benchmark_main.cpp
-    benchmark_timeline.cpp)
+    benchmark_timeline.cpp
+    benchmark_event_db.cpp)
 
 target_include_directories(hawktracer_benchmarks PRIVATE ${BENCHMARK_INCLUDE_DIRS})
-target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer)
+target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer hawktracer_viewer)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries(hawktracer_benchmarks Shlwapi)
