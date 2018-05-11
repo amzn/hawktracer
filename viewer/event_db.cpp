@@ -40,11 +40,11 @@ std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
     std::vector<EventRef> response;
     if (query.klass_id == (HT_EventKlassId)-1)
     {
-        query_all_event_klasses(response, start_ts, stop_ts);
+        _query_all_event_klasses(response, start_ts, stop_ts);
     }    
     else
     {
-        query_event_klass(response, _events[query.klass_id], start_ts, stop_ts); 
+        _query_event_klass(response, _events[query.klass_id], start_ts, stop_ts); 
     }
     return response;
 }
@@ -82,7 +82,7 @@ static void inplace_merge_events(std::vector<EventRef>& response,
             });
 }
 
-void EventDB::query_all_event_klasses(std::vector<EventRef>& response,
+void EventDB::_query_all_event_klasses(std::vector<EventRef>& response,
                                       HT_TimestampNs start_ts,
                                       HT_TimestampNs stop_ts)
 {  
@@ -90,7 +90,7 @@ void EventDB::query_all_event_klasses(std::vector<EventRef>& response,
     lengths.resize(_events.size());
     for (auto& events : _events)
     {
-        query_event_klass(response, events.second, start_ts, stop_ts);
+        _query_event_klass(response, events.second, start_ts, stop_ts);
         lengths.push_back(response.size());
     }
 
@@ -109,18 +109,18 @@ static void append_events(std::vector<EventRef>& dst,
     }
 }
 
-void EventDB::query_event_klass(std::vector<EventRef>& response,
+void EventDB::_query_event_klass(std::vector<EventRef>& response,
                                 std::vector<parser::Event>& events,
                                 HT_TimestampNs start_ts,
                                 HT_TimestampNs stop_ts)
 {
     std::vector<parser::Event>::iterator first_event;
     std::vector<parser::Event>::iterator last_event;
-    get_range_of_events(events, start_ts, stop_ts, first_event, last_event);
+    _get_range_of_events(events, start_ts, stop_ts, first_event, last_event);
     append_events(response, first_event, last_event);
 }
 
-void EventDB::get_range_of_events(std::vector<parser::Event>& events,
+void EventDB::_get_range_of_events(std::vector<parser::Event>& events,
                                   HT_TimestampNs start_ts,
                                   HT_TimestampNs stop_ts,
                                   std::vector<parser::Event>::iterator& first_event,

@@ -42,14 +42,14 @@ private:
         }
     };
 
-    void query_all_event_klasses(std::vector<EventRef>& response,
+    void _query_all_event_klasses(std::vector<EventRef>& response,
                                  HT_TimestampNs start_ts,
                                  HT_TimestampNs stop_ts);
-    void query_event_klass(std::vector<EventRef>& response,
+    void _query_event_klass(std::vector<EventRef>& response,
                            std::vector<parser::Event>& events,
                            HT_TimestampNs start_ts,
                            HT_TimestampNs stop_ts);
-    void get_range_of_events(std::vector<parser::Event>& events,
+    void _get_range_of_events(std::vector<parser::Event>& events,
                              HT_TimestampNs start_ts,
                              HT_TimestampNs stop_ts,
                              std::vector<parser::Event>::iterator& first_event,
