@@ -62,7 +62,7 @@
 /** @def HT_API
  * Defines a directive for exporting/importing symbols from DLL.
  */
-#ifdef HT_PLATFORM_WIN32
+#if defined(HT_PLATFORM_WIN32) && !defined(HT_COMPILE_STATIC)
 #  if defined(HT_COMPILE_SHARED_EXPORT)
 #    define HT_API __declspec(dllexport)
 #  else
