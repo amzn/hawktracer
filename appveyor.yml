@@ -1,0 +1,19 @@
+version: '1.0.{build}'
+
+image: Visual Studio 2017
+
+platform:
+  - x64
+ 
+configuration:
+  - Debug
+
+before_build:
+    - cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_ASAN=ON -DENABLE_BENCHMARKS=ON -DENABLE_CODE_COVERAGE=ON -DENABLE_EXAMPLES=ON -DENABLE_SHARED_LIB=ON -DENABLE_STATIC_LIB=ON -DENABLE_TESTS=ON .
+
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln
+
+test_script:
+  - cd %APPVEYOR_BUILD_FOLDER%\tests
+  - ctest -C Debug -VV

@@ -86,6 +86,7 @@ if(ENABLE_STATIC_LIB)
     target_include_directories(hawktracer_static PUBLIC
         "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
         $<INSTALL_INTERFACE:include>)
+    target_compile_definitions(hawktracer_static PRIVATE -DHT_COMPILE_STATIC)
     list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer_static)
 endif(ENABLE_STATIC_LIB)
 

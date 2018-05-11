@@ -9,9 +9,7 @@ ExternalProject_Add(
   INSTALL_COMMAND ""
   CMAKE_ARGS
     "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-    "-DBUILD_SHARED_LIBS=ON"
-  BINARY_DIR "${GTEST_BIN_DIR}"
-  BUILD_COMMAND "${CMAKE_COMMAND}" --build "${GTEST_BIN_DIR}" --config "Release"
+    "-Dgtest_force_shared_crt=ON"
   LOG_DOWNLOAD ON
   LOG_CONFIGURE ON
   LOG_BUILD ON)
@@ -19,13 +17,16 @@ ExternalProject_Add(
 ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 
-if(MSVC)
-    set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/Release/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
-else()
-    set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/${CMAKE_SHARED_LIBRARY_PREFIX}gtest${CMAKE_SHARED_LIBRARY_SUFFIX}")
-endif()
-set(GTEST_LIBRARY hawktracer_gtest)
+ExternalProject_Get_Property(googletest binary_dir)
+set(GTEST_LIBS_DIRS ${binary_dir}/googlemock/gtest)
 
+if(MSVC)
+    set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIRS}/Debug/${CMAKE_STATIC_LIBRARY_PREFIX}gtestd${CMAKE_STATIC_LIBRARY_SUFFIX}")
+else()
+    set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIRS}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+endif()
+
+set(GTEST_LIBRARY hawktracer_gtest)
 add_library(${GTEST_LIBRARY} UNKNOWN IMPORTED)
 set_target_properties(${GTEST_LIBRARY} PROPERTIES
   IMPORTED_LOCATION ${GTEST_LIBRARY_PATH})
@@ -36,9 +37,9 @@ function(DEFINE_HT_TEST)
     cmake_parse_arguments(ht "" "NAME" "${MULTI_PARAM}" ${ARGN})
     set(EXE_NAME hawktracer_test_${ht_NAME})
     add_executable(${EXE_NAME} ${ht_SOURCES})
-    target_link_libraries(${EXE_NAME} ${ht_LINK_LIBS} hawktracer ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${EXE_NAME} ${ht_LINK_LIBS} hawktracer_static ${CMAKE_THREAD_LIBS_INIT})
     target_include_directories(${EXE_NAME} PRIVATE ${GTEST_INCLUDE_DIRS})
-    target_compile_definitions(${EXE_NAME} PRIVATE -DHT_COMPILE_SHARED_EXPORT)
+    target_compile_definitions(${EXE_NAME} PRIVATE -DHT_COMPILE_STATIC)
     if ("${ht_RUN_PARAMS}" STREQUAL "")
         add_test(${ht_NAME} ${EXE_NAME})
     else()
