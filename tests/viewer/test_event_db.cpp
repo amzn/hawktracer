@@ -10,8 +10,8 @@ using HawkTracer::parser::FieldType;
 
 class TestEventDB : public ::testing::Test
 {
-    protected:
-    void SetUp() override
+protected:
+    static void SetUpTestCase() 
     {
         // Setup Events Klasses 
         _klass1 = std::make_shared<EventKlass>("first_klass", 1);
@@ -39,39 +39,52 @@ class TestEventDB : public ::testing::Test
         _event4.get()->set_value(_timestamp_field.get(), _value4);
     }
 
-    std::shared_ptr<EventKlass> _klass1;
-    std::shared_ptr<EventKlass> _klass2;
-    std::shared_ptr<EventKlassField> _timestamp_field;
-    std::shared_ptr<Event> _event1;
-    std::shared_ptr<Event> _event2;
-    std::shared_ptr<Event> _event3;
-    std::shared_ptr<Event> _event4;
-    FieldType _value1{};
-    FieldType _value2{};
-    FieldType _value3{};
-    FieldType _value4{};
-    EventDB event_db;
+    static std::shared_ptr<EventKlass> _klass1;
+    static std::shared_ptr<EventKlass> _klass2;
+    static std::shared_ptr<EventKlassField> _timestamp_field;
+    static std::shared_ptr<Event> _event1;
+    static std::shared_ptr<Event> _event2;
+    static std::shared_ptr<Event> _event3;
+    static std::shared_ptr<Event> _event4;
+    static FieldType _value1;
+    static FieldType _value2;
+    static FieldType _value3;
+    static FieldType _value4;
+
+    EventDB _event_db;
 };
+
+std::shared_ptr<EventKlass> TestEventDB::_klass1;
+std::shared_ptr<EventKlass> TestEventDB::_klass2;
+std::shared_ptr<EventKlassField> TestEventDB::_timestamp_field;
+std::shared_ptr<Event> TestEventDB::_event1;
+std::shared_ptr<Event> TestEventDB::_event2;
+std::shared_ptr<Event> TestEventDB::_event3;
+std::shared_ptr<Event> TestEventDB::_event4;
+FieldType TestEventDB::_value1;
+FieldType TestEventDB::_value2;
+FieldType TestEventDB::_value3;
+FieldType TestEventDB::_value4;
 
 TEST_F(TestEventDB, CheckIfEventsAreKeptSorted)
 {
     // Arrange
     Query query;
-    HT_TimestampNs start_ts = (HT_TimestampNs)100;
-    HT_TimestampNs stop_ts = (HT_TimestampNs)200;
+    const HT_TimestampNs start_ts = 100u;
+    const HT_TimestampNs stop_ts = 200u;
 
     // Act
-    event_db.insert(*_event2);
-    event_db.insert(*_event1);
+    _event_db.insert(*_event2);
+    _event_db.insert(*_event1);
     
     // Assert
-    auto response = event_db.get_data(start_ts, stop_ts, query);
+    auto response = _event_db.get_data(start_ts, stop_ts, query);
     std::vector<Event> correct_response = {*_event1, *_event2};
 
-    ASSERT_EQ(response.size(), correct_response.size());
-    for (unsigned int i = 0; i < response.size(); ++i)
+    ASSERT_EQ(correct_response.size(), response.size());
+    for (size_t i = 0; i < response.size(); ++i)
     {
-        ASSERT_EQ(response[i].get().get_timestamp(), correct_response[i].get_timestamp());
+        ASSERT_EQ(correct_response[i].get_timestamp(), response[i].get().get_timestamp());
     }
 }
 
@@ -79,25 +92,24 @@ TEST_F(TestEventDB, QuerySpecifcKlassId)
 {
     // Arrange
     Query query;
-    HT_TimestampNs start_ts = (HT_TimestampNs)100;
-    HT_TimestampNs stop_ts = (HT_TimestampNs)300;
     query.klass_id = 1;
+    const HT_TimestampNs start_ts = 100u;
+    const HT_TimestampNs stop_ts = 300u;
 
     // Act
-    event_db.insert(*_event1);
-    event_db.insert(*_event2);
-    event_db.insert(*_event3);
-    auto response = event_db.get_data(start_ts, stop_ts, query);
+    _event_db.insert(*_event1);
+    _event_db.insert(*_event2);
+    _event_db.insert(*_event3);
+    auto response = _event_db.get_data(start_ts, stop_ts, query);
 
     // Assert
     std::vector<Event> correct_response = {*_event1, *_event3};
-    ASSERT_EQ(response.size(), correct_response.size());
-    for (unsigned int i = 0; i < response.size(); ++i)
+    ASSERT_EQ(correct_response.size(), response.size());
+    for (size_t i = 0; i < response.size(); ++i)
     {
-        ASSERT_EQ(response[i].get().get_timestamp(), correct_response[i].get_timestamp());
+        ASSERT_EQ(correct_response[i].get_timestamp(), response[i].get().get_timestamp());
     }
 }
-
 
 TEST_F(TestEventDB, CheckLowerBoundConditions)
 {
@@ -107,41 +119,92 @@ TEST_F(TestEventDB, CheckLowerBoundConditions)
     HT_TimestampNs stop_ts;
 
     // Act
-    event_db.insert(*_event1);
-    event_db.insert(*_event2);
-    event_db.insert(*_event3);
-    event_db.insert(*_event4);
+    _event_db.insert(*_event1);
+    _event_db.insert(*_event2);
+    _event_db.insert(*_event3);
+    _event_db.insert(*_event4);
 
-    start_ts = (HT_TimestampNs)100;
-    stop_ts = (HT_TimestampNs)400;
-    auto response1 = event_db.get_data(start_ts, stop_ts, query1);
+    start_ts = 100u;
+    stop_ts = 400u;
+    auto response1 = _event_db.get_data(start_ts, stop_ts, query1);
 
-    start_ts = (HT_TimestampNs)0;
-    stop_ts = (HT_TimestampNs)500;
-    auto response2 = event_db.get_data(start_ts, stop_ts, query2);
+    start_ts = 0u;
+    stop_ts = 500u;
+    auto response2 = _event_db.get_data(start_ts, stop_ts, query2);
 
-    start_ts = (HT_TimestampNs)150;
-    stop_ts = (HT_TimestampNs)350;
-    auto response3 = event_db.get_data(start_ts, stop_ts, query3);
+    start_ts = 150u;
+    stop_ts = 350u;
+    auto response3 = _event_db.get_data(start_ts, stop_ts, query3);
 
     // Assert
     std::vector<Event> correct_response1 = {*_event1, *_event2, *_event3, *_event4};
     std::vector<Event> correct_response2 = {*_event1, *_event2, *_event3, *_event4};
     std::vector<Event> correct_response3 = {*_event2, *_event3};
-    ASSERT_EQ(response1.size(), correct_response1.size());
-    for (unsigned int i = 0; i < response1.size(); ++i)
+    ASSERT_EQ(correct_response1.size(), response1.size());
+    for (size_t i = 0; i < response1.size(); ++i)
     {
-        ASSERT_EQ(response1[i].get().get_timestamp(), correct_response1[i].get_timestamp());
+        ASSERT_EQ(correct_response1[i].get_timestamp(), response1[i].get().get_timestamp());
     }
-    ASSERT_EQ(response2.size(), correct_response2.size());
-    for (unsigned int i = 0; i < response2.size(); ++i)
+    ASSERT_EQ(correct_response2.size(), response2.size());
+    for (size_t i = 0; i < response2.size(); ++i)
     {
-        ASSERT_EQ(response2[i].get().get_timestamp(), correct_response2[i].get_timestamp());
+        ASSERT_EQ(correct_response2[i].get_timestamp(), response2[i].get().get_timestamp());
     }
-    ASSERT_EQ(response3.size(), correct_response3.size());
-    for (unsigned int i = 0; i < response3.size(); ++i)
+    ASSERT_EQ(correct_response3.size(), response3.size());
+    for (size_t i = 0; i < response3.size(); ++i)
     {
-        ASSERT_EQ(response3[i].get().get_timestamp(), correct_response3[i].get_timestamp());
+        ASSERT_EQ(correct_response3[i].get_timestamp(), response3[i].get().get_timestamp());
     }
 }
 
+TEST_F(TestEventDB, EmptyDatabaseShouldNotCrash)
+{
+    // Arrange
+    Query query;
+    query.klass_id = 1; 
+    const HT_TimestampNs start_ts = 100u;
+    const HT_TimestampNs stop_ts = 200u;
+
+    // Act
+    auto response = _event_db.get_data(start_ts, stop_ts, query);
+
+    // Assert
+    ASSERT_EQ(0, response.size());
+}
+
+TEST_F(TestEventDB, QueryWithInvalidTimestampsShouldNotReturnAnything)
+{
+    // Arrange
+    Query query;
+    const HT_TimestampNs start_ts = 200u;
+    const HT_TimestampNs stop_ts = 100u;
+
+    // Act
+    _event_db.insert(*_event1);
+    _event_db.insert(*_event2);
+    auto response = _event_db.get_data(start_ts, stop_ts, query);
+
+    // Assert
+    ASSERT_EQ(0, response.size());
+}
+
+TEST_F(TestEventDB, QueryOneTimestamp)
+{
+    // Arrange
+    Query query;
+    query.klass_id = 1;
+    const HT_TimestampNs start_ts = 100u;
+    const HT_TimestampNs stop_ts = 100u;
+
+    // Act
+    _event_db.insert(*_event1);
+    auto response = _event_db.get_data(start_ts, stop_ts, query);
+
+    // Assert
+    std::vector<Event> correct_response = {*_event1};
+    ASSERT_EQ(correct_response.size(), response.size());
+    for (size_t i = 0; i < response.size(); ++i)
+    {
+        ASSERT_EQ(correct_response[i].get_timestamp(), response[i].get().get_timestamp());
+    }
+}
