@@ -80,9 +80,12 @@ void ChromeTraceListener::process_event(const parser::Event& event)
     {
         return;
     }
+
+    // Chrome expects the timestamps/durations to be microseconds
+    // so we need to convert from nano to micro
     file << ",{\"name\": \"" << label
-         << "\", \"ph\": \"X\", \"ts\": " << event.get_value<uint64_t>("timestamp")
-         << ", \"dur\": " << event.get_value_or_default<uint64_t>("duration", 0u)
+         << "\", \"ph\": \"X\", \"ts\": " << (event.get_value<uint64_t>("timestamp") / 1000u)
+         << ", \"dur\": " << (event.get_value_or_default<uint64_t>("duration", 0u) / 1000u)
          << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<uint32_t>("thread_id", 0)
          << "}";
 }
