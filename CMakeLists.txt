@@ -20,6 +20,8 @@ option(ENABLE_RELEASE_MODE "Enables release mode. This flag should be used
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # PLATFORM FEATURES
 include(platform_features)
 define_platform_feature(CPU_USAGE "cpu_usage.c")
