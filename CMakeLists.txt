@@ -18,6 +18,8 @@ option(ENABLE_MAINTAINER_MODE "Enables maintainer mode. Overrides some flags
 option(ENABLE_RELEASE_MODE "Enables release mode. This flag should be used
     to compile and release product.")
 
+option(ENABLE_STATIC_LINKING "Link libraries and tests agains hawktracer static lib" ON)
+
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # PLATFORM FEATURES
@@ -43,6 +45,10 @@ if(ENABLE_RELEASE_MODE)
     set(ENABLE_BENCHMARKS ON)
     set(ENABLE_EXAMPLES ON)
 endif(ENABLE_RELEASE_MODE)
+
+if(ENABLE_STATIC_LINKING)
+    set(ENABLE_STATIC_LIB ON)
+endif(ENABLE_STATIC_LINKING)
 
 include(warnings)
 
