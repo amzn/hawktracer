@@ -2,6 +2,11 @@
 
 #include "hawktracer/parser/klass_register.hpp"
 
+static uint64_t ns_to_ms(uint64_t nano_secs)
+{
+    return nano_secs / 1000u;
+}
+
 namespace HawkTracer
 {
 namespace client
@@ -84,8 +89,8 @@ void ChromeTraceListener::process_event(const parser::Event& event)
     // Chrome expects the timestamps/durations to be microseconds
     // so we need to convert from nano to micro
     file << ",{\"name\": \"" << label
-         << "\", \"ph\": \"X\", \"ts\": " << (event.get_value<uint64_t>("timestamp") / 1000u)
-         << ", \"dur\": " << (event.get_value_or_default<uint64_t>("duration", 0u) / 1000u)
+         << "\", \"ph\": \"X\", \"ts\": " << ns_to_ms(event.get_value<uint64_t>("timestamp"))
+         << ", \"dur\": " << ns_to_ms(event.get_value_or_default<uint64_t>("duration", 0u))
          << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<uint32_t>("thread_id", 0)
          << "}";
 }
