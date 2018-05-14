@@ -30,6 +30,17 @@ void EventDB::insert(parser::Event event)
             } 
         }
         _events[klass_id].insert(it.base(), std::move(event));
+        _cache.insert_event(_events[klass_id][_events[klass_id].size() - 1], klass_id);
+    }
+}
+
+static void append_events(std::vector<EventRef>& dst, 
+                          std::vector<parser::Event>::iterator first_event, 
+                          std::vector<parser::Event>::iterator last_event) 
+{
+   for (auto it = first_event; it != last_event; ++it)
+    {
+        dst.push_back(*it);
     }
 
 
@@ -44,7 +55,24 @@ std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
     }    
     else
     {
-        _query_event_klass(response, _events[query.klass_id], start_ts, stop_ts); 
+        if (_events.find(query.klass_id) == _events.end())
+            return response;
+
+        std::vector<parser::Event>::iterator first_event;
+        std::vector<parser::Event>::iterator last_event;
+        _get_range_of_events(_events[query.klass_id], start_ts, stop_ts, first_event, last_event);
+        --last_event;
+
+        if (_cache.range_in_cache(first_event->get_timestamp(), last_event->get_timestamp(), query.klass_id))
+        {
+            return _cache.get_data(query.klass_id);
+        }
+        else
+        {
+            ++last_event; 
+            append_events(response, first_event, last_event);
+            _cache.update(query.klass_id, response);
+        }
     }
     return response;
 }
@@ -83,8 +111,8 @@ static void inplace_merge_events(std::vector<EventRef>& response,
 }
 
 void EventDB::_query_all_event_klasses(std::vector<EventRef>& response,
-                                      HT_TimestampNs start_ts,
-                                      HT_TimestampNs stop_ts)
+                                       HT_TimestampNs start_ts,
+                                       HT_TimestampNs stop_ts)
 {  
     std::vector<int> lengths;
     lengths.resize(_events.size());
@@ -99,20 +127,10 @@ void EventDB::_query_all_event_klasses(std::vector<EventRef>& response,
         inplace_merge_events(response, lengths, 0, lengths.size() - 1);
 }
 
-static void append_events(std::vector<EventRef>& dst, 
-                          std::vector<parser::Event>::iterator first_event, 
-                          std::vector<parser::Event>::iterator last_event) 
-{
-   for (auto it = first_event; it != last_event; ++it)
-    {
-        dst.push_back(*it);
-    }
-}
-
 void EventDB::_query_event_klass(std::vector<EventRef>& response,
-                                std::vector<parser::Event>& events,
-                                HT_TimestampNs start_ts,
-                                HT_TimestampNs stop_ts)
+                                 std::vector<parser::Event>& events,
+                                 HT_TimestampNs start_ts,
+                                 HT_TimestampNs stop_ts)
 {
     std::vector<parser::Event>::iterator first_event;
     std::vector<parser::Event>::iterator last_event;
@@ -121,10 +139,10 @@ void EventDB::_query_event_klass(std::vector<EventRef>& response,
 }
 
 void EventDB::_get_range_of_events(std::vector<parser::Event>& events,
-                                  HT_TimestampNs start_ts,
-                                  HT_TimestampNs stop_ts,
-                                  std::vector<parser::Event>::iterator& first_event,
-                                  std::vector<parser::Event>::iterator& last_event)
+                                   HT_TimestampNs start_ts,
+                                   HT_TimestampNs stop_ts,
+                                   std::vector<parser::Event>::iterator& first_event,
+                                   std::vector<parser::Event>::iterator& last_event)
 {
     // Events for calling lower_bound
     CompareTimestampEvent start_event(start_ts);
