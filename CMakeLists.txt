@@ -8,17 +8,15 @@ option(ENABLE_TESTS "Enable unit tests" OFF)
 option(ENABLE_CODE_COVERAGE "Enable code coverage" OFF)
 option(ENABLE_BENCHMARKS "Enable benchmarks" OFF)
 option(ENABLE_EXAMPLES "Enable examples" OFF)
-option(ENABLE_STATIC_LIB "Build static hawktracer library" OFF)
-option(ENABLE_SHARED_LIB "Build shared hawktracer library" ON)
 option(ENABLE_DOC "Build documentation" ON)
+
+option(BUILD_STATIC_LIB "Build static hawktracer library" OFF)
 
 option(ENABLE_MAINTAINER_MODE "Enables maintainer mode. Overrides some flags
     (e.g. ENABLE_TESTS, ENABLE_CODE_COVERAGE, ENABLE_BENCHMARKS)")
 
 option(ENABLE_RELEASE_MODE "Enables release mode. This flag should be used
     to compile and release product.")
-
-option(ENABLE_STATIC_LINKING "Link libraries and tests agains hawktracer static lib" ON)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
@@ -41,16 +39,10 @@ if(ENABLE_MAINTAINER_MODE)
 endif(ENABLE_MAINTAINER_MODE)
 
 if(ENABLE_RELEASE_MODE)
-    set(ENABLE_STATIC_LIB ON)
-    set(ENABLE_SHARED_LIB ON)
     set(ENABLE_TESTS ON)
     set(ENABLE_BENCHMARKS ON)
     set(ENABLE_EXAMPLES ON)
 endif(ENABLE_RELEASE_MODE)
-
-if(ENABLE_STATIC_LINKING)
-    set(ENABLE_STATIC_LIB ON)
-endif(ENABLE_STATIC_LINKING)
 
 include(warnings)
 

@@ -9,13 +9,10 @@ configuration:
   - RelWithDebInfo
 
 before_build:
-  - cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_ASAN=ON -DENABLE_BENCHMARKS=ON -DENABLE_CODE_COVERAGE=ON -DENABLE_EXAMPLES=ON -DENABLE_SHARED_LIB=ON -DENABLE_STATIC_LIB=ON -DENABLE_TESTS=ON -DENABLE_STATIC_LINKING=ON .
+  - cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_BENCHMARKS=ON -DENABLE_EXAMPLES=ON -DBUILD_STATIC_LIB=ON -DENABLE_TESTS=ON .
 
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln 
-
-build_script:
-  - cmake --build . --config RelWithDebInfo
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\tests
