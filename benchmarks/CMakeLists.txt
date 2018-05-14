@@ -40,8 +40,7 @@ add_executable(hawktracer_benchmarks
     benchmark_timeline.cpp)
 
 target_include_directories(hawktracer_benchmarks PRIVATE ${BENCHMARK_INCLUDE_DIRS})
-target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} ${HAWKTRACER_LIB} ${CMAKE_THREAD_LIBS_INIT})
-target_compile_definitions(hawktracer_benchmarks PRIVATE ${HAWKTRACER_COMPILE_DEFINITIONS})
+target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries(hawktracer_benchmarks Shlwapi)

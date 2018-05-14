@@ -1,6 +1,8 @@
 #ifndef HAWKTRACER_MACROS_H
 #define HAWKTRACER_MACROS_H
 
+#include <hawktracer/config.h>
+
 /** Helper macro for suppressing unused value warnings. */
 #define HT_UNUSED(x) (void)(x)
 
