@@ -18,8 +18,6 @@ namespace HawkTracer
 namespace viewer
 {
 
-using EventRef = std::reference_wrapper<const parser::Event>;
-
 class EventDB
 {
 public:

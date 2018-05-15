@@ -30,7 +30,7 @@ void EventDB::insert(parser::Event event)
             } 
         }
         _events[klass_id].insert(it.base(), std::move(event));
-        _cache.insert_event(_events[klass_id][_events[klass_id].size() - 1], klass_id);
+        _cache.insert_event(_events[klass_id].back(), klass_id);
     }
 }
 
@@ -38,7 +38,7 @@ static void append_events(std::vector<EventRef>& dst,
                           std::vector<parser::Event>::iterator first_event, 
                           std::vector<parser::Event>::iterator last_event) 
 {
-   for (auto it = first_event; it != last_event; ++it)
+    for (auto it = first_event; it != last_event; ++it)
     {
         dst.push_back(*it);
     }
@@ -49,27 +49,39 @@ std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
                                         const Query& query)
 {
     std::vector<EventRef> response;
+
+    if (start_ts > stop_ts)
+    {
+        return response;
+    }
+
     if (query.klass_id == (HT_EventKlassId)-1)
     {
         _query_all_event_klasses(response, start_ts, stop_ts);
     }    
     else
     {
-        if (_events.find(query.klass_id) == _events.end())
+        auto events = _events.find(query.klass_id);
+        if (events == _events.end())
+        {
             return response;
+        }
 
         std::vector<parser::Event>::iterator first_event;
         std::vector<parser::Event>::iterator last_event;
-        _get_range_of_events(_events[query.klass_id], start_ts, stop_ts, first_event, last_event);
-        --last_event;
+        _get_range_of_events(events->second, start_ts, stop_ts, first_event, last_event);
+        bool valid_range = first_event != events->second.end() && last_event != events->second.begin();
+        if (!valid_range)
+        {
+            return response;
+        }
 
-        if (_cache.range_in_cache(first_event->get_timestamp(), last_event->get_timestamp(), query.klass_id))
+        if (_cache.range_in_cache(first_event->get_timestamp(), std::prev(last_event)->get_timestamp(), query.klass_id))
         {
             return _cache.get_data(query.klass_id);
         }
         else
         {
-            ++last_event; 
             append_events(response, first_event, last_event);
             _cache.update(query.klass_id, response);
         }
@@ -144,7 +156,7 @@ void EventDB::_get_range_of_events(std::vector<parser::Event>& events,
                                    std::vector<parser::Event>::iterator& first_event,
                                    std::vector<parser::Event>::iterator& last_event)
 {
-    // Events for calling lower_bound
+    // Events for calling lower_bound and upper_bound
     CompareTimestampEvent start_event(start_ts);
     CompareTimestampEvent stop_event(stop_ts);
 
@@ -152,9 +164,10 @@ void EventDB::_get_range_of_events(std::vector<parser::Event>& events,
             [] (const parser::Event& e1, const parser::Event& e2) {
             return e1.get_timestamp() < e2.get_timestamp();
             });
-    last_event = std::lower_bound(events.begin(), events.end(), stop_event,
+
+    last_event = std::upper_bound(events.begin(), events.end(), stop_event,
             [] (const parser::Event& e1, const parser::Event& e2) {
-            return e1.get_timestamp() <= e2.get_timestamp();
+            return e1.get_timestamp() < e2.get_timestamp();
             });
 }
 
