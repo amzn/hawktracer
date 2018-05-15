@@ -1,6 +1,12 @@
 #include "hawktracer/feature_callstack.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/thread.h"
+#include "hawktracer/stack.h"
+
+typedef struct
+{
+    HT_Stack stack;
+} HT_FeatureCallstack;
 
 HT_ErrorCode
 ht_feature_callstack_enable(HT_Timeline* timeline)

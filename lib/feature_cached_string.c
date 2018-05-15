@@ -1,3 +1,4 @@
+#include "hawktracer/bag.h"
 #include "hawktracer/feature_cached_string.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/core_events.h"
@@ -5,6 +6,13 @@
 #include "internal/mutex.h"
 
 #include <assert.h>
+
+
+typedef struct
+{
+    HT_Bag cached_data;
+    struct _HT_Mutex* lock;
+} HT_FeatureCachedString;
 
 HT_ErrorCode
 ht_feature_cached_string_enable(HT_Timeline* timeline)
