@@ -1,7 +1,6 @@
 #include "event_db.hpp"
 
 #include <algorithm>
-#include <queue>
 
 namespace HawkTracer
 {

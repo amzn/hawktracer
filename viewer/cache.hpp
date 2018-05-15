@@ -4,9 +4,6 @@
 #include <hawktracer/base_types.h>
 #include <hawktracer/parser/event.hpp>
 
-#include <unordered_map>
-#include <vector>
-
 namespace HawkTracer
 {
 namespace viewer
