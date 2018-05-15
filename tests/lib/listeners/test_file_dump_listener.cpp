@@ -87,20 +87,19 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 TEST(TestFileDumpListener, NonSerializedTimeline)
 {
     // Arrange
-    HT_Timeline timeline;
-    ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, NULL);
+    HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
 
     HT_FileDumpListener* listener = ht_file_dump_listener_create(test_file, 4096u, nullptr);
-    ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, listener);
+    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, listener);
 
     HT_DECL_EVENT(HT_Event, event);
     event.id = 32;
     event.timestamp = 9983;
 
     // Act
-    ht_timeline_push_event(&timeline, &event);
-    ht_timeline_flush(&timeline);
-    ht_timeline_unregister_all_listeners(&timeline);
+    ht_timeline_push_event(timeline, &event);
+    ht_timeline_flush(timeline);
+    ht_timeline_unregister_all_listeners(timeline);
     ht_file_dump_listener_destroy(listener);
 
     // Assert
@@ -117,5 +116,5 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
 #undef ASSERT_FROM_BUFFER
 
     fclose(fp);
-    ht_timeline_deinit(&timeline);
+    ht_timeline_destroy(timeline);
 }

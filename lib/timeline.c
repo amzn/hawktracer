@@ -8,6 +8,18 @@
 #include <string.h>
 #include <assert.h>
 
+struct _HT_Timeline
+{
+    void* features[HT_TIMELINE_MAX_FEATURES];
+    size_t buffer_capacity;
+    size_t buffer_usage;
+    HT_Byte* buffer;
+    HT_EventIdProvider* id_provider;
+    HT_TimelineListenerContainer* listeners;
+    struct _HT_Mutex* locking_policy;
+    HT_Boolean serialize_events;
+};
+
 static inline void
 _ht_timeline_notify_listeners(HT_Timeline* timeline, TEventPtr events, size_t size)
 {
@@ -91,6 +103,19 @@ ht_timeline_flush(HT_Timeline* timeline)
     }
 }
 
+void
+ht_timeline_set_feature(HT_Timeline* timeline, size_t feature_id, void* feature)
+{
+    timeline->features[feature_id] = feature;
+}
+
+void*
+ht_timeline_get_feature(HT_Timeline* timeline, size_t feature_id)
+{
+    return timeline->features[feature_id];
+}
+
+
 HT_ErrorCode
 ht_timeline_register_listener(
         HT_Timeline* timeline,
@@ -108,20 +133,27 @@ ht_timeline_unregister_all_listeners(HT_Timeline* timeline)
                 timeline->listeners);
 }
 
-HT_ErrorCode
-ht_timeline_init(HT_Timeline* timeline,
-                 size_t buffer_capacity,
-                 HT_Boolean thread_safe,
-                 HT_Boolean serialize_events,
-                 const char* listeners)
+HT_Timeline*
+ht_timeline_create(size_t buffer_capacity,
+                   HT_Boolean thread_safe,
+                   HT_Boolean serialize_events,
+                   const char* listeners,
+                   HT_ErrorCode* out_err)
 {
     HT_ErrorCode error_code = HT_ERR_OK;
+    HT_Timeline* timeline = HT_CREATE_TYPE(HT_Timeline);
+
+    if (timeline == NULL)
+    {
+        goto done;
+    }
+
     timeline->buffer = (HT_Byte*)ht_alloc(buffer_capacity);
 
     if (timeline->buffer == NULL)
     {
         error_code = HT_ERR_OUT_OF_MEMORY;
-        goto done;
+        goto error_allocate_buffer;
     }
 
     timeline->listeners = ht_find_or_create_listener(listeners);
@@ -157,13 +189,20 @@ error_locking_policy:
     ht_timeline_listener_container_unref(timeline->listeners);
 error_create_listener:
     ht_free(timeline->buffer);
-
+error_allocate_buffer:
+    ht_free(timeline);
+    timeline = NULL;
 done:
-    return error_code;
+    if (out_err != NULL)
+    {
+        *out_err = error_code;
+    }
+
+    return timeline;
 }
 
 void
-ht_timeline_deinit(HT_Timeline* timeline)
+ht_timeline_destroy(HT_Timeline* timeline)
 {
     size_t i;
 
@@ -187,4 +226,12 @@ ht_timeline_deinit(HT_Timeline* timeline)
     {
         ht_mutex_destroy(timeline->locking_policy);
     }
+
+    ht_free(timeline);
+}
+
+HT_EventIdProvider*
+ht_timeline_get_id_provider(HT_Timeline* timeline)
+{
+    return timeline->id_provider;
 }

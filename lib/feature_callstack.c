@@ -21,7 +21,7 @@ ht_feature_callstack_enable(HT_Timeline* timeline)
         return error_code;
     }
 
-    timeline->features[HT_FEATURE_CALLSTACK] = feature;
+    ht_timeline_set_feature(timeline, HT_FEATURE_CALLSTACK, feature);
 
     return HT_ERR_OK;
 }
@@ -29,9 +29,10 @@ ht_feature_callstack_enable(HT_Timeline* timeline)
 void
 ht_feature_callstack_disable(HT_Timeline* timeline)
 {
-    ht_stack_deinit(&((HT_FeatureCallstack*)timeline->features[HT_FEATURE_CALLSTACK])->stack);
-    ht_free(timeline->features[HT_FEATURE_CALLSTACK]);
-    timeline->features[HT_FEATURE_CALLSTACK] = 0;
+    HT_FeatureCallstack* f = (HT_FeatureCallstack*)ht_timeline_get_feature(timeline, HT_FEATURE_CALLSTACK);
+    ht_stack_deinit(&f->stack);
+    ht_free(f);
+    ht_timeline_set_feature(timeline, HT_FEATURE_CALLSTACK, NULL);
 }
 
 void ht_feature_callstack_start(HT_Timeline* timeline, HT_CallstackBaseEvent* event)

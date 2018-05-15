@@ -35,13 +35,12 @@ TEST(TestRegistry, PushAllKlassInfoEventsShouldPushAll)
     // Arrange
     size_t event_klass_count = 0;
     HT_EventKlass** klasses = ht_registry_get_event_klasses(&event_klass_count);
-    HT_Timeline timeline;
-    ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, nullptr);
+    HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, nullptr, nullptr);
     NotifyInfo<HT_EventKlass> info;
-    ht_timeline_register_listener(&timeline, test_listener<HT_EventKlass>, &info);
+    ht_timeline_register_listener(timeline, test_listener<HT_EventKlass>, &info);
 
     // Act
-    ht_registry_push_all_klass_info_events(&timeline);
+    ht_registry_push_all_klass_info_events(timeline);
 
     // Assert
     size_t total_events = 0;
@@ -52,7 +51,7 @@ TEST(TestRegistry, PushAllKlassInfoEventsShouldPushAll)
 
     ASSERT_EQ(total_events, info.values.size());
 
-    ht_timeline_deinit(&timeline);
+    ht_timeline_destroy(timeline);
 }
 
 TEST(TestRegistry, RegisterListenerTwiceShouldFail)

@@ -11,12 +11,11 @@ int main(int argc, char** argv)
 {
     ht_init(argc, argv);
 
-    HT_Timeline timeline;
-    ht_timeline_init(&timeline, 10, HT_FALSE, HT_FALSE, NULL);
+    HT_Timeline* timeline = ht_timeline_create(10, HT_FALSE, HT_FALSE, NULL, NULL);
 
     ht_deinit();
 
-    ht_timeline_deinit(&timeline);
+    ht_timeline_destroy(timeline);
 
     return 0;
 }
