@@ -75,20 +75,16 @@ set(HAWKTRACER_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRE
 
 if(BUILD_STATIC_LIB)
     add_library(hawktracer STATIC ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer PUBLIC
-        "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
-        $<INSTALL_INTERFACE:include>)
-    list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
 else ()
     add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer PUBLIC
-        "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
-        $<INSTALL_INTERFACE:include>)
-    target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
-    list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
 endif(BUILD_STATIC_LIB)
-  
-install(TARGETS ${HAWKTRACER_LIB_INSTALL_TARGETS}
+
+target_include_directories(hawktracer PUBLIC
+    "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
+    $<INSTALL_INTERFACE:include>)
+target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
+
+install(TARGETS hawktracer
     EXPORT HawkTracerTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
