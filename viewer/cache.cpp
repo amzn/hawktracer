@@ -7,20 +7,17 @@ namespace HawkTracer
 namespace viewer
 {
 
-Cache::Cache()
-{
-}
-
 bool Cache::range_in_cache(HT_TimestampNs start_ts,
                            HT_TimestampNs stop_ts,
                            HT_EventKlassId klass_id)
 {
-    if (_events.find(klass_id) == _events.end())
+    auto events = _events.find(klass_id);
+    if (events == _events.end())
     {
         return false;
     }
-    HT_TimestampNs cache_start_ts = _events[klass_id].front().get().get_timestamp();
-    HT_TimestampNs cache_stop_ts = _events[klass_id].back().get().get_timestamp();
+    HT_TimestampNs cache_start_ts = events->second.front().get().get_timestamp();
+    HT_TimestampNs cache_stop_ts = events->second.back().get().get_timestamp();
     if (cache_start_ts != start_ts || cache_stop_ts != stop_ts)
     {
         return false;
@@ -46,12 +43,13 @@ void Cache::update(HT_EventKlassId klass_id,
 
 void Cache::insert_event(EventRef event, HT_EventKlassId klass_id)
 {
-    if (_events.find(klass_id) == _events.end())
+    auto events = _events.find(klass_id);
+    if (events == _events.end())
     {
         return;
     }
-    HT_TimestampNs cache_start_ts = _events[klass_id].front().get().get_timestamp();
-    HT_TimestampNs cache_stop_ts = _events[klass_id].back().get().get_timestamp();
+    HT_TimestampNs cache_start_ts = events->second.front().get().get_timestamp();
+    HT_TimestampNs cache_stop_ts = events->second.back().get().get_timestamp();
     bool should_insert_event = cache_start_ts <= event.get().get_timestamp() && event.get().get_timestamp() <= cache_stop_ts;
 
     if (!should_insert_event)
@@ -67,7 +65,7 @@ void Cache::insert_event(EventRef event, HT_EventKlassId klass_id)
             break;
         }
     }
-    _events[klass_id].insert(it, event);
+    events->second.insert(it, event);
 }
 
 } // namespace viewer
