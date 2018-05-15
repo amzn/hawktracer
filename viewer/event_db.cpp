@@ -77,7 +77,7 @@ std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
 
         if (_cache.range_in_cache(first_event->get_timestamp(), std::prev(last_event)->get_timestamp(), query.klass_id))
         {
-            return _cache.get_data(query.klass_id);
+            _cache.get_data(query.klass_id, response);
         }
         else
         {

@@ -18,7 +18,7 @@ public:
                         HT_TimestampNs stop_ts,
                         HT_EventKlassId klass_id);
 
-    std::vector<EventRef> get_data(HT_EventKlassId klass_id);
+    bool get_data(HT_EventKlassId klass_id, std::vector<EventRef>& events);
 
     void update(HT_EventKlassId klass_id,
                 std::vector<EventRef> new_response);
