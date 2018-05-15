@@ -8,44 +8,23 @@ static const char* test_file = "dump_listener_test_file_test_file";
 TEST(TestFileDumpListener, InitShouldFailIfFileCanNotBeOpened)
 {
     // Arrange
-    HT_FileDumpListener listener;
-
-    // Act & Assert
-    ASSERT_EQ(HT_ERR_CANT_OPEN_FILE, ht_file_dump_listener_init(&listener, "/non/existing/file", 4096u));
-}
-
-TEST(TestFileDumpListener, FlushingTimelineShouldAddEventToInternalBuffer)
-{
-    // Arrange
-    HT_FileDumpListener listener;
-    HT_Timeline* timeline = ht_global_timeline_get();
-
-    ht_file_dump_listener_init(&listener, test_file, 4096u);
-    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
-
-    HT_DECL_EVENT(HT_Event, event);
-    event.id = 1;
-    event.timestamp = 1;
-    ht_timeline_push_event(timeline, &event);
+    HT_ErrorCode error;
 
     // Act
-    ht_timeline_flush(timeline);
+    HT_FileDumpListener* listener = ht_file_dump_listener_create("/non/existing/file", 4096u, &error);
 
     // Assert
-    ht_timeline_unregister_all_listeners(timeline);
-    ASSERT_LT(0u, listener.buffer.usage);
-
-    ht_file_dump_listener_deinit(&listener);
+    ASSERT_EQ(nullptr, listener);
+    ASSERT_EQ(HT_ERR_CANT_OPEN_FILE, error);
 }
 
 TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
 {
     // Arrange
-    HT_FileDumpListener listener;
     HT_Timeline* timeline = ht_global_timeline_get();
 
-    ht_file_dump_listener_init(&listener, test_file, 4096u);
-    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
+    HT_FileDumpListener* listener = ht_file_dump_listener_create(test_file, 4096u, nullptr);
+    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, listener);
 
     HT_DECL_EVENT(HT_Event, event);
     event.id = 32;
@@ -55,7 +34,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
     ht_timeline_push_event(timeline, &event);
     ht_timeline_flush(timeline);
     ht_timeline_unregister_all_listeners(timeline);
-    ht_file_dump_listener_deinit(&listener);
+    ht_file_dump_listener_destroy(listener);
 
     // Assert
     FILE* fp = fopen(test_file, "rb");
@@ -72,17 +51,15 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
 
     fclose(fp);
 }
-
 TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 {
     // Arrange
-    HT_FileDumpListener listener;
     HT_Timeline* timeline = ht_global_timeline_get();
     const size_t buffer_size = 4096u;
 
     remove(test_file);
-    ht_file_dump_listener_init(&listener, test_file, buffer_size);
-    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, &listener);
+    HT_FileDumpListener* listener = ht_file_dump_listener_create(test_file, buffer_size, nullptr);
+    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, listener);
 
     // Act
     for (size_t i = 0; i < buffer_size; i++)
@@ -97,7 +74,7 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 
     // Assert
     ht_timeline_unregister_all_listeners(timeline);
-    ht_file_dump_listener_deinit(&listener);
+    ht_file_dump_listener_destroy(listener);
 
     FILE* fp = fopen(test_file, "rb");
     ASSERT_NE(nullptr, fp);
@@ -110,12 +87,11 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 TEST(TestFileDumpListener, NonSerializedTimeline)
 {
     // Arrange
-    HT_FileDumpListener listener;
     HT_Timeline timeline;
     ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, NULL);
 
-    ht_file_dump_listener_init(&listener, test_file, 4096u);
-    ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &listener);
+    HT_FileDumpListener* listener = ht_file_dump_listener_create(test_file, 4096u, nullptr);
+    ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, listener);
 
     HT_DECL_EVENT(HT_Event, event);
     event.id = 32;
@@ -125,7 +101,7 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
     ht_timeline_push_event(&timeline, &event);
     ht_timeline_flush(&timeline);
     ht_timeline_unregister_all_listeners(&timeline);
-    ht_file_dump_listener_deinit(&listener);
+    ht_file_dump_listener_destroy(listener);
 
     // Assert
     FILE* fp = fopen(test_file, "rb");

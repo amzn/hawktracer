@@ -31,10 +31,10 @@ int main(int argc, char** argv)
 
     ht_init(argc, argv);
 
-    HT_FileDumpListener file_dump_listener;
-    if (ht_file_dump_listener_init(&file_dump_listener, "test_output.htdump", 4096u) == HT_ERR_OK)
+    HT_FileDumpListener* file_dump_listener = ht_file_dump_listener_create("test_output.htdump", 4096u, NULL);
+    if (file_dump_listener != NULL)
     {
-        ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, &file_dump_listener);
+        ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, file_dump_listener);
     }
 
     ht_registry_push_all_klass_info_events(ht_global_timeline_get());
@@ -43,6 +43,6 @@ int main(int argc, char** argv)
 
     ht_timeline_flush(ht_global_timeline_get());
     ht_timeline_unregister_all_listeners(ht_global_timeline_get());
-    ht_file_dump_listener_deinit(&file_dump_listener);
+    ht_file_dump_listener_destroy(file_dump_listener);
     ht_deinit();
 }
