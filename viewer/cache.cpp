@@ -2,6 +2,8 @@
 
 #include <hawktracer/base_types.h>
 
+#include <algorithm>
+
 namespace HawkTracer
 {
 namespace viewer
@@ -57,14 +59,10 @@ void Cache::insert_event(EventRef event, HT_EventKlassId klass_id)
         return;
     }
     
-    std::vector<EventRef>::iterator it;
-    for (it = _events[klass_id].begin(); it != _events[klass_id].end(); ++it)
-    {
-        if (it->get().get_timestamp() > event.get().get_timestamp())
-        {
-            break;
-        }
-    }
+    auto it = std::upper_bound(events->second.begin(), events->second.end(), event.get(),
+            [] (const EventRef& e1, const EventRef& e2) {
+                return e1.get().get_timestamp() < e2.get().get_timestamp();
+            });
     events->second.insert(it, event);
 }
 
