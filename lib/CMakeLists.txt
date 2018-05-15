@@ -83,6 +83,7 @@ target_include_directories(hawktracer PUBLIC
     "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
     $<INSTALL_INTERFACE:include>)
 target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
+target_link_libraries(hawktracer INTERFACE ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS hawktracer
     EXPORT HawkTracerTargets

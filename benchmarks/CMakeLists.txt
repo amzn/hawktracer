@@ -2,8 +2,6 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     message(WARNING "Benchmarks should not be built in Debug mode.")
 endif()
 
-find_package(Threads REQUIRED)
-
 set(GOOGLEBENCHMARK_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/googlebenchmark")
 
 include(ExternalProject)
@@ -40,7 +38,7 @@ add_executable(hawktracer_benchmarks
     benchmark_timeline.cpp)
 
 target_include_directories(hawktracer_benchmarks PRIVATE ${BENCHMARK_INCLUDE_DIRS})
-target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries(hawktracer_benchmarks Shlwapi)
