@@ -27,9 +27,10 @@ bool Cache::range_in_cache(HT_TimestampNs start_ts,
     return true;
 }
 
-std::vector<EventRef> Cache::get_data(HT_EventKlassId klass_id)
+boost::optional<std::vector<EventRef>> Cache::get_data(HT_EventKlassId klass_id)
 {
-    return _events[klass_id];
+    auto it = _events.find(klass_id);
+    return it != _events.end() ? it->second : boost::optional<std::vector<EventRef>>{};
 }
 
 void Cache::update(HT_EventKlassId klass_id,
