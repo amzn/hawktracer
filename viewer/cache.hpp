@@ -17,8 +17,6 @@ using EventRef = std::reference_wrapper<const parser::Event>;
 class Cache
 {
 public:
-    Cache();
-
     bool range_in_cache(HT_TimestampNs start_ts,
                         HT_TimestampNs stop_ts,
                         HT_EventKlassId klass_id);
