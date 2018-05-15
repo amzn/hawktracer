@@ -29,7 +29,7 @@ void EventDB::insert(parser::Event event)
             } 
         }
         _events[klass_id].insert(it.base(), std::move(event));
-        _cache.insert_event(_events[klass_id].back(), klass_id);
+        _cache.insert_event(_events[klass_id].back());
     }
 }
 
