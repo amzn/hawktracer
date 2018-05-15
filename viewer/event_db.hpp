@@ -6,8 +6,6 @@
 #include <hawktracer/parser/event.hpp>
 #include <hawktracer/base_types.h>
 
-#include <functional>
-
 struct Query
 {
     HT_EventKlassId klass_id = (HT_EventKlassId)-1; // TODO: optional<>
