@@ -4,6 +4,8 @@
 #include <hawktracer/base_types.h>
 #include <hawktracer/parser/event.hpp>
 
+#include <boost/optional.hpp>
+
 namespace HawkTracer
 {
 namespace viewer
@@ -18,7 +20,7 @@ public:
                         HT_TimestampNs stop_ts,
                         HT_EventKlassId klass_id);
 
-    std::vector<EventRef> get_data(HT_EventKlassId klass_id);
+    boost::optional<std::vector<EventRef>> get_data(HT_EventKlassId klass_id);
 
     void update(HT_EventKlassId klass_id,
                 std::vector<EventRef> new_response);
