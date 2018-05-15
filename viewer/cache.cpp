@@ -52,9 +52,9 @@ void Cache::update(HT_EventKlassId klass_id,
     _events[klass_id] = std::move(new_response);
 }
 
-void Cache::insert_event(EventRef event, HT_EventKlassId klass_id)
+void Cache::insert_event(EventRef event)
 {
-    auto events = _events.find(klass_id);
+    auto events = _events.find(event.get().get_klass()->get_id());
     if (events == _events.end())
     {
         return;

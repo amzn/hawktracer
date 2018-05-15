@@ -23,7 +23,7 @@ public:
     void update(HT_EventKlassId klass_id,
                 std::vector<EventRef> new_response);
 
-    void insert_event(EventRef event, HT_EventKlassId klass_id);
+    void insert_event(EventRef event);
     
 private: 
     std::unordered_map<HT_EventKlassId, std::vector<EventRef>> _events;
