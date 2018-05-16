@@ -1,5 +1,4 @@
 #include "hawktracer/alloc.h"
-#include "hawktracer/bag.h"
 #include "hawktracer/core_events.h"
 #include "internal/hash.h"
 #include "internal/feature.h"

@@ -1,6 +1,7 @@
 #include "hawktracer/task_scheduler.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/monotonic_clock.h"
+#include "internal/bag.h"
 
 #include <string.h>
 

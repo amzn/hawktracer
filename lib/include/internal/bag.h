@@ -1,5 +1,5 @@
-#ifndef HAWKTRACER_BAG_H
-#define HAWKTRACER_BAG_H
+#ifndef HAWKTRACER_INTERNAL_BAG_H
+#define HAWKTRACER_INTERNAL_BAG_H
 
 #include <hawktracer/macros.h>
 #include <hawktracer/base_types.h>
@@ -97,4 +97,4 @@ HT_API void ht_bag_clear(HT_Bag* bag);
 
 HT_DECLS_END
 
-#endif /* HAWKTRACER_BAG_H */
+#endif /* HAWKTRACER_INTERNAL_BAG_H */

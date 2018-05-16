@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_INTERNAL_TIMELINE_LISTENER_CONTAINER_H
 #define HAWKTRACER_INTERNAL_TIMELINE_LISTENER_CONTAINER_H
 
-#include <hawktracer/bag.h>
+#include <internal/bag.h>
 
 HT_DECLS_BEGIN
 

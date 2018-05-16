@@ -1,6 +1,6 @@
 #include "test_allocator.h"
 
-#include <hawktracer/bag.h>
+#include <internal/bag.h>
 
 #include <gtest/gtest.h>
 

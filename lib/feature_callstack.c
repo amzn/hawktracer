@@ -1,7 +1,7 @@
 #include "hawktracer/feature_callstack.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/thread.h"
-#include "hawktracer/stack.h"
+#include "internal/stack.h"
 
 typedef struct
 {

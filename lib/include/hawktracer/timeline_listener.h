@@ -2,7 +2,6 @@
 #define HAWKTRACER_TIMELINE_LISTENER_H
 
 #include <hawktracer/base_types.h>
-#include <hawktracer/bag.h>
 
 #include <stddef.h>
 

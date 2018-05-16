@@ -3,7 +3,6 @@
 
 #include <hawktracer/config.h>
 #include <hawktracer/alloc.h>
-#include <hawktracer/bag.h>
 #include <hawktracer/base_types.h>
 #include <hawktracer/scoped_tracepoint.h>
 #include <hawktracer/core_events.h>
@@ -20,7 +19,6 @@
 #include <hawktracer/mkcreflect.h>
 #include <hawktracer/monotonic_clock.h>
 #include <hawktracer/registry.h>
-#include <hawktracer/stack.h>
 #include <hawktracer/string_scoped_tracepoint.h>
 #include <hawktracer/task_scheduler.h>
 #include <hawktracer/thread.h>

@@ -1,4 +1,4 @@
-#include "hawktracer/stack.h"
+#include "internal/stack.h"
 #include "hawktracer/alloc.h"
 
 #include <string.h>

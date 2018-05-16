@@ -2,7 +2,6 @@
 #define HAWKTRACER_TASK_SCHEDULER_H
 
 #include <hawktracer/base_types.h>
-#include <hawktracer/bag.h>
 
 HT_DECLS_BEGIN
 
