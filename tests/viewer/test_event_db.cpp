@@ -72,6 +72,13 @@ protected:
 class TestCacheEventDB : public TestEventDB
 {
 protected:
+    static void SetUpTestCase()
+    {
+        _value5.f_UINT64 = 250;
+        _event5 = std::make_shared<Event>(_klass1);
+        _event5.get()->set_value(_timestamp_field.get(), _value5);
+    }
+
     void SetUp() override
     {
         auto _cache = HawkTracer::parser::make_unique<MockCache>();
@@ -85,6 +92,8 @@ protected:
     }
 
     MockCache* _shared_cache;
+    static std::shared_ptr<Event> _event5;
+    static FieldType _value5;
 };
 
 std::shared_ptr<EventKlass> TestEventDB::_klass1;
@@ -94,10 +103,12 @@ std::shared_ptr<Event> TestEventDB::_event1;
 std::shared_ptr<Event> TestEventDB::_event2;
 std::shared_ptr<Event> TestEventDB::_event3;
 std::shared_ptr<Event> TestEventDB::_event4;
+std::shared_ptr<Event> TestCacheEventDB::_event5;
 FieldType TestEventDB::_value1;
 FieldType TestEventDB::_value2;
 FieldType TestEventDB::_value3;
 FieldType TestEventDB::_value4;
+FieldType TestCacheEventDB::_value5;
 
 TEST_F(TestEventDB, CheckIfEventsAreKeptSorted)
 {
@@ -274,3 +285,80 @@ TEST_F(TestCacheEventDB, QueryingTwiceShouldUseCache)
         ASSERT_EQ(correct_response1[i].get_timestamp(), response1[i].get().get_timestamp());
     }
 }
+
+TEST_F(TestCacheEventDB, QueryingDifferentRangeShouldNotUseCache)
+{
+    // Arrange
+    Query query;
+    query.klass_id = 1;
+    const HT_TimestampNs start_ts1 = 100u;
+    const HT_TimestampNs stop_ts1 = 300u;
+    const HT_TimestampNs start_ts2 = 200u;
+    const HT_TimestampNs stop_ts2 = 400u;
+
+    EXPECT_CALL(*_shared_cache, insert_event(_)).Times(1);
+    EXPECT_CALL(*_shared_cache, range_in_cache(start_ts1, stop_ts1, query.klass_id))
+        .Times(1)
+        .WillOnce(Return(false));
+    EXPECT_CALL(*_shared_cache, range_in_cache(start_ts2, stop_ts2, query.klass_id))
+            .Times(1)
+        .WillOnce(Return(false));
+    EXPECT_CALL(*_shared_cache, update(query.klass_id, _)).Times(2);
+    EXPECT_CALL(*_shared_cache, get_data(query.klass_id, _)).Times(0);
+
+    // Act
+    _event_db->insert(*_event1);
+    _event_db->insert(*_event3);
+
+    auto response1 = _event_db->get_data(start_ts1, stop_ts1, query);
+    auto response2 = _event_db->get_data(start_ts2, stop_ts2, query);
+
+    // Assert
+    std::vector<Event> correct_response1 = {*_event1, *_event3};
+    std::vector<Event> correct_response2 = {*_event3};
+    ASSERT_EQ(correct_response1.size(), response1.size());
+    for (size_t i = 0; i < response1.size(); ++i)
+    {
+        ASSERT_EQ(correct_response1[i].get_timestamp(), response1[i].get().get_timestamp());
+    }
+    ASSERT_EQ(correct_response2.size(), response2.size());
+    for (size_t i = 0; i < response2.size(); ++i)
+    {
+        ASSERT_EQ(correct_response2[i].get_timestamp(), response2[i].get().get_timestamp());
+    }
+}
+
+TEST_F(TestCacheEventDB, QueryingTwiceAndInsertingEventShouldUseCache)
+{
+    // Arrange
+    Query query;
+    query.klass_id = 1;
+    const HT_TimestampNs start_ts = 100u;
+    const HT_TimestampNs stop_ts = 300u;
+
+    EXPECT_CALL(*_shared_cache, insert_event(_)).Times(2);
+    EXPECT_CALL(*_shared_cache, range_in_cache(start_ts, stop_ts, query.klass_id))
+        .Times(2)
+        .WillOnce(Return(false))
+        .WillOnce(Return(true));
+    EXPECT_CALL(*_shared_cache, update(query.klass_id, _)).Times(1);
+    EXPECT_CALL(*_shared_cache, get_data(query.klass_id, _)).Times(1);
+
+    // Act
+    _event_db->insert(*_event1);
+    _event_db->insert(*_event3);
+    auto response1 = _event_db->get_data(start_ts, stop_ts, query);
+
+    // Assert
+    std::vector<Event> correct_response1 = {*_event1, *_event3};
+    ASSERT_EQ(correct_response1.size(), response1.size());
+    for (size_t i = 0; i < response1.size(); ++i)
+    {
+        ASSERT_EQ(correct_response1[i].get_timestamp(), response1[i].get().get_timestamp());
+    }
+
+    // Act
+    _event_db->insert(*_event5);
+    auto response2 = _event_db->get_data(start_ts, stop_ts, query);
+}
+
