@@ -36,7 +36,6 @@ protected:
     }
 
     static std::shared_ptr<EventKlass> _klass1;
-    static std::shared_ptr<EventKlass> _klass2;
     static std::shared_ptr<EventKlassField> _timestamp_field;
     static std::shared_ptr<Event> _event1;
     static std::shared_ptr<Event> _event2;
@@ -49,7 +48,6 @@ protected:
 };
 
 std::shared_ptr<EventKlass> TestCache::_klass1;
-std::shared_ptr<EventKlass> TestCache::_klass2;
 std::shared_ptr<EventKlassField> TestCache::_timestamp_field;
 std::shared_ptr<Event> TestCache::_event1;
 std::shared_ptr<Event> TestCache::_event2;
