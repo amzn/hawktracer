@@ -7,7 +7,8 @@ namespace HawkTracer
 namespace viewer
 {
 
-EventDB::EventDB()
+EventDB::EventDB(std::unique_ptr<ICache> cache) :
+    _cache(std::move(cache))
 {
 }
 
@@ -29,7 +30,7 @@ void EventDB::insert(parser::Event event)
             } 
         }
         _events[klass_id].insert(it.base(), std::move(event));
-        _cache.insert_event(_events[klass_id].back());
+        _cache->insert_event(_events[klass_id].back());
     }
 }
 
@@ -75,14 +76,14 @@ std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
             return response;
         }
 
-        if (_cache.range_in_cache(first_event->get_timestamp(), std::prev(last_event)->get_timestamp(), query.klass_id))
+        if (_cache->range_in_cache(first_event->get_timestamp(), std::prev(last_event)->get_timestamp(), query.klass_id))
         {
-            _cache.get_data(query.klass_id, response);
+            _cache->get_data(query.klass_id, response);
         }
         else
         {
             append_events(response, first_event, last_event);
-            _cache.update(query.klass_id, response);
+            _cache->update(query.klass_id, response);
         }
     }
     return response;
