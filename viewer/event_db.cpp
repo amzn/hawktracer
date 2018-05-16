@@ -67,22 +67,13 @@ std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
             return response;
         }
 
-        std::vector<parser::Event>::iterator first_event;
-        std::vector<parser::Event>::iterator last_event;
-        _get_range_of_events(events->second, start_ts, stop_ts, first_event, last_event);
-        bool valid_range = first_event != events->second.end() && last_event != events->second.begin();
-        if (!valid_range)
-        {
-            return response;
-        }
-
-        if (_cache->range_in_cache(first_event->get_timestamp(), std::prev(last_event)->get_timestamp(), query.klass_id))
+        if (_cache->range_in_cache(start_ts, stop_ts, query.klass_id))
         {
             _cache->get_data(query.klass_id, response);
         }
         else
         {
-            append_events(response, first_event, last_event);
+            _query_event_klass(response, _events[query.klass_id], start_ts, stop_ts);
             _cache->update(query.klass_id, response);
         }
     }
