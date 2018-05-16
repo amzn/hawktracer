@@ -6,6 +6,12 @@
 
 #define _DEFAULT_INIT_TASK_COUNT 16
 
+struct _HT_TaskScheduler
+{
+    HT_Bag tasks;
+    HT_TaskId next_task_id;
+};
+
 struct _HT_Task
 {
     HT_TaskCallback callback;
@@ -31,22 +37,39 @@ _greatest_common_divisor(HT_DurationNs a, HT_DurationNs b)
     return a;
 }
 
-HT_ErrorCode
-ht_task_scheduler_init(HT_TaskScheduler* task_scheduler)
+HT_TaskScheduler*
+ht_task_scheduler_create(HT_ErrorCode* out_err)
 {
-    HT_ErrorCode error_code = ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT);
+    HT_TaskScheduler* task_scheduler = HT_CREATE_TYPE(HT_TaskScheduler);
+    HT_ErrorCode error_code;
+
+    if (task_scheduler == NULL)
+    {
+        error_code = HT_ERR_OUT_OF_MEMORY;
+        goto done;
+    }
+
+    error_code = ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT);
     if (error_code != HT_ERR_OK)
     {
-        return error_code;
+        ht_free(task_scheduler);
+        task_scheduler = NULL;
+        goto done;
     }
 
     task_scheduler->next_task_id = 0;
 
-    return HT_ERR_OK;
+done:
+    if (out_err != NULL)
+    {
+        *out_err = error_code;
+    }
+
+    return task_scheduler;
 }
 
 void
-ht_task_scheduler_deinit(HT_TaskScheduler* task_scheduler)
+ht_task_scheduler_destroy(HT_TaskScheduler* task_scheduler)
 {
     size_t i = 0;
     for (i = 0; i < task_scheduler->tasks.size; i++)
@@ -55,6 +78,7 @@ ht_task_scheduler_deinit(HT_TaskScheduler* task_scheduler)
     }
 
     ht_bag_deinit(&task_scheduler->tasks);
+    ht_free(task_scheduler);
 }
 
 HT_TaskId
