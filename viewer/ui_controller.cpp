@@ -15,6 +15,7 @@ namespace viewer
 using namespace parser;
 
 UIController::UIController(std::unique_ptr<BaseUI> ui, std::unique_ptr<Stream> stream) :
+    _model(make_unique<Cache>()),
     _ui(std::move(ui)),
     _total_ts_range((HT_TimestampNs)-1, 0)
 {

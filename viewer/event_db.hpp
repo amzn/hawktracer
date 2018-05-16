@@ -19,7 +19,7 @@ namespace viewer
 class EventDB
 {
 public:
-    EventDB();
+    EventDB(std::unique_ptr<ICache> cache);
 
     void insert(parser::Event event);
 
@@ -28,7 +28,7 @@ public:
                                    const Query& query);
 private:
     std::unordered_map<HT_EventKlassId, std::vector<parser::Event>> _events;
-    Cache _cache;
+    std::unique_ptr<ICache> _cache;
     
     class CompareTimestampEvent : public parser::Event
     {
