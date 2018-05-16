@@ -17,19 +17,26 @@ ExternalProject_Add(
   LOG_BUILD ON)
 
 ExternalProject_Get_Property(googletest source_dir)
-set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
+set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include ${source_dir}/googlemock/include)
 
 if(MSVC)
     set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/Release/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
 else()
     set(GTEST_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/gtest/${CMAKE_SHARED_LIBRARY_PREFIX}gtest${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set(GMOCK_LIBRARY_PATH "${GTEST_BIN_DIR}/googlemock/${CMAKE_SHARED_LIBRARY_PREFIX}gmock${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 set(GTEST_LIBRARY hawktracer_gtest)
+set(GMOCK_LIBRARY hawktracer_gmock)
 
 add_library(${GTEST_LIBRARY} UNKNOWN IMPORTED)
+add_library(${GMOCK_LIBRARY} UNKNOWN IMPORTED)
 set_target_properties(${GTEST_LIBRARY} PROPERTIES
   IMPORTED_LOCATION ${GTEST_LIBRARY_PATH})
 add_dependencies(${GTEST_LIBRARY} googletest)
+set_target_properties(${GMOCK_LIBRARY} PROPERTIES
+  IMPORTED_LOCATION ${GMOCK_LIBRARY_PATH})
+add_dependencies(${GMOCK_LIBRARY} gmock)
+
 
 function(DEFINE_HT_TEST)
     set(MULTI_PARAM SOURCES LINK_LIBS RUN_PARAMS)
