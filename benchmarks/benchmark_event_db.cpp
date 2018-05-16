@@ -69,7 +69,7 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
     auto stream = HawkTracer::parser::make_unique<HawkTracer::parser::FileStream>(filename);
     HawkTracer::parser::KlassRegister klass_register;
     auto reader = HawkTracer::parser::make_unique<HawkTracer::parser::ProtocolReader>(&klass_register, std::move(stream), true);
-    HawkTracer::viewer::EventDB event_db;
+    HawkTracer::viewer::EventDB event_db(HawkTracer::parser::make_unique<HawkTracer::viewer::Cache>());
     HawkTracer::viewer::TimeRange total_ts_range(0, 0);
     reader->register_events_listener([&event_db, &total_ts_range](const HawkTracer::parser::Event& event) {
             handle_event(event, event_db, total_ts_range);
