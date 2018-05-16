@@ -5,6 +5,7 @@
 #include "internal/feature.h"
 #include "internal/registry.h"
 #include "internal/mutex.h"
+#include "internal/timeline_listener_container.h"
 
 #include <assert.h>
 #include <string.h>
