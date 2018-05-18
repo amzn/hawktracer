@@ -142,10 +142,11 @@ int main(int argc, char** argv)
         client::CallgrindListener callgrind_listener(std::move(tracepoint_map));
         callgrind_listener.init(out_file);
         reader.register_events_listener([&callgrind_listener] (const parser::Event& event) { callgrind_listener.process_event(event); });
+        std::cout << "Callgrind format is not implemented yet" << std::endl;
     }
     else
     {
-        std::cerr << "Unknown format: " << format << std::endl;
+        std::cerr << "Unknown format: " << format << ". Supported formats are chrome-tracing and callgrind" << std::endl;
     }
 
     std::cout << "Output will be written to a file: " << out_file << std::endl;
