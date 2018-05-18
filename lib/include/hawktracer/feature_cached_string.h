@@ -8,7 +8,8 @@ HT_DECLS_BEGIN
 
 typedef struct
 {
-    HT_Bag cached_data; /* TODO it should be some kind of set */
+    HT_Bag cached_data;
+    struct _HT_Mutex* lock;
 } HT_FeatureCachedString;
 
 #define HT_FEATURE_CACHED_STRING 1
@@ -17,7 +18,9 @@ HT_API HT_ErrorCode ht_feature_cached_string_enable(HT_Timeline* timeline);
 
 HT_API void ht_feature_cached_string_disable(HT_Timeline* timeline);
 
-HT_API uintptr_t ht_feature_cached_string_push(HT_Timeline* timeline, const char* label);
+HT_API const char* ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label);
+
+HT_API void ht_feature_cached_string_push_map(HT_Timeline* timeline);
 
 HT_DECLS_END
 

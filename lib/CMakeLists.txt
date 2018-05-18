@@ -6,8 +6,8 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/alloc.h
     include/hawktracer/bag.h
     include/hawktracer/base_types.h
-    include/hawktracer/callstack_scoped_tracepoint.h
-    include/hawktracer/callstack_scoped_tracepoint.hpp
+    include/hawktracer/scoped_tracepoint.h
+    include/hawktracer/scoped_tracepoint.hpp
     include/hawktracer/core_events.h
     include/hawktracer/event_id_provider.h
     include/hawktracer/event_macros.h
@@ -46,6 +46,7 @@ set(HAWKTRACER_CORE_SOURCES
     monotonic_clock.cpp
     mutex.cpp
     registry.c
+    scoped_tracepoint.c
     stack.c
     task_scheduler.c
     tcp_server.cpp
@@ -58,32 +59,33 @@ if (HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED)
     list(APPEND HAWKTRACER_CORE_SOURCES "${HT_PLATFORM_FEATURE_CPU_USAGE_SOURCE}")
 endif()
 
+if (CMAKE_USE_PTHREADS_INIT)
+    set(HT_USE_PTHREADS ON)
+    list(APPEND HAWKTRACER_CORE_SOURCES posix_mapped_tracepoint.c)
+endif()
+
+if (BUILD_STATIC_LIB)
+    set(HT_COMPILE_STATIC ON)
+endif (BUILD_STATIC_LIB)
+
 configure_file(include/hawktracer/config.h.in include/hawktracer/config.h)
 
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})
 set(HAWKTRACER_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include")
 
-# We need to compile sources 2 times - the reason why we can't re-use object files
-# is because for shared lib they'll be compiled with -fPIC, which is not needed
-# (and might affect a performance) for static libraries.
-set(HAWKTRACER_LIB_INSTALL_TARGETS)
-if(ENABLE_SHARED_LIB)
+if(BUILD_STATIC_LIB)
+    add_library(hawktracer STATIC ${HAWKTRACER_LIB_SOURCES})
+else ()
     add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer PUBLIC
-        "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
-        $<INSTALL_INTERFACE:include>)
-    target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
-    list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer)
-endif(ENABLE_SHARED_LIB)
-if(ENABLE_STATIC_LIB)
-    add_library(hawktracer_static STATIC ${HAWKTRACER_LIB_SOURCES})
-    target_include_directories(hawktracer_static PUBLIC
-        "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
-        $<INSTALL_INTERFACE:include>)
-    list(APPEND HAWKTRACER_LIB_INSTALL_TARGETS hawktracer_static)
-endif(ENABLE_STATIC_LIB)
+endif(BUILD_STATIC_LIB)
 
-install(TARGETS ${HAWKTRACER_LIB_INSTALL_TARGETS}
+target_include_directories(hawktracer PUBLIC
+    "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"
+    $<INSTALL_INTERFACE:include>)
+target_compile_definitions(hawktracer PRIVATE -DHT_COMPILE_SHARED_EXPORT)
+target_link_libraries(hawktracer INTERFACE ${CMAKE_THREAD_LIBS_INIT})
+
+install(TARGETS hawktracer
     EXPORT HawkTracerTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib

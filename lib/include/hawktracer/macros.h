@@ -1,6 +1,8 @@
 #ifndef HAWKTRACER_MACROS_H
 #define HAWKTRACER_MACROS_H
 
+#include <hawktracer/config.h>
+
 /** Helper macro for suppressing unused value warnings. */
 #define HT_UNUSED(x) (void)(x)
 
@@ -62,7 +64,7 @@
 /** @def HT_API
  * Defines a directive for exporting/importing symbols from DLL.
  */
-#ifdef HT_PLATFORM_WIN32
+#if defined(HT_PLATFORM_WIN32) && !defined(HT_COMPILE_STATIC)
 #  if defined(HT_COMPILE_SHARED_EXPORT)
 #    define HT_API __declspec(dllexport)
 #  else
@@ -71,5 +73,13 @@
 #else
 #  define HT_API
 #endif
+
+#define HT_MACRO_CONCAT_(x, y) x ## y
+
+/** Concatenates two values */
+#define HT_MACRO_CONCAT(x, y) HT_MACRO_CONCAT_(x, y)
+
+/** Creates unique variable name by appending a line number to a base name. */
+#define HT_UNIQUE_VAR_NAME(BASE_VAR_NAME) HT_MACRO_CONCAT(BASE_VAR_NAME, __LINE__)
 
 #endif /* HAWKTRACER_MACROS_H */

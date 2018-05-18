@@ -1,4 +1,4 @@
-#include <hawktracer/callstack_scoped_tracepoint.h>
+#include <hawktracer/scoped_tracepoint.h>
 
 #include "test_common.h"
 #include "test_test_events.h"

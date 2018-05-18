@@ -5,8 +5,7 @@
 #include <hawktracer/alloc.h>
 #include <hawktracer/bag.h>
 #include <hawktracer/base_types.h>
-#include <hawktracer/callstack_scoped_tracepoint.h>
-#include <hawktracer/callstack_scoped_tracepoint.hpp>
+#include <hawktracer/scoped_tracepoint.h>
 #include <hawktracer/core_events.h>
 #include <hawktracer/event_id_provider.h>
 #include <hawktracer/event_macros.h>
@@ -22,6 +21,7 @@
 #include <hawktracer/monotonic_clock.h>
 #include <hawktracer/registry.h>
 #include <hawktracer/stack.h>
+#include <hawktracer/string_scoped_tracepoint.h>
 #include <hawktracer/task_scheduler.h>
 #include <hawktracer/thread.h>
 #include <hawktracer/timeline.h>

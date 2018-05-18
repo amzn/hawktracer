@@ -1,3 +1,5 @@
+#include "test_allocator.h"
+
 #include <hawktracer/stack.h>
 
 #include <gtest/gtest.h>
@@ -90,5 +92,38 @@ TEST(TestStack, ShouldNotChangeCapacityAfterEachPopPush)
     ht_stack_pop(&stack);
     ASSERT_EQ(stack.capacity, 8 * sizeof(int));
 
+    ht_stack_deinit(&stack);
+}
+
+TEST(TestStack, InitShouldFailIfMallocReturnsNull)
+{
+    // Arrange
+    HT_Stack stack;
+    ScopedSetAlloc allocator(ht_test_null_realloc);
+
+    // Act
+    HT_ErrorCode error_code = ht_stack_init(&stack, 8, 4);
+
+    // Assert
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
+}
+
+TEST(TestStack, PushShouldFailIfMallocReturnsNull)
+{
+    // Arrange
+    HT_Stack stack;
+    ht_stack_init(&stack, sizeof(int), 1);
+    ScopedSetAlloc allocator(ht_test_null_realloc);
+
+    int v = 2;
+    HT_ErrorCode error_code_1 = ht_stack_push(&stack, &v, sizeof(v));
+
+    // Act
+    HT_ErrorCode error_code_2 = ht_stack_push(&stack, &v, sizeof(v));
+
+    // Assert
+    ASSERT_EQ(HT_ERR_OK, error_code_1);
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code_2);
+    allocator.reset();
     ht_stack_deinit(&stack);
 }

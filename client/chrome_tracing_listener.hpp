@@ -22,6 +22,8 @@ public:
     void process_event(const parser::Event& event);
 
 private:
+    const std::string _mapping_klass_name;
+    HT_EventKlassId _mapping_klass_id = 0;
     std::ofstream file;
     std::unique_ptr<TracepointMap> _tracepoint_map;
 };

@@ -1,4 +1,4 @@
-if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
     message(FATAL_ERROR "ASAN cannot be built in Release configuration")
 endif()
 

@@ -47,6 +47,12 @@ void TracepointMap::load_maps(const std::string& map_files)
     } while (len != std::string::npos);
 }
 
+void TracepointMap::add_map_entry(uint64_t id, std::string label)
+{
+    MapInfo info = { label, category_to_string(Unknown) };
+    _input_map[id] = info;
+}
+
 TracepointMap::MapInfo TracepointMap::get_label_info(uint64_t label)
 {
     auto it = _input_map.find(label);
