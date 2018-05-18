@@ -1,5 +1,5 @@
-#include "callgrind_listener.hpp" 
-#include "chrome_tracing_listener.hpp" 
+#include "callgrind_converter.hpp" 
+#include "chrome_trace_converter.hpp" 
 #include "tcp_client_stream.hpp" 
 #include <hawktracer/parser/file_stream.hpp>
 #include <hawktracer/parser/protocol_reader.hpp>
@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <map>
 
 using namespace HawkTracer;
 
@@ -41,14 +42,31 @@ std::string create_output_path(const char* path)
     return file_name_buffer;
 }
 
-void print_help(const char* app_name)
+std::string print_supported_formats(std::map<std::string, std::unique_ptr<client::IConverter>>& formats)
+{
+    std::string supported_formats;
+    for (auto& format : formats)
+    {
+        supported_formats += format.first + " ";
+    }
+    return supported_formats;
+}
+
+void print_help(const char* app_name, std::map<std::string, std::unique_ptr<client::IConverter>>& formats)
 {
     std::cout << "usage: " << app_name << " [OPTION]..." << std::endl
-              << "  --format    chrome-tracing or callgrind (default is chrome)" << std::endl
+              << "  --format    supported formats are: " << print_supported_formats(formats) << "(default is chrome-tracing)" << std::endl
               << "  --source    data source description (either filename, or server address)" << std::endl
               << "  --output    an output Chrome Tracing Json file" << std::endl
               << "  --map       comma-separated list of map files" << std::endl
               << "  --help      print this text" << std::endl;
+}
+
+void init_supported_formats(std::map<std::string, std::unique_ptr<client::IConverter>>& formats,
+                            std::shared_ptr<client::TracepointMap>& tracepoint_map)
+{
+    formats["chrome-tracing"] = parser::make_unique<client::ChromeTraceConverter>(tracepoint_map);
+    formats["callgrind"] = parser::make_unique<client::CallgrindConverter>(tracepoint_map);
 }
 
 int main(int argc, char** argv)
@@ -57,7 +75,11 @@ int main(int argc, char** argv)
     std::string output_path = "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace";
     std::string source;
     std::string map_files;
+    std::map<std::string, std::unique_ptr<client::IConverter>> formats;
 
+    auto tracepoint_map = std::make_shared<client::TracepointMap>();
+    init_supported_formats(formats, tracepoint_map);
+    
     for (int i = 1; i < argc; i++)
     {
         if (strcmp(argv[i], "--format") == 0 && i < argc - 1)
@@ -84,7 +106,7 @@ int main(int argc, char** argv)
                 std::cerr << "unrecognized option '" << argv[i] << "'" << std::endl;
                 ret = 1;
             }
-            print_help(argv[0]);
+            print_help(argv[0], formats);
             return ret;
         }
     }
@@ -92,7 +114,7 @@ int main(int argc, char** argv)
     if (source.empty())
     {
         std::cerr << "--source parameter is mandatory" << std::endl;
-        print_help(argv[0]);
+        print_help(argv[0], formats);
         return 1;
     }
 
@@ -115,38 +137,40 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    auto tracepoint_map = parser::make_unique<client::TracepointMap>();
-
     if (map_files.empty())
     {
         std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
     }
     else
     {
-        tracepoint_map->load_maps(map_files);
+        bool map_set = formats[format]->set_tracepoint_map(map_files);
+        if (!map_set)
+        {
+            std::cerr << "Map could not be set" << std::endl;
+        }
     }
 
     parser::KlassRegister klass_register;
     parser::ProtocolReader reader(&klass_register, std::move(stream), true);
     std::string out_file = create_output_path(output_path.c_str());
 
-
-    if (format == "chrome")
+    auto converter = formats.find(format);
+    if (converter == formats.end())
     {
-        client::ChromeTraceListener chrome_listener(std::move(tracepoint_map));
-        chrome_listener.init(out_file);
-        reader.register_events_listener([&chrome_listener] (const parser::Event& event) { chrome_listener.process_event(event); });
-    }
-    else if (format == "callgrind")
-    {
-        client::CallgrindListener callgrind_listener(std::move(tracepoint_map));
-        callgrind_listener.init(out_file);
-        reader.register_events_listener([&callgrind_listener] (const parser::Event& event) { callgrind_listener.process_event(event); });
-        std::cout << "Callgrind format is not implemented yet" << std::endl;
+        std::cerr << "Unknown format: " << format << ". Supported formats are: " << print_supported_formats(formats) << std::endl;
+        return 1;
     }
     else
     {
-        std::cerr << "Unknown format: " << format << ". Supported formats are chrome-tracing and callgrind" << std::endl;
+        auto& converter = formats[format];
+        converter->init(out_file);
+        reader.register_events_listener([&converter] (const parser::Event& event) { converter->process_event(event); });
+
+        // CallgringConverter not fully implemented
+        if (format == "callgrind")
+        {
+            std::cout << "Support for callgrind format is not implemented yet!!!" << std::endl;
+        }
     }
 
     std::cout << "Output will be written to a file: " << out_file << std::endl;
@@ -174,4 +198,4 @@ int main(int argc, char** argv)
     std::cout << "Trace file has been saved to: " << out_file << std::endl;
 
     return 0;
-}
+    }

@@ -1,4 +1,4 @@
-#include "chrome_tracing_listener.hpp"
+#include "chrome_trace_converter.hpp"
 
 #include "hawktracer/parser/klass_register.hpp"
 
@@ -12,18 +12,18 @@ namespace HawkTracer
 namespace client
 {
 
-ChromeTraceListener::ChromeTraceListener(std::unique_ptr<TracepointMap> tracepoint_map) :
-    _mapping_klass_name("HT_StringMappingEvent"),
-    _tracepoint_map(std::move(tracepoint_map))
+ChromeTraceConverter::ChromeTraceConverter(std::shared_ptr<TracepointMap> tracepoint_map) :
+    IConverter(tracepoint_map),
+    _mapping_klass_name("HT_StringMappingEvent")
 {
 }
 
-ChromeTraceListener::~ChromeTraceListener()
+ChromeTraceConverter::~ChromeTraceConverter()
 {
     uninit();
 }
 
-bool ChromeTraceListener::init(const std::string& file_name)
+bool ChromeTraceConverter::init(const std::string& file_name)
 {
     file.open(file_name);
     if (file.is_open())
@@ -34,7 +34,7 @@ bool ChromeTraceListener::init(const std::string& file_name)
     return false;
 }
 
-void ChromeTraceListener::uninit()
+void ChromeTraceConverter::uninit()
 {
     if (file.is_open())
     {
@@ -43,7 +43,7 @@ void ChromeTraceListener::uninit()
     }
 }
 
-void ChromeTraceListener::process_event(const parser::Event& event)
+void ChromeTraceConverter::process_event(const parser::Event& event)
 {
     std::string label;
 

@@ -1,7 +1,8 @@
-#ifndef HAWKTRACER_CLIENT_CALLGRIND_LISTENER_HPP
-#define HAWKTRACER_CLIENT_CALLGRIND_LISTENER_HPP
+#ifndef HAWKTRACER_CLIENT_CALLGRIND_CONVERTER_HPP
+#define HAWKTRACER_CLIENT_CALLGRIND_CONVERTER_HPP
 
 #include <hawktracer/parser/event.hpp>
+#include "iconverter.hpp"
 #include "tracepoint_map.hpp"
 
 #include <fstream>
@@ -12,11 +13,11 @@ namespace HawkTracer
 namespace client
 {
 
-class CallgrindListener
+class CallgrindConverter : public IConverter
 {
 public:
-    CallgrindListener(std::unique_ptr<TracepointMap> tracepoint_map);
-    ~CallgrindListener();
+    CallgrindConverter(std::shared_ptr<TracepointMap> tracepoint_map);
+    ~CallgrindConverter();
 
     bool init(const std::string& file_name);
     void uninit();
@@ -24,10 +25,9 @@ public:
 
 private:
     std::ofstream file;
-    std::unique_ptr<TracepointMap> _tracepoint_map;
 };
 
 } // namespace client
 } // namespace HawkTracer
 
-#endif // HAWKTRACER_CLIENT_CALLGRIND_LISTENER_HPP
+#endif // HAWKTRACER_CLIENT_CALLGRIND_CONVERTER_HPP
