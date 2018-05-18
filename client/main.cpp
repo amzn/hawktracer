@@ -1,6 +1,6 @@
-#include "chrome_tracing_listener.hpp"
-#include "tcp_client_stream.hpp"
-
+#include "callgrind_listener.hpp" 
+#include "chrome_tracing_listener.hpp" 
+#include "tcp_client_stream.hpp" 
 #include <hawktracer/parser/file_stream.hpp>
 #include <hawktracer/parser/protocol_reader.hpp>
 #include <hawktracer/parser/make_unique.hpp>
@@ -44,6 +44,7 @@ std::string create_output_path(const char* path)
 void print_help(const char* app_name)
 {
     std::cout << "usage: " << app_name << " [OPTION]..." << std::endl
+              << "  --format    chrome-tracing or callgrind (default is chrome)" << std::endl
               << "  --source    data source description (either filename, or server address)" << std::endl
               << "  --output    an output Chrome Tracing Json file" << std::endl
               << "  --map       comma-separated list of map files" << std::endl
@@ -52,13 +53,18 @@ void print_help(const char* app_name)
 
 int main(int argc, char** argv)
 {
+    std::string format = "chrome-tracing";
     std::string output_path = "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace";
     std::string source;
     std::string map_files;
 
     for (int i = 1; i < argc; i++)
     {
-        if (strcmp(argv[i], "--output") == 0 && i < argc - 1)
+        if (strcmp(argv[i], "--format") == 0 && i < argc - 1)
+        {
+            format = argv[++i];
+        }
+        else if (strcmp(argv[i], "--output") == 0 && i < argc - 1)
         {
             output_path = argv[++i];
         }
@@ -122,10 +128,25 @@ int main(int argc, char** argv)
 
     parser::KlassRegister klass_register;
     parser::ProtocolReader reader(&klass_register, std::move(stream), true);
-    client::ChromeTraceListener chrome_listener(std::move(tracepoint_map));
     std::string out_file = create_output_path(output_path.c_str());
-    chrome_listener.init(out_file);
-    reader.register_events_listener([&chrome_listener] (const parser::Event& event) { chrome_listener.process_event(event); });
+
+
+    if (format == "chrome")
+    {
+        client::ChromeTraceListener chrome_listener(std::move(tracepoint_map));
+        chrome_listener.init(out_file);
+        reader.register_events_listener([&chrome_listener] (const parser::Event& event) { chrome_listener.process_event(event); });
+    }
+    else if (format == "callgrind")
+    {
+        client::CallgrindListener callgrind_listener(std::move(tracepoint_map));
+        callgrind_listener.init(out_file);
+        reader.register_events_listener([&callgrind_listener] (const parser::Event& event) { callgrind_listener.process_event(event); });
+    }
+    else
+    {
+        std::cerr << "Unknown format: " << format << std::endl;
+    }
 
     std::cout << "Output will be written to a file: " << out_file << std::endl;
 
