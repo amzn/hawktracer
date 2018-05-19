@@ -96,6 +96,10 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
 
         ht_mutex_unlock(event_klass_registry_register_mutex);
     }
+    else
+    {
+        klass_id = event_klass->klass_id;
+    }
 
     return klass_id;
 }
