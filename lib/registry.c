@@ -83,16 +83,21 @@ done:
 HT_EventKlassId
 ht_registry_register_event_klass(HT_EventKlass* event_klass)
 {
+    HT_EventKlassId klass_id = HT_INVALID_KLASS_ID;
+
     if (event_klass->klass_id == 0)
     {
         ht_mutex_lock(event_klass_registry_register_mutex);
-        /* TODO: handle error code */
-        ht_bag_add(&event_klass_register, event_klass);
-        event_klass->klass_id = event_klass_register.size;
+
+        if (ht_bag_add(&event_klass_register, event_klass) == HT_ERR_OK)
+        {
+            klass_id = event_klass->klass_id = event_klass_register.size;
+        }
+
         ht_mutex_unlock(event_klass_registry_register_mutex);
     }
 
-    return event_klass->klass_id;
+    return klass_id;
 }
 
 void

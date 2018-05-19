@@ -35,7 +35,7 @@ ht_feature_callstack_enable(HT_Timeline* timeline)
 void
 ht_feature_callstack_disable(HT_Timeline* timeline)
 {
-    HT_FeatureCallstack* f = (HT_FeatureCallstack*)ht_timeline_get_feature(timeline, HT_FEATURE_CALLSTACK);
+    HT_FeatureCallstack* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CALLSTACK, HT_FeatureCallstack);
     ht_stack_deinit(&f->stack);
     ht_free(f);
     ht_timeline_set_feature(timeline, HT_FEATURE_CALLSTACK, NULL);

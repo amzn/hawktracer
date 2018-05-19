@@ -48,7 +48,7 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
 void
 ht_feature_cached_string_disable(HT_Timeline* timeline)
 {
-    HT_FeatureCachedString* feature = (HT_FeatureCachedString*)ht_timeline_get_feature(timeline, HT_FEATURE_CACHED_STRING);
+    HT_FeatureCachedString* feature = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
 
     ht_bag_deinit(&feature->cached_data);
     ht_mutex_destroy(feature->lock);
@@ -59,7 +59,7 @@ ht_feature_cached_string_disable(HT_Timeline* timeline)
 const char*
 ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
 {
-    HT_FeatureCachedString* f = (HT_FeatureCachedString*)ht_timeline_get_feature(timeline, HT_FEATURE_CACHED_STRING);
+    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
     HT_ErrorCode error_code;
 
     assert(f);
@@ -80,7 +80,7 @@ ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
 void
 ht_feature_cached_string_push_map(HT_Timeline* timeline)
 {
-    HT_FeatureCachedString* f = (HT_FeatureCachedString*)ht_timeline_get_feature(timeline, HT_FEATURE_CACHED_STRING);
+    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
     size_t i;
 
     assert(f);

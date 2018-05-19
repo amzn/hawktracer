@@ -8,12 +8,16 @@
 
 #include <stddef.h>
 
+/**
+ * Returns a pointer to a timeline's feature.
+ */
 #define HT_TIMELINE_FEATURE(timeline, feature_id, feature_type) \
     ((feature_type*)ht_timeline_get_feature(timeline, feature_id))
 
-HT_DECLS_BEGIN
-
+/** Defines maximum number of features that can be attached to a timeline. */
 #define HT_TIMELINE_MAX_FEATURES 32
+
+HT_DECLS_BEGIN
 
 typedef struct _HT_Timeline HT_Timeline;
 
