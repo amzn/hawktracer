@@ -1,8 +1,7 @@
 #ifndef HAWKTRACER_LISTENERS_FILE_DUMP_LISTENER_H
 #define HAWKTRACER_LISTENERS_FILE_DUMP_LISTENER_H
 
-#include <hawktracer/listener_buffer.h>
-
+#include <hawktracer/base_types.h>
 #include <stdio.h>
 
 HT_DECLS_BEGIN

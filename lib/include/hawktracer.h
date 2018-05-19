@@ -12,7 +12,6 @@
 #include <hawktracer/feature_callstack.h>
 #include <hawktracer/global_timeline.h>
 #include <hawktracer/init.h>
-#include <hawktracer/listener_buffer.h>
 #include <hawktracer/listeners.h>
 #include <hawktracer/macros.h>
 #include <hawktracer/mkcreflect.h>

@@ -1,6 +1,7 @@
 #include "hawktracer/listeners/file_dump_listener.h"
 #include "hawktracer/alloc.h"
 
+#include "internal/listener_buffer.h"
 #include "internal/mutex.h"
 
 struct _HT_FileDumpListener

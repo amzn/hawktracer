@@ -1,7 +1,7 @@
 #include "hawktracer/listeners/tcp_listener.h"
 #include "hawktracer/alloc.h"
-#include "hawktracer/listener_buffer.h"
 #include "hawktracer/registry.h"
+#include "internal/listener_buffer.h"
 #include "internal/listeners/tcp_server.hpp"
 
 #include <new>
