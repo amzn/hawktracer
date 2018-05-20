@@ -5,7 +5,7 @@
 The library provides many different types of events (e.g. CPU usage event, duration tracepoint), but the list can easily be extended by the user.
 
 ## General
-* Tutorial
+* @subpage tutorials
 * @subpage integration
 * Frequently asked question
 * Core concepts
