@@ -37,12 +37,13 @@ int main(int argc, char** argv)
         ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, file_dump_listener);
     }
 
-    ht_registry_push_all_klass_info_events(ht_global_timeline_get());
-
     fnc_start();
 
     ht_timeline_flush(ht_global_timeline_get());
     ht_timeline_unregister_all_listeners(ht_global_timeline_get());
     ht_file_dump_listener_destroy(file_dump_listener);
+
     ht_deinit();
+
+    return 0;
 }

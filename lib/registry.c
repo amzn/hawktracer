@@ -104,50 +104,6 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
     return klass_id;
 }
 
-void
-ht_registry_push_all_klass_info_events(HT_Timeline* timeline)
-{
-    size_t i;
-
-    ht_mutex_lock(event_klass_registry_register_mutex);
-
-    for (i = 0; i < event_klass_register.size; i++)
-    {
-        ht_registry_push_klass_info_event(timeline, (HT_EventKlass*)event_klass_register.data[i]);
-    }
-
-    ht_mutex_unlock(event_klass_registry_register_mutex);
-
-    ht_timeline_flush(timeline);
-}
-
-void
-ht_registry_push_klass_info_event(HT_Timeline* timeline, HT_EventKlass* klass)
-{
-    size_t j;
-    HT_DECL_EVENT(HT_EventKlassInfoEvent, event);
-    ht_timeline_init_event(timeline, HT_EVENT(&event));
-    event.event_klass_name = klass->type_info->name;
-    event.info_klass_id = klass->klass_id;
-    event.field_count = (uint8_t) klass->type_info->fields_count;
-
-    ht_timeline_push_event(timeline, HT_EVENT(&event));
-
-    for (j = 0; j < klass->type_info->fields_count; j++)
-    {
-        MKCREFLECT_FieldInfo* info = &klass->type_info->fields[j];
-        HT_DECL_EVENT(HT_EventKlassFieldInfoEvent, field_event);
-        ht_timeline_init_event(timeline, HT_EVENT(&field_event));
-        field_event.data_type = info->data_type;
-        field_event.info_klass_id = event.info_klass_id;
-        field_event.field_name = info->field_name;
-        field_event.field_type = info->field_type;
-        field_event.size = info->size;
-
-        ht_timeline_push_event(timeline, HT_EVENT(&field_event));
-    }
-}
-
 HT_EventKlass**
 ht_registry_get_event_klasses(size_t* out_klass_count)
 {
@@ -227,6 +183,110 @@ ht_feature_disable(HT_Timeline *timeline, uint32_t id)
     assert(feature_disable_callback[id]);
 
     feature_disable_callback[id](timeline);
+}
+
+#define REGISTRY_LISETNER_BUFF_SIZE 4096
+
+static void
+_ht_registry_serialize_event_to_buffer(HT_Event* event, HT_Byte* data, size_t* data_pos, HT_Boolean serialize)
+{
+    HT_EventKlass* klass = HT_EVENT_GET_CLASS(event);
+
+    if (serialize)
+    {
+        *data_pos += klass->serialize(event, data + *data_pos);
+    }
+    else
+    {
+        memcpy(data + *data_pos, event, klass->type_info->size);
+        *data_pos += klass->type_info->size;
+    }
+}
+
+static void
+_ht_registry_init_event_klass_info_event(HT_EventKlass* klass, HT_EventKlassInfoEvent* event)
+{
+    event->base.id = ht_event_id_provider_next(ht_event_id_provider_get_default());
+    event->base.timestamp = ht_monotonic_clock_get_timestamp();
+
+    event->event_klass_name = klass->type_info->name;
+    event->info_klass_id = klass->klass_id;
+    event->field_count = (uint8_t) klass->type_info->fields_count;
+}
+
+static void
+_ht_registry_init_event_klass_field_info_event(HT_EventKlass* klass, size_t field_id, HT_EventKlassFieldInfoEvent* event)
+{
+    MKCREFLECT_FieldInfo* info = &klass->type_info->fields[field_id];
+    event->base.id = ht_event_id_provider_next(ht_event_id_provider_get_default());
+    event->base.timestamp = ht_monotonic_clock_get_timestamp();
+    event->data_type = info->data_type;
+    event->info_klass_id = klass->klass_id;
+    event->field_name = info->field_name;
+    event->field_type = info->field_type;
+    event->size = info->size;
+}
+
+static size_t
+_ht_registry_push_class_to_listener(HT_EventKlass* klass, HT_Byte* data, size_t* data_pos, HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize)
+{
+    size_t j;
+    size_t total_size = 0;
+    HT_DECL_EVENT(HT_EventKlassInfoEvent, event);
+    _ht_registry_init_event_klass_info_event(klass, &event);
+
+    if (ht_HT_EventKlassInfoEvent_get_size(HT_EVENT(&event)) > REGISTRY_LISETNER_BUFF_SIZE - *data_pos)
+    {
+        callback(data, *data_pos, serialize, listener);
+        total_size += *data_pos;
+        *data_pos = 0;
+    }
+
+    _ht_registry_serialize_event_to_buffer(HT_EVENT(&event), data, data_pos, serialize);
+
+    for (j = 0; j < klass->type_info->fields_count; j++)
+    {
+        HT_DECL_EVENT(HT_EventKlassFieldInfoEvent, field_event);
+        _ht_registry_init_event_klass_field_info_event(klass, j, &field_event);
+
+        if (ht_HT_EventKlassFieldInfoEvent_get_size(HT_EVENT(&field_event)) > REGISTRY_LISETNER_BUFF_SIZE - *data_pos)
+        {
+            callback(data, *data_pos, serialize, listener);
+            total_size += *data_pos;
+            *data_pos = 0;
+        }
+
+        _ht_registry_serialize_event_to_buffer(HT_EVENT(&field_event), data, data_pos, serialize);
+    }
+
+    return total_size;
+}
+
+size_t
+ht_registry_push_registry_klasses_to_listener(HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize)
+{
+    size_t i;
+    size_t total_size = 0;
+
+    HT_Byte data[REGISTRY_LISETNER_BUFF_SIZE];
+    size_t data_pos = 0;
+
+    ht_mutex_lock(event_klass_registry_register_mutex);
+
+    for (i = 0; i < event_klass_register.size; i++)
+    {
+        total_size += _ht_registry_push_class_to_listener((HT_EventKlass*)event_klass_register.data[i], data, &data_pos, callback, listener, serialize);
+    }
+
+    ht_mutex_unlock(event_klass_registry_register_mutex);
+
+    if (data_pos > 0)
+    {
+        callback(data, data_pos, serialize, listener);
+        total_size += data_pos;
+    }
+
+    return total_size;
 }
 
 

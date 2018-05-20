@@ -37,10 +37,9 @@ TEST(TestRegistry, PushAllKlassInfoEventsShouldPushAll)
     HT_EventKlass** klasses = ht_registry_get_event_klasses(&event_klass_count);
     HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, nullptr, nullptr);
     NotifyInfo<HT_EventKlass> info;
-    ht_timeline_register_listener(timeline, test_listener<HT_EventKlass>, &info);
 
     // Act
-    ht_registry_push_all_klass_info_events(timeline);
+    ht_registry_push_registry_klasses_to_listener(test_listener<HT_EventKlass>, &info, HT_FALSE);
 
     // Assert
     size_t total_events = 0;

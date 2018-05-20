@@ -1,5 +1,6 @@
 #include "hawktracer/listeners/file_dump_listener.h"
 #include "hawktracer/alloc.h"
+#include "hawktracer/registry.h"
 
 #include "internal/listener_buffer.h"
 #include "internal/mutex.h"
@@ -47,12 +48,15 @@ ht_file_dump_listener_create(const char* filename, size_t buffer_size, HT_ErrorC
     }
 
     error_code = ht_listener_buffer_init(&listener->buffer, buffer_size);
-    if (error_code == HT_ERR_OK)
+    if (error_code != HT_ERR_OK)
     {
+        ht_mutex_destroy(listener->mtx);
+    }
+    else
+    {
+        ht_registry_push_registry_klasses_to_listener(ht_file_dump_listener_callback, listener, HT_TRUE);
         goto done;
     }
-
-    ht_mutex_destroy(listener->mtx);
 
 error_create_mutex:
     fclose(listener->p_file);

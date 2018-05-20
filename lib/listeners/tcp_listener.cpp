@@ -34,7 +34,7 @@ private:
     {
         HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
         listener->_last_client_sock_fd = sock_fd;
-        ht_registry_push_all_klass_info_events(listener->_reg_timeline);
+        ht_registry_push_registry_klasses_to_listener(ht_tcp_listener_callback, user_data, HT_TRUE);
     }
 
     static void _f_flush(void* listener)
@@ -47,7 +47,6 @@ private:
     std::mutex _push_action_mutex;
     HT_ListenerBuffer _buffer;
     HawkTracer::TCPServer _tcp_server;
-    HT_Timeline* _reg_timeline;
     int _last_client_sock_fd = 0;
     /* TODO: This is just a hack to prevent from sending half-events.
      * We should revisit this for next release */
@@ -61,40 +60,15 @@ HT_ErrorCode HT_TCPListener::init(int port)
     {
         return error_code;
     }
-    _reg_timeline = ht_timeline_create(4096, HT_FALSE, HT_TRUE, NULL, &error_code);
-    if (error_code != HT_ERR_OK)
-    {
-        ht_listener_buffer_deinit(&_buffer);
-        return error_code;
-    }
 
     if (_tcp_server.start(port, _client_connected, this))
     {
-        /* TODO: handle ht_timeline_register_listener() error */
-        error_code = ht_timeline_register_listener(_reg_timeline, [] (TEventPtr e, size_t c, HT_Boolean, void* ud) {
-            HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(ud);
-            std::lock_guard<std::mutex> l(listener->_push_action_mutex);
-            listener->_tcp_server.write_to_socket(listener->_last_client_sock_fd, (char*)e, c);
-        }, this);
-
-        if (error_code == HT_ERR_OK)
-        {
-            return error_code;
-        }
-        else
-        {
-            _tcp_server.stop();
-        }
-    }
-    else
-    {
-        error_code = HT_ERR_CANT_START_TCP_SERVER;
+        return HT_ERR_OK;
     }
 
     ht_listener_buffer_deinit(&_buffer);
-    ht_timeline_destroy(_reg_timeline);
 
-    return error_code;
+    return HT_ERR_CANT_START_TCP_SERVER;
 }
 
 _HT_TCPListener::~_HT_TCPListener()
@@ -102,7 +76,6 @@ _HT_TCPListener::~_HT_TCPListener()
     _flush();
     _tcp_server.stop();
     ht_listener_buffer_deinit(&_buffer);
-    ht_timeline_destroy(_reg_timeline);
 }
 
 void _HT_TCPListener::push_events(TEventPtr events, size_t size, HT_Boolean serialized)

@@ -5,7 +5,21 @@
 
 static const char* test_file = "dump_listener_test_file_test_file";
 
-TEST(TestFileDumpListener, InitShouldFailIfFileCanNotBeOpened)
+class TestFileDumpListener : public ::testing::Test
+{
+protected:
+    static void SetUpTestCase()
+    {
+        _registry_klass_bytes = ht_registry_push_registry_klasses_to_listener(
+                    [](TEventPtr, size_t, HT_Boolean, void*){}, nullptr, HT_TRUE);
+    }
+
+    static size_t _registry_klass_bytes;
+};
+
+size_t TestFileDumpListener::_registry_klass_bytes;
+
+TEST_F(TestFileDumpListener, InitShouldFailIfFileCanNotBeOpened)
 {
     // Arrange
     HT_ErrorCode error;
@@ -18,7 +32,7 @@ TEST(TestFileDumpListener, InitShouldFailIfFileCanNotBeOpened)
     ASSERT_EQ(HT_ERR_CANT_OPEN_FILE, error);
 }
 
-TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
+TEST_F(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
 {
     // Arrange
     HT_Timeline* timeline = ht_global_timeline_get();
@@ -39,6 +53,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
     // Assert
     FILE* fp = fopen(test_file, "rb");
     ASSERT_NE(nullptr, fp);
+    fseek(fp, _registry_klass_bytes, SEEK_SET);
     char buff[64];
     EXPECT_EQ(event.klass->get_size(&event), fread(buff, sizeof(char), 64, fp));
     size_t offset = 0;
@@ -51,7 +66,7 @@ TEST(TestFileDumpListener, EventShouldBeCorrectlyStoredInAFile)
 
     fclose(fp);
 }
-TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
+TEST_F(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
 {
     // Arrange
     HT_Timeline* timeline = ht_global_timeline_get();
@@ -84,7 +99,7 @@ TEST(TestFileDumpListener, ManyEventsShouldCauseDumpToFile)
     ASSERT_LT(buffer_size, file_size);
 }
 
-TEST(TestFileDumpListener, NonSerializedTimeline)
+TEST_F(TestFileDumpListener, NonSerializedTimeline)
 {
     // Arrange
     HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
@@ -105,6 +120,7 @@ TEST(TestFileDumpListener, NonSerializedTimeline)
     // Assert
     FILE* fp = fopen(test_file, "rb");
     ASSERT_NE(nullptr, fp);
+    fseek(fp, _registry_klass_bytes, SEEK_SET);
     char buff[64];
     EXPECT_EQ(event.klass->get_size(&event), fread(buff, sizeof(char), 64, fp));
     size_t offset = 0;
