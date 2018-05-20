@@ -72,6 +72,7 @@ endif(ENABLE_TESTS)
 if(ENABLE_EXAMPLES)
     add_subdirectory(examples)
 endif(ENABLE_EXAMPLES)
+install(DIRECTORY examples DESTINATION .)
 
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
