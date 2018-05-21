@@ -12,8 +12,7 @@ namespace HawkTracer
 namespace client
 {
 
-ChromeTraceConverter::ChromeTraceConverter(std::shared_ptr<TracepointMap> tracepoint_map) :
-    IConverter(tracepoint_map),
+ChromeTraceConverter::ChromeTraceConverter() :
     _mapping_klass_name("HT_StringMappingEvent")
 {
 }

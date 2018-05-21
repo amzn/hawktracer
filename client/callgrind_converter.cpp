@@ -5,11 +5,6 @@ namespace HawkTracer
 namespace client
 {
 
-CallgrindConverter::CallgrindConverter(std::shared_ptr<TracepointMap> tracepoint_map) :
-    IConverter(tracepoint_map)
-{
-}
-
 CallgrindConverter::~CallgrindConverter()
 {
     uninit();

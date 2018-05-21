@@ -2,7 +2,7 @@
 #define HAWKTRACER_CLIENT_CHROME_TRACE_CONVERTER_HPP
 
 #include <hawktracer/parser/event.hpp>
-#include "iconverter.hpp" 
+#include "converter.hpp" 
 #include "tracepoint_map.hpp"
 
 #include <fstream>
@@ -12,10 +12,10 @@ namespace HawkTracer
 namespace client
 {
 
-class ChromeTraceConverter : public IConverter
+class ChromeTraceConverter : public Converter
 {
 public:
-    ChromeTraceConverter(std::shared_ptr<TracepointMap> tracepoint_map);
+    ChromeTraceConverter();
     ~ChromeTraceConverter() override;
 
     bool init(const std::string& file_name) override;

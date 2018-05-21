@@ -2,7 +2,7 @@
 #define HAWKTRACER_CLIENT_CALLGRIND_CONVERTER_HPP
 
 #include <hawktracer/parser/event.hpp>
-#include "iconverter.hpp"
+#include "converter.hpp"
 #include "tracepoint_map.hpp"
 
 #include <fstream>
@@ -13,10 +13,9 @@ namespace HawkTracer
 namespace client
 {
 
-class CallgrindConverter : public IConverter
+class CallgrindConverter : public Converter
 {
 public:
-    CallgrindConverter(std::shared_ptr<TracepointMap> tracepoint_map);
     ~CallgrindConverter() override;
 
     bool init(const std::string& file_name) override;
