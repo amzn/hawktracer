@@ -1,4 +1,4 @@
-#include "chrome_tracing_listener.hpp"
+#include "chrome_trace_converter.hpp"
 
 #include "hawktracer/parser/klass_register.hpp"
 
@@ -12,38 +12,37 @@ namespace HawkTracer
 namespace client
 {
 
-ChromeTraceListener::ChromeTraceListener(std::unique_ptr<TracepointMap> tracepoint_map) :
-    _mapping_klass_name("HT_StringMappingEvent"),
-    _tracepoint_map(std::move(tracepoint_map))
+ChromeTraceConverter::ChromeTraceConverter() :
+    _mapping_klass_name("HT_StringMappingEvent")
 {
 }
 
-ChromeTraceListener::~ChromeTraceListener()
+ChromeTraceConverter::~ChromeTraceConverter()
 {
     uninit();
 }
 
-bool ChromeTraceListener::init(const std::string& file_name)
+bool ChromeTraceConverter::init(const std::string& file_name)
 {
-    file.open(file_name);
-    if (file.is_open())
+    _file.open(file_name);
+    if (_file.is_open())
     {
-        file << "{\"traceEvents\": [ {} ";
+        _file << "{\"traceEvents\": [ {} ";
         return true;
     }
     return false;
 }
 
-void ChromeTraceListener::uninit()
+void ChromeTraceConverter::uninit()
 {
-    if (file.is_open())
+    if (_file.is_open())
     {
-        file << "]}";
-        file.close();
+        _file << "]}";
+        _file.close();
     }
 }
 
-void ChromeTraceListener::process_event(const parser::Event& event)
+void ChromeTraceConverter::process_event(const parser::Event& event)
 {
     std::string label;
 
@@ -88,7 +87,7 @@ void ChromeTraceListener::process_event(const parser::Event& event)
 
     // Chrome expects the timestamps/durations to be microseconds
     // so we need to convert from nano to micro
-    file << ",{\"name\": \"" << label
+    _file << ",{\"name\": \"" << label
          << "\", \"ph\": \"X\", \"ts\": " << ns_to_ms(event.get_value<uint64_t>("timestamp"))
          << ", \"dur\": " << ns_to_ms(event.get_value_or_default<uint64_t>("duration", 0u))
          << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<uint32_t>("thread_id", 0)
