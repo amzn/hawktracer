@@ -17,14 +17,14 @@ class CallgrindConverter : public IConverter
 {
 public:
     CallgrindConverter(std::shared_ptr<TracepointMap> tracepoint_map);
-    ~CallgrindConverter();
+    ~CallgrindConverter() override;
 
-    bool init(const std::string& file_name);
-    void uninit();
-    void process_event(const parser::Event& event);
+    bool init(const std::string& file_name) override;
+    void uninit() override;
+    void process_event(const parser::Event& event) override;
 
 private:
-    std::ofstream file;
+    std::ofstream _file;
 };
 
 } // namespace client

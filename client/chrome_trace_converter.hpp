@@ -16,7 +16,7 @@ class ChromeTraceConverter : public IConverter
 {
 public:
     ChromeTraceConverter(std::shared_ptr<TracepointMap> tracepoint_map);
-    ~ChromeTraceConverter();
+    ~ChromeTraceConverter() override;
 
     bool init(const std::string& file_name) override;
     void uninit() override;
@@ -25,7 +25,7 @@ public:
 private:
     const std::string _mapping_klass_name; 
     HT_EventKlassId _mapping_klass_id = 0;
-    std::ofstream file;
+    std::ofstream _file;
 };
 
 } // namespace client

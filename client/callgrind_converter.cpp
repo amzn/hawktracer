@@ -17,10 +17,10 @@ CallgrindConverter::~CallgrindConverter()
 
 bool CallgrindConverter::init(const std::string& file_name)
 {
-    file.open(file_name);
-    if (file.is_open())
+    _file.open(file_name);
+    if (_file.is_open())
     {
-        file << "# callgrind format\n";
+        _file << "# callgrind format\n";
         return true;
     }
     return false;
@@ -29,9 +29,9 @@ bool CallgrindConverter::init(const std::string& file_name)
 
 void CallgrindConverter::uninit()
 {
-    if (file.is_open())
+    if (_file.is_open())
     {
-        file.close();
+        _file.close();
     }
 }
 
