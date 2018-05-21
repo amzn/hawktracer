@@ -135,19 +135,6 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (map_files.empty())
-    {
-        std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
-    }
-    else
-    {
-        bool map_set = formats[format]->set_tracepoint_map(map_files);
-        if (!map_set)
-        {
-            std::cerr << "Map could not be set" << std::endl;
-        }
-    }
-
     parser::KlassRegister klass_register;
     parser::ProtocolReader reader(&klass_register, std::move(stream), true);
     std::string out_file = create_output_path(output_path.c_str());
@@ -168,6 +155,19 @@ int main(int argc, char** argv)
         if (format == "callgrind")
         {
             std::cout << "Support for callgrind format is not implemented yet!!!" << std::endl;
+        }
+    }
+
+    if (map_files.empty())
+    {
+        std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
+    }
+    else
+    {
+        bool map_set = formats[format]->set_tracepoint_map(map_files);
+        if (!map_set)
+        {
+            std::cerr << "Map could not be set" << std::endl;
         }
     }
 
