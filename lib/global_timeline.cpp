@@ -20,7 +20,7 @@ struct GlobalTimeline
 
 HT_Timeline* ht_global_timeline_get(void)
 {
-    static thread_local GlobalTimeline timeline;
+    static HT_THREAD_LOCAL GlobalTimeline timeline;
 
     return timeline.c_timeline;
 }

@@ -21,7 +21,7 @@ std::atomic<HT_ThreadId> ThreadIdGenerator::_thread_id =  ATOMIC_VAR_INIT(0);
 HT_ThreadId
 ht_thread_get_current_thread_id(void)
 {
-    static thread_local ThreadIdGenerator generator;
+    static HT_THREAD_LOCAL ThreadIdGenerator generator;
 
     return generator.get_id();
 }
