@@ -2,6 +2,7 @@
 #define HAWKTRACER_CLIENT_CONVERTER_CPP
 
 #include "converter.hpp"
+#include <hawktracer/parser/make_unique.hpp>
 
 #include <fstream>
 #include <stack>
@@ -10,6 +11,11 @@ namespace HawkTracer
 {
 namespace client
 {
+
+Converter::Converter() :
+    _tracepoint_map(HawkTracer::parser::make_unique<TracepointMap>())
+{
+}
 
 bool Converter::set_tracepoint_map(const std::string& map_files)
 {

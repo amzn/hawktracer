@@ -15,6 +15,8 @@ namespace client
 class Converter
 {
 public:
+    Converter();
+
     virtual ~Converter() {}
     virtual bool init(const std::string& file_name) = 0;
     virtual void uninit() = 0;
@@ -23,7 +25,7 @@ public:
 
 protected:
     HT_EventKlassId _mapping_klass_id = 0;
-    std::shared_ptr<TracepointMap> _tracepoint_map;
+    std::unique_ptr<TracepointMap> _tracepoint_map;
 };
 
 } // namespace client
