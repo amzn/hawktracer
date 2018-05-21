@@ -42,7 +42,7 @@ std::string create_output_path(const char* path)
     return file_name_buffer;
 }
 
-std::string print_supported_formats(std::map<std::string, std::unique_ptr<client::IConverter>>& formats)
+std::string supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
 {
     std::string supported_formats;
     for (auto& format : formats)
@@ -52,21 +52,20 @@ std::string print_supported_formats(std::map<std::string, std::unique_ptr<client
     return supported_formats;
 }
 
-void print_help(const char* app_name, std::map<std::string, std::unique_ptr<client::IConverter>>& formats)
+void print_help(const char* app_name, std::map<std::string, std::unique_ptr<client::Converter>>& formats)
 {
     std::cout << "usage: " << app_name << " [OPTION]..." << std::endl
-              << "  --format    supported formats are: " << print_supported_formats(formats) << "(default is chrome-tracing)" << std::endl
+              << "  --format    supported formats are: " << supported_formats(formats) << "(default is chrome-tracing)" << std::endl
               << "  --source    data source description (either filename, or server address)" << std::endl
               << "  --output    an output Chrome Tracing Json file" << std::endl
               << "  --map       comma-separated list of map files" << std::endl
               << "  --help      print this text" << std::endl;
 }
 
-void init_supported_formats(std::map<std::string, std::unique_ptr<client::IConverter>>& formats,
-                            std::shared_ptr<client::TracepointMap>& tracepoint_map)
+void init_supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
 {
-    formats["chrome-tracing"] = parser::make_unique<client::ChromeTraceConverter>(tracepoint_map);
-    formats["callgrind"] = parser::make_unique<client::CallgrindConverter>(tracepoint_map);
+    formats["chrome-tracing"] = parser::make_unique<client::ChromeTraceConverter>();
+    formats["callgrind"] = parser::make_unique<client::CallgrindConverter>();
 }
 
 int main(int argc, char** argv)
@@ -75,10 +74,9 @@ int main(int argc, char** argv)
     std::string output_path = "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace";
     std::string source;
     std::string map_files;
-    std::map<std::string, std::unique_ptr<client::IConverter>> formats;
+    std::map<std::string, std::unique_ptr<client::Converter>> formats;
 
-    auto tracepoint_map = std::make_shared<client::TracepointMap>();
-    init_supported_formats(formats, tracepoint_map);
+    init_supported_formats(formats);
     
     for (int i = 1; i < argc; i++)
     {
@@ -157,7 +155,7 @@ int main(int argc, char** argv)
     auto converter = formats.find(format);
     if (converter == formats.end())
     {
-        std::cerr << "Unknown format: " << format << ". Supported formats are: " << print_supported_formats(formats) << std::endl;
+        std::cerr << "Unknown format: " << format << ". Supported formats are: " << supported_formats(formats) << std::endl;
         return 1;
     }
     else
@@ -198,4 +196,4 @@ int main(int argc, char** argv)
     std::cout << "Trace file has been saved to: " << out_file << std::endl;
 
     return 0;
-    }
+}
