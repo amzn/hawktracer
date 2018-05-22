@@ -8,10 +8,10 @@ add_library(hawktracer_client
 
 target_include_directories(hawktracer_client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-add_executable(hawktracer-to-json main.cpp)
+add_executable(hawktracer-converter main.cpp)
 
 target_link_libraries(hawktracer_client hawktracer_parser)
-target_link_libraries(hawktracer-to-json hawktracer_client)
+target_link_libraries(hawktracer-converter hawktracer_client)
 
-install(TARGETS hawktracer-to-json
+install(TARGETS hawktracer-converter
     RUNTIME DESTINATION bin)
