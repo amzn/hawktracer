@@ -27,8 +27,8 @@ _ht_timeline_notify_listeners(HT_Timeline* timeline, TEventPtr events, size_t si
     size_t i;
     for (i = 0; i < timeline->listeners->user_datas.size; i++)
     {
-        (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
-                (events, size, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
+        HT_TimelineListenerCallback* callback_ptr = ht_bag_get_n(&timeline->listeners->callbacks, i);
+        (**callback_ptr)(events, size, timeline->serialize_events, *(void**)ht_bag_get_n(&timeline->listeners->user_datas, i));
     }
 }
 

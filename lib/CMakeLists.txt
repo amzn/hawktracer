@@ -13,6 +13,7 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/events.h
     include/hawktracer/feature_cached_string.h
     include/hawktracer/feature_callstack.h
+    include/hawktracer/feature_duration.h
     include/hawktracer/global_timeline.h
     include/hawktracer/init.h
     include/hawktracer/listener_buffer.h
@@ -44,6 +45,7 @@ set(HAWKTRACER_CORE_SOURCES
     events.c
     feature_cached_string.c
     feature_callstack.c
+    feature_duration.c
     global_timeline.cpp
     init.c
     listener_buffer.c

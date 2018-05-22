@@ -51,13 +51,13 @@ ht_registry_init(void)
 {
     HT_ErrorCode error_code;
 
-    error_code = ht_bag_init(&event_klass_register, 8);
+    error_code = ht_bag_init(&event_klass_register, 8, sizeof(HT_EventKlass*));
     if (error_code != HT_ERR_OK)
     {
         goto done;
     }
 
-    error_code = ht_bag_init(&listeners_register, 8);
+    error_code = ht_bag_init(&listeners_register, 8, sizeof(HT_TimelineListenerContainer*));
     if (error_code != HT_ERR_OK)
     {
         goto error_listeners_register;
@@ -90,7 +90,7 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
     {
         ht_mutex_lock(event_klass_registry_register_mutex);
 
-        if (ht_bag_add(&event_klass_register, event_klass) == HT_ERR_OK)
+        if (ht_bag_add(&event_klass_register, &event_klass) == HT_ERR_OK)
         {
             klass_id = event_klass->klass_id = event_klass_register.size;
         }
@@ -120,7 +120,7 @@ ht_registry_deinit(void)
     size_t i;
     for (i = 0; i < listeners_register.size; i++)
     {
-        ht_timeline_listener_container_unref(listeners_register.data[i]);
+        ht_timeline_listener_container_unref(*(void**)ht_bag_get_n(&listeners_register, i));
     }
 
     ht_mutex_destroy(features_register_mutex);
@@ -139,9 +139,9 @@ ht_registry_find_listener_container(const char* name)
     ht_mutex_lock(listeners_register_mutex);
     for (i = 0; i < listeners_register.size; i++)
     {
-        if (((HT_TimelineListenerContainer*)listeners_register.data[i])->id == id)
+        if ((*(HT_TimelineListenerContainer**)ht_bag_get_n(&listeners_register, i))->id == id)
         {
-            void* container = listeners_register.data[i];
+            void* container = *(void**)ht_bag_get_n(&listeners_register, i);
             ht_mutex_unlock(listeners_register_mutex);
             return container;
         }
@@ -165,7 +165,7 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
     container->id = djb2_hash(name);
     container->refcount++;
 
-    error_code = ht_bag_add(&listeners_register, container);
+    error_code = ht_bag_add(&listeners_register, &container);
     if (error_code != HT_ERR_OK)
     {
         ht_mutex_unlock(listeners_register_mutex);
@@ -269,7 +269,7 @@ ht_registry_push_registry_klasses_to_listener(HT_TimelineListenerCallback callba
 
     for (i = 0; i < event_klass_register.size; i++)
     {
-        total_size += _ht_registry_push_class_to_listener((HT_EventKlass*)event_klass_register.data[i], data, &data_pos, callback, listener, serialize);
+        total_size += _ht_registry_push_class_to_listener(*(HT_EventKlass**)ht_bag_get_n(&event_klass_register, i), data, &data_pos, callback, listener, serialize);
     }
 
     ht_mutex_unlock(event_klass_registry_register_mutex);

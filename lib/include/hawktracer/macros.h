@@ -6,6 +6,9 @@
 /** Helper macro for suppressing unused value warnings. */
 #define HT_UNUSED(x) (void)(x)
 
+/** Helper macro to do pointer arithmetic on HT_Byte* data */
+#define HT_PTR_ADD(ptr, value) (((HT_Byte*)ptr) + value)
+
 /** @def HT_DECLS_BEGIN
  * Defines a beginning of C linkage block.
  */

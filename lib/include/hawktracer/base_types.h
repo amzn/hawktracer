@@ -14,6 +14,8 @@ typedef uint32_t HT_EventKlassId;
 typedef uint64_t HT_TimestampNs;
 /** An unsigned integer used for event identifiers. */
 typedef uint64_t HT_EventId;
+/** An unsigned integer used for duration identifiers. */
+typedef uint64_t HT_DurationId;
 /** An unsigned integer used for representing duration in nanoseconds. */
 typedef uint64_t HT_DurationNs;
 /** A standard boolean type, possible values: #HT_TRUE, #HT_FALSE */

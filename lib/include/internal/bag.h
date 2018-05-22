@@ -17,7 +17,8 @@ typedef struct
     size_t min_capacity;
     size_t capacity;
     size_t size;
-    void** data;
+    size_t element_size;
+    void* data;
 } HT_Bag;
 
 /**
@@ -25,13 +26,14 @@ typedef struct
  *
  * @param bag a pointer to the container.
  * @param min_capacity minimal capacity of the container.
+ * @param element_size size of each element in the bag.
  *
  * @returns #HT_ERR_OK, if initialization completed successfully; otherwise, appropriate error code.
  *
  * Initialization might fail, if the process can't allocate enough memory.
  * In that case, #HT_ERR_OUT_OF_MEMORY is returned.
  */
-HT_API HT_ErrorCode ht_bag_init(HT_Bag* bag, size_t min_capacity);
+HT_API HT_ErrorCode ht_bag_init(HT_Bag* bag, size_t min_capacity, size_t element_size);
 
 /**
  * Uninitializes bag structure.
@@ -93,7 +95,9 @@ HT_API void ht_bag_clear(HT_Bag* bag);
  * @warning If the @a bag is empty, behavior of this function
  * is undefined.
  */
-#define ht_bag_last(bag) bag.data[bag.size - 1]
+#define ht_bag_last(bag) HT_PTR_ADD(bag.data, (bag.size - 1) * bag.element_size)
+
+HT_API void* ht_bag_get_n(HT_Bag* bag, size_t n);
 
 HT_DECLS_END
 
