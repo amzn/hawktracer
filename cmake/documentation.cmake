@@ -17,12 +17,20 @@ if (DOXYGEN_FOUND)
 
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 
-    add_custom_target(doc_doxygen
+    add_custom_target(doc_doxygen ALL
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 
+    if(WIN32 AND NOT CYGWIN)
+        set(INSTALL_DOC_DIR doc)
+    else()
+        set(INSTALL_DOC_DIR share/doc/hawktracer)
+    endif()
+
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen_doc/html/ DESTINATION ${INSTALL_DOC_DIR})
+      
     find_package(PythonInterp 3)
     if (${PYTHONINTERP_FOUND})
         add_custom_target(doc_doxygen_coverage
