@@ -150,12 +150,6 @@ int main(int argc, char** argv)
         auto& converter = formats[format];
         converter->init(out_file);
         reader.register_events_listener([&converter] (const parser::Event& event) { converter->process_event(event); });
-
-        // CallgringConverter not fully implemented
-        if (format == "callgrind")
-        {
-            std::cout << "Support for callgrind format is not implemented yet!!!" << std::endl;
-        }
     }
 
     if (map_files.empty())
