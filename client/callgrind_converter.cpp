@@ -116,6 +116,10 @@ void CallgrindConverter::process_event(const parser::Event& event)
 {
     std::string label = get_label(event);
 
+    if (label == "")
+    {
+        return;
+    }
     uint32_t thread_id = event.get_value_or_default<uint32_t>("thread_id", 0);
     HT_TimestampNs start_ts = event.get_value<uint64_t>("timestamp");
     HT_TimestampNs duration = event.get_value_or_default<uint64_t>("duration", 0u);

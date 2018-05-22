@@ -38,6 +38,11 @@ void ChromeTraceConverter::uninit()
 void ChromeTraceConverter::process_event(const parser::Event& event)
 {
     std::string label = get_label(event);
+    
+    if (label == "")
+    {
+        return;
+    }
 
     // Chrome expects the timestamps/durations to be microseconds
     // so we need to convert from nano to micro

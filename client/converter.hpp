@@ -17,6 +17,7 @@ class Converter
 public:
     Converter();
 
+
     virtual ~Converter() {}
     virtual bool init(const std::string& file_name) = 0;
     virtual void uninit() = 0;
@@ -25,7 +26,6 @@ public:
     virtual bool stop() = 0;
 
 protected:
-    Converter();
     std::string get_label(const parser::Event& event);
     const std::string _mapping_klass_name; 
     HT_EventKlassId _mapping_klass_id = 0;
