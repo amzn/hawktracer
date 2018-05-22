@@ -2,15 +2,9 @@
 #define HT_FEATURE_CALLSTACK_H
 
 #include <hawktracer/core_events.h>
-#include <hawktracer/stack.h>
 #include <hawktracer/timeline.h>
 
 HT_DECLS_BEGIN
-
-typedef struct
-{
-    HT_Stack stack;
-} HT_FeatureCallstack;
 
 #define HT_FEATURE_CALLSTACK 0
 

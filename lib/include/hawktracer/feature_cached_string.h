@@ -1,16 +1,9 @@
 #ifndef HAWKTRACER_FEATURE_CACHED_STRING_H
 #define HAWKTRACER_FEATURE_CACHED_STRING_H
 
-#include <hawktracer/bag.h>
 #include <hawktracer/timeline.h>
 
 HT_DECLS_BEGIN
-
-typedef struct
-{
-    HT_Bag cached_data;
-    struct _HT_Mutex* lock;
-} HT_FeatureCachedString;
 
 #define HT_FEATURE_CACHED_STRING 1
 

@@ -17,17 +17,17 @@ protected:
 
     void init_timeline(size_t buff_capacity)
     {
-        ht_timeline_init(&_timeline, buff_capacity, HT_FALSE, HT_FALSE, nullptr);
-        ht_feature_callstack_enable(&_timeline);
+        _timeline = ht_timeline_create(buff_capacity, HT_FALSE, HT_FALSE, nullptr, nullptr);
+        ht_feature_callstack_enable(_timeline);
     }
 
     void TearDown() override
     {
-        ht_timeline_unregister_all_listeners(&_timeline);
-        ht_timeline_deinit(&_timeline);
+        ht_timeline_unregister_all_listeners(_timeline);
+        ht_timeline_destroy(_timeline);
     }
 
-    HT_Timeline _timeline;
+    HT_Timeline* _timeline;
 };
 
 TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
@@ -36,20 +36,20 @@ TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
     init_timeline(sizeof(HT_CallstackIntEvent) * 3);
     NotifyInfo<HT_CallstackIntEvent> info;
 
-    ht_timeline_register_listener(&_timeline, test_listener<HT_CallstackIntEvent>, &info);
+    ht_timeline_register_listener(_timeline, test_listener<HT_CallstackIntEvent>, &info);
 
     // Act
     for (int i = 0; i < 4; i++)
     {
-        ht_feature_callstack_start_int(&_timeline, i);
+        ht_feature_callstack_start_int(_timeline, i);
     }
 
     for (int i = 0; i < 4; i++)
     {
-        ht_feature_callstack_stop(&_timeline);
+        ht_feature_callstack_stop(_timeline);
     }
 
-    ht_timeline_flush(&_timeline);
+    ht_timeline_flush(_timeline);
 
     // Assert
     ASSERT_EQ(4 * sizeof(HT_CallstackIntEvent), info.notified_events);
@@ -67,21 +67,20 @@ TEST_F(TestFeatureCallstack, CallstackTimelinesRunOnDifferentThreadsShouldGenera
     init_timeline(sizeof(HT_CallstackIntEvent));
     NotifyInfo<HT_CallstackIntEvent> info1;
     NotifyInfo<HT_CallstackIntEvent> info2;
-    ht_timeline_register_listener(&_timeline, test_listener<HT_CallstackIntEvent>, &info1);
+    ht_timeline_register_listener(_timeline, test_listener<HT_CallstackIntEvent>, &info1);
 
     // Act
-    ht_feature_callstack_start_int(&_timeline, 1);
-    ht_feature_callstack_stop(&_timeline);
-    ht_timeline_flush(&_timeline);
+    ht_feature_callstack_start_int(_timeline, 1);
+    ht_feature_callstack_stop(_timeline);
+    ht_timeline_flush(_timeline);
     std::thread([&info2]
     {
-        HT_Timeline tm;
-        ht_timeline_init(&tm, sizeof(HT_CallstackIntEvent), HT_FALSE, HT_FALSE, NULL);
-        ht_feature_callstack_enable(&tm);
-        ht_timeline_register_listener(&tm, test_listener<HT_CallstackIntEvent>, &info2);
-        ht_feature_callstack_start_int(&tm, 2);
-        ht_feature_callstack_stop(&tm);
-        ht_timeline_deinit(&tm);
+        HT_Timeline* tm = ht_timeline_create(sizeof(HT_CallstackIntEvent), HT_FALSE, HT_FALSE, NULL, NULL);
+        ht_feature_callstack_enable(tm);
+        ht_timeline_register_listener(tm, test_listener<HT_CallstackIntEvent>, &info2);
+        ht_feature_callstack_start_int(tm, 2);
+        ht_feature_callstack_stop(tm);
+        ht_timeline_destroy(tm);
     }).join();
 
     // Assert
@@ -96,22 +95,22 @@ TEST_F(TestFeatureCallstack, MixedCallstackEventTypes)
     init_timeline(sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent));
     MixedNotifyInfo info;
 
-    ht_timeline_register_listener(&_timeline, mixed_test_listener, &info);
+    ht_timeline_register_listener(_timeline, mixed_test_listener, &info);
 
     const char* label1 = "label1";
     const char* label2 = "label2";
 
     // Act
-    ht_feature_callstack_start_int(&_timeline, 1);
-    ht_feature_callstack_start_string(&_timeline, label1);
-    ht_feature_callstack_start_int(&_timeline, 2);
-    ht_feature_callstack_stop(&_timeline);
-    ht_feature_callstack_start_string(&_timeline, label2);
-    ht_feature_callstack_stop(&_timeline);
-    ht_feature_callstack_stop(&_timeline);
-    ht_feature_callstack_stop(&_timeline);
+    ht_feature_callstack_start_int(_timeline, 1);
+    ht_feature_callstack_start_string(_timeline, label1);
+    ht_feature_callstack_start_int(_timeline, 2);
+    ht_feature_callstack_stop(_timeline);
+    ht_feature_callstack_start_string(_timeline, label2);
+    ht_feature_callstack_stop(_timeline);
+    ht_feature_callstack_stop(_timeline);
+    ht_feature_callstack_stop(_timeline);
 
-    ht_timeline_flush(&_timeline);
+    ht_timeline_flush(_timeline);
 
     // Assert
     ASSERT_EQ(2 * (sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent)), info.notified_events);
@@ -133,17 +132,17 @@ TEST_F(TestFeatureCallstack, TestScopedTracepoint)
     const char* string_label = "31337_string";
     MixedNotifyInfo info;
 
-    ht_timeline_register_listener(&_timeline, mixed_test_listener, &info);
+    ht_timeline_register_listener(_timeline, mixed_test_listener, &info);
 
     // Act
     {
-        HT_TP_SCOPED_INT(&_timeline, int_label);
+        HT_TP_SCOPED_INT(_timeline, int_label);
         {
-            HT_TP_SCOPED_STRING(&_timeline, string_label);
+            HT_TP_SCOPED_STRING(_timeline, string_label);
         }
     }
 
-    ht_timeline_flush(&_timeline);
+    ht_timeline_flush(_timeline);
 
     // Assert
     ASSERT_EQ(sizeof(HT_CallstackIntEvent) + sizeof(HT_CallstackStringEvent), info.notified_events);
@@ -159,22 +158,22 @@ TEST_F(TestFeatureCallstack, Base)
     init_timeline(sizeof(HT_CallstackBaseEvent) * 3);
     NotifyInfo<TestCallstackEvent> info;
 
-    ht_timeline_register_listener(&_timeline, test_listener<TestCallstackEvent>, &info);
+    ht_timeline_register_listener(_timeline, test_listener<TestCallstackEvent>, &info);
 
     // Act
     for (int i = 0; i < 100; i++)
     {
         HT_DECL_EVENT(TestCallstackEvent, event);
         event.info = i;
-        ht_feature_callstack_start(&_timeline, (HT_CallstackBaseEvent*)&event);
+        ht_feature_callstack_start(_timeline, (HT_CallstackBaseEvent*)&event);
     }
 
     for (int i = 0; i < 100; i++)
     {
-        ht_feature_callstack_stop(&_timeline);
+        ht_feature_callstack_stop(_timeline);
     }
 
-    ht_timeline_flush(&_timeline);
+    ht_timeline_flush(_timeline);
 
     // Assert
     ASSERT_EQ(100 * sizeof(TestCallstackEvent), info.notified_events);
@@ -192,25 +191,25 @@ TEST_F(TestFeatureCallstack, MixedEventPublishing)
     init_timeline(sizeof(HT_CallstackBaseEvent) * 3);
     NotifyInfo<TestCallstackEvent> info;
 
-    ht_timeline_register_listener(&_timeline, test_listener<TestCallstackEvent>, &info);
+    ht_timeline_register_listener(_timeline, test_listener<TestCallstackEvent>, &info);
 
     auto start_event = [this] (int info) {
         HT_DECL_EVENT(TestCallstackEvent, event);
         event.info = info;
-        ht_feature_callstack_start(&_timeline, (HT_CallstackBaseEvent*)&event);
+        ht_feature_callstack_start(_timeline, (HT_CallstackBaseEvent*)&event);
     };
 
     // Act
     start_event(1);
     start_event(2);
-    ht_feature_callstack_stop(&_timeline);
+    ht_feature_callstack_stop(_timeline);
     start_event(3);
     start_event(4);
-    ht_feature_callstack_stop(&_timeline);
-    ht_feature_callstack_stop(&_timeline);
-    ht_feature_callstack_stop(&_timeline);
+    ht_feature_callstack_stop(_timeline);
+    ht_feature_callstack_stop(_timeline);
+    ht_feature_callstack_stop(_timeline);
 
-    ht_timeline_flush(&_timeline);
+    ht_timeline_flush(_timeline);
 
     // Assert
     ASSERT_EQ(4 * sizeof(TestCallstackEvent), info.notified_events);

@@ -2,21 +2,12 @@
 #define HAWKTRACER_TIMELINE_LISTENER_H
 
 #include <hawktracer/base_types.h>
-#include <hawktracer/bag.h>
 
 #include <stddef.h>
 
 HT_DECLS_BEGIN
 
-typedef struct
-{
-    /* TODO single struct with pair? */
-    HT_Bag callbacks;
-    HT_Bag user_datas;
-    struct _HT_Mutex* mutex;
-    uint32_t id;
-    int refcount; /* TODO atomic */
-} HT_TimelineListenerContainer;
+typedef struct _HT_TimelineListenerContainer HT_TimelineListenerContainer;
 
 typedef void(*HT_TimelineListenerCallback)(
         TEventPtr events, size_t event_count, HT_Boolean serialized, void* user_data);

@@ -1,6 +1,16 @@
 #include "hawktracer/listeners/file_dump_listener.h"
+#include "hawktracer/alloc.h"
+#include "hawktracer/registry.h"
 
+#include "internal/listener_buffer.h"
 #include "internal/mutex.h"
+
+struct _HT_FileDumpListener
+{
+    HT_ListenerBuffer buffer;
+    FILE* p_file;
+    HT_Mutex* mtx;
+};
 
 inline static void
 _ht_file_dump_listener_flush(void* listener)
@@ -11,16 +21,23 @@ _ht_file_dump_listener_flush(void* listener)
     fd_listener->buffer.usage = 0;
 }
 
-HT_ErrorCode
-ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename, size_t buffer_size)
+HT_FileDumpListener*
+ht_file_dump_listener_create(const char* filename, size_t buffer_size, HT_ErrorCode* out_err)
 {
     HT_ErrorCode error_code = HT_ERR_OK;
+    HT_FileDumpListener* listener = HT_CREATE_TYPE(HT_FileDumpListener);
+
+    if (listener == NULL)
+    {
+        error_code = HT_ERR_OUT_OF_MEMORY;
+        goto done;
+    }
 
     listener->p_file = fopen(filename, "wb");
     if (listener->p_file == NULL)
     {
         error_code = HT_ERR_CANT_OPEN_FILE;
-        goto done;
+        goto error_open_file;
     }
 
     listener->mtx = ht_mutex_create();
@@ -31,24 +48,36 @@ ht_file_dump_listener_init(HT_FileDumpListener* listener, const char* filename, 
     }
 
     error_code = ht_listener_buffer_init(&listener->buffer, buffer_size);
-    if (error_code == HT_ERR_OK)
+    if (error_code != HT_ERR_OK)
     {
+        ht_mutex_destroy(listener->mtx);
+    }
+    else
+    {
+        ht_registry_push_registry_klasses_to_listener(ht_file_dump_listener_callback, listener, HT_TRUE);
         goto done;
     }
-
-    ht_mutex_destroy(listener->mtx);
 
 error_create_mutex:
     fclose(listener->p_file);
 
+error_open_file:
+    ht_free(listener);
+    listener = NULL;
+
 done:
-    return error_code;
+    if (out_err != NULL)
+    {
+        *out_err = error_code;
+    }
+
+    return listener;
 }
 
 void
-ht_file_dump_listener_deinit(HT_FileDumpListener* listener)
+ht_file_dump_listener_destroy(HT_FileDumpListener* listener)
 {
-    if (listener->p_file != NULL)
+    if (listener != NULL)
     {
         ht_mutex_lock(listener->mtx);
         _ht_file_dump_listener_flush(listener);
@@ -57,6 +86,7 @@ ht_file_dump_listener_deinit(HT_FileDumpListener* listener)
         listener->p_file = NULL;
         ht_mutex_unlock(listener->mtx);
         ht_mutex_destroy(listener->mtx);
+        ht_free(listener);
     }
 }
 

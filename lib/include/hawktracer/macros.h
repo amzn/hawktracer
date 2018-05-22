@@ -82,4 +82,18 @@
 /** Creates unique variable name by appending a line number to a base name. */
 #define HT_UNIQUE_VAR_NAME(BASE_VAR_NAME) HT_MACRO_CONCAT(BASE_VAR_NAME, __LINE__)
 
+/**
+ * @def HT_THREAD_LOCAL
+ * A thread storage duration.
+ */
+#ifdef HT_CPP11
+#  define HT_THREAD_LOCAL thread_local
+#elif __STDC_VERSION__ >= 201112 && !defined __STDC_NO_THREADS__
+#  define thread_local _Thread_local
+#elif defined _WIN32 && ( defined _MSC_VER || defined __ICL || defined __DMC__ || defined __BORLANDC__ )
+#  define thread_local __declspec(thread)
+#elif defined __GNUC__ || defined __SUNPRO_C || defined __xlC__ /* ICC (linux) and Clang are covered by __GNUC__ */
+#  define thread_local __thread
+#endif
+
 #endif /* HAWKTRACER_MACROS_H */

@@ -1,5 +1,5 @@
-#ifndef HAWKTRACER_LISTENER_BUFFER_H
-#define HAWKTRACER_LISTENER_BUFFER_H
+#ifndef HAWKTRACER_INTERNAL_LISTENER_BUFFER_H
+#define HAWKTRACER_INTERNAL_LISTENER_BUFFER_H
 
 #include <hawktracer/base_types.h>
 
@@ -34,4 +34,4 @@ HT_API void ht_listener_buffer_process_unserialized_events(HT_ListenerBuffer* bu
 
 HT_DECLS_END
 
-#endif /* HAWKTRACER_LISTENER_BUFFER_H */
+#endif /* HAWKTRACER_INTERNAL_LISTENER_BUFFER_H */

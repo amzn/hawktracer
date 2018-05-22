@@ -29,6 +29,9 @@ typedef uint8_t HT_Byte;
 /** Defines @b false value for the HT_Boolean type. */
 #define HT_FALSE 0
 
+/** Defines an invalid klass identifier. */
+#define HT_INVALID_KLASS_ID ((HT_EventKlassId)-1)
+
 /** Defines list of possible errors returned by library functions. */
 typedef enum
 {

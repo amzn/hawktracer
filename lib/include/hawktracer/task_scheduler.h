@@ -2,7 +2,6 @@
 #define HAWKTRACER_TASK_SCHEDULER_H
 
 #include <hawktracer/base_types.h>
-#include <hawktracer/bag.h>
 
 HT_DECLS_BEGIN
 
@@ -30,27 +29,23 @@ typedef enum
     HT_TASK_SCHEDULING_RESTART_TIMER
 } HT_TaskSchedulingMode;
 
-typedef struct
-{
-    HT_Bag tasks;
-    HT_TaskId next_task_id;
-} HT_TaskScheduler;
+typedef struct _HT_TaskScheduler HT_TaskScheduler;
 
 /**
- * Initializes HT_TaskScheduler structure.
+ * Creates an instance of the HT_TaskScheduler structure.
  *
- * @param task_scheduler a pointer to the scheduler.
+ * @param out_err #HT_ERR_OK, if creation completed succesfully; otherwise, appropriate error code.
  *
- * @return #HT_ERR_OK, if initialization completed succesfully; otherwise, appropriate error code.
+ * @return task_scheduler a pointer to the scheduler, or NULL if create failed.
  */
-HT_API HT_ErrorCode ht_task_scheduler_init(HT_TaskScheduler* task_scheduler);
+HT_API HT_TaskScheduler* ht_task_scheduler_create(HT_ErrorCode* out_err);
 
 /**
- * Uninitializes task scheduler data structure.
+ * Destroys task scheduler data structure.
  *
  * @param task_scheduler a pointer to the scheduler.
  */
-HT_API void ht_task_scheduler_deinit(HT_TaskScheduler* task_scheduler);
+HT_API void ht_task_scheduler_destroy(HT_TaskScheduler* task_scheduler);
 
 /**
  * Adds a new task to a scheduler.

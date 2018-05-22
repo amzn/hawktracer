@@ -1,10 +1,17 @@
+#include "internal/bag.h"
 #include "hawktracer/feature_cached_string.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/core_events.h"
-#include "internal/hash.h"
 #include "internal/mutex.h"
 
 #include <assert.h>
+
+
+typedef struct
+{
+    HT_Bag cached_data;
+    HT_Mutex* lock;
+} HT_FeatureCachedString;
 
 HT_ErrorCode
 ht_feature_cached_string_enable(HT_Timeline* timeline)
@@ -33,7 +40,7 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
         return error_code;
     }
 
-    timeline->features[HT_FEATURE_CACHED_STRING] = feature;
+    ht_timeline_set_feature(timeline, HT_FEATURE_CACHED_STRING, feature);
 
     return error_code;
 }
@@ -41,18 +48,18 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
 void
 ht_feature_cached_string_disable(HT_Timeline* timeline)
 {
-    HT_FeatureCachedString* feature = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
+    HT_FeatureCachedString* feature = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
 
     ht_bag_deinit(&feature->cached_data);
     ht_mutex_destroy(feature->lock);
     ht_free(feature);
-    timeline->features[HT_FEATURE_CACHED_STRING] = NULL;
+    ht_timeline_set_feature(timeline, HT_FEATURE_CACHED_STRING, NULL);
 }
 
 const char*
 ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
 {
-    HT_FeatureCachedString* f = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
+    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
     HT_ErrorCode error_code;
 
     assert(f);
@@ -73,7 +80,7 @@ ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
 void
 ht_feature_cached_string_push_map(HT_Timeline* timeline)
 {
-    HT_FeatureCachedString* f = (HT_FeatureCachedString*)timeline->features[HT_FEATURE_CACHED_STRING];
+    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
     size_t i;
 
     assert(f);

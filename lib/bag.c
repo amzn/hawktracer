@@ -1,4 +1,4 @@
-#include "hawktracer/bag.h"
+#include "internal/bag.h"
 #include "hawktracer/alloc.h"
 
 static inline HT_Boolean

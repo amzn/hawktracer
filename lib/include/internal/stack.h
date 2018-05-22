@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_STACK_H
 #define HAWKTRACER_STACK_H
 
-#include <hawktracer/bag.h>
+#include <internal/bag.h>
 #include <hawktracer/base_types.h>
 
 HT_DECLS_BEGIN

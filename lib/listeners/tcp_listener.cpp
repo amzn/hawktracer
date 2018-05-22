@@ -1,15 +1,24 @@
 #include "hawktracer/listeners/tcp_listener.h"
 #include "hawktracer/alloc.h"
-#include "hawktracer/listener_buffer.h"
 #include "hawktracer/registry.h"
+#include "internal/listener_buffer.h"
 #include "internal/listeners/tcp_server.hpp"
 
 #include <new>
 
-struct _HT_TCPListenerPimpl
+inline static void
+_set_error(HT_ErrorCode error_code, HT_ErrorCode* out)
+{
+    if (out)
+    {
+        *out = error_code;
+    }
+}
+
+struct _HT_TCPListener
 {
 public:
-    ~_HT_TCPListenerPimpl();
+    ~_HT_TCPListener();
     HT_ErrorCode init(int port);
     void push_events(TEventPtr events, size_t size, HT_Boolean serialized);
 
@@ -23,14 +32,14 @@ private:
 
     static void _client_connected(int sock_fd, void* user_data)
     {
-        HT_TCPListenerPimpl* listener = reinterpret_cast<HT_TCPListenerPimpl*>(user_data);
+        HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
         listener->_last_client_sock_fd = sock_fd;
-        ht_registry_push_all_klass_info_events(&listener->_reg_timeline);
+        ht_registry_push_registry_klasses_to_listener(ht_tcp_listener_callback, user_data, HT_TRUE);
     }
 
     static void _f_flush(void* listener)
     {
-        HT_TCPListenerPimpl* tcp_listener = reinterpret_cast<HT_TCPListenerPimpl*>(listener);
+        HT_TCPListener* tcp_listener = reinterpret_cast<HT_TCPListener*>(listener);
         tcp_listener->_flush();
         tcp_listener->_was_flushed = true;
     }
@@ -38,65 +47,38 @@ private:
     std::mutex _push_action_mutex;
     HT_ListenerBuffer _buffer;
     HawkTracer::TCPServer _tcp_server;
-    HT_Timeline _reg_timeline;
     int _last_client_sock_fd = 0;
     /* TODO: This is just a hack to prevent from sending half-events.
      * We should revisit this for next release */
     bool _was_flushed = false;
 };
 
-HT_ErrorCode HT_TCPListenerPimpl::init(int port)
+HT_ErrorCode HT_TCPListener::init(int port)
 {
     HT_ErrorCode error_code = ht_listener_buffer_init(&_buffer, HT_TCP_LISTENER_BUFFER_SIZE);
     if (error_code != HT_ERR_OK)
     {
         return error_code;
     }
-    error_code = ht_timeline_init(&_reg_timeline, 4096, HT_FALSE, HT_TRUE, NULL);
-    if (error_code != HT_ERR_OK)
-    {
-        ht_listener_buffer_deinit(&_buffer);
-        return error_code;
-    }
 
     if (_tcp_server.start(port, _client_connected, this))
     {
-        /* TODO: handle ht_timeline_register_listener() error */
-        error_code = ht_timeline_register_listener(&_reg_timeline, [] (TEventPtr e, size_t c, HT_Boolean, void* ud) {
-            HT_TCPListenerPimpl* listener = reinterpret_cast<HT_TCPListenerPimpl*>(ud);
-            std::lock_guard<std::mutex> l(listener->_push_action_mutex);
-            listener->_tcp_server.write_to_socket(listener->_last_client_sock_fd, (char*)e, c);
-        }, this);
-
-        if (error_code == HT_ERR_OK)
-        {
-            return error_code;
-        }
-        else
-        {
-            _tcp_server.stop();
-        }
-    }
-    else
-    {
-        error_code = HT_ERR_CANT_START_TCP_SERVER;
+        return HT_ERR_OK;
     }
 
     ht_listener_buffer_deinit(&_buffer);
-    ht_timeline_deinit(&_reg_timeline);
 
-    return error_code;
+    return HT_ERR_CANT_START_TCP_SERVER;
 }
 
-HT_TCPListenerPimpl::~_HT_TCPListenerPimpl()
+_HT_TCPListener::~_HT_TCPListener()
 {
     _flush();
     _tcp_server.stop();
     ht_listener_buffer_deinit(&_buffer);
-    ht_timeline_deinit(&_reg_timeline);
 }
 
-void HT_TCPListenerPimpl::push_events(TEventPtr events, size_t size, HT_Boolean serialized)
+void _HT_TCPListener::push_events(TEventPtr events, size_t size, HT_Boolean serialized)
 {
     if (!_tcp_server.is_running())
     {
@@ -121,26 +103,35 @@ void HT_TCPListenerPimpl::push_events(TEventPtr events, size_t size, HT_Boolean 
     }
 }
 
-HT_ErrorCode ht_tcp_listener_init(HT_TCPListener* listener, int port)
+HT_TCPListener* ht_tcp_listener_create(int port, HT_ErrorCode* out_err)
 {
-    listener->pimpl = (HT_TCPListenerPimpl*) ht_alloc(sizeof(HT_TCPListenerPimpl));
-    if (!listener->pimpl)
+    HT_TCPListener* listener = HT_CREATE_TYPE(HT_TCPListener);
+    if (!listener)
     {
-        return HT_ERR_OUT_OF_MEMORY;
+        _set_error(HT_ERR_OUT_OF_MEMORY, out_err);
+        return nullptr;
     }
 
-    new(listener->pimpl) HT_TCPListenerPimpl();
+    new(listener) HT_TCPListener();
 
-    return listener->pimpl->init(port);
+    HT_ErrorCode error_code = listener->init(port);
+    if (error_code != HT_ERR_OK)
+    {
+        ht_tcp_listener_destroy(listener);
+        listener = nullptr;
+    }
+
+    _set_error(error_code, out_err);
+    return listener;
 }
 
-void ht_tcp_listener_deinit(HT_TCPListener* listener)
+void ht_tcp_listener_destroy(HT_TCPListener* listener)
 {
-    listener->pimpl->~HT_TCPListenerPimpl();
-    ht_free(listener->pimpl);
+    listener->~HT_TCPListener();
+    ht_free(listener);
 }
 
 void ht_tcp_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data)
 {
-    ((HT_TCPListener*)user_data)->pimpl->push_events(events, size, serialized);
+    ((HT_TCPListener*)user_data)->push_events(events, size, serialized);
 }
