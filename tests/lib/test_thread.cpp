@@ -46,3 +46,24 @@ TEST(TestThread, ShouldNotRepeatThreadIdForNewThreads)
     // Assert
     ASSERT_NE(id1, id2);
 }
+
+TEST(TestThread, AlwaysShouldUseTheSameThreadIdForOneThread)
+{
+    // Arrange
+    HT_ThreadId id1 = 0;
+    HT_ThreadId id2 = 0;
+    HT_ThreadId id3 = 0;
+
+    id1 = ht_thread_get_current_thread_id();
+
+    std::thread([&id2] {
+        id2 = ht_thread_get_current_thread_id();
+    }).join();
+
+    // Act
+    id3 = ht_thread_get_current_thread_id();
+
+    // Assert
+    ASSERT_EQ(id1, id3);
+    ASSERT_NE(id1, id2);
+}
