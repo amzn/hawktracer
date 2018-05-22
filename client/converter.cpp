@@ -11,6 +11,11 @@ namespace HawkTracer
 namespace client
 {
 
+Converter::Converter()
+{
+    _tracepoint_map = std::make_shared<TracepointMap>();
+}
+
 bool Converter::set_tracepoint_map(const std::string& map_files)
 {
     if (_tracepoint_map != nullptr)

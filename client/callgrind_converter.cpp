@@ -1,9 +1,17 @@
 #include "callgrind_converter.hpp"
 
+#include "hawktracer/parser/klass_register.hpp"
+#include <algorithm>
+
 namespace HawkTracer
 {
 namespace client
 {
+
+CallgrindConverter::CallgrindConverter() :
+    _mapping_klass_name("HT_StringMappingEvent")
+{
+}
 
 CallgrindConverter::~CallgrindConverter()
 {
@@ -12,10 +20,13 @@ CallgrindConverter::~CallgrindConverter()
 
 bool CallgrindConverter::init(const std::string& file_name)
 {
-    _file.open(file_name);
-    if (_file.is_open())
+    _file_name = file_name;
+    std::ofstream blank_file;
+    blank_file.open(file_name);
+    if (blank_file.is_open())
     {
-        _file << "# callgrind format\n";
+        blank_file << "# callgrind format\n";
+        blank_file.close();
         return true;
     }
     return false;
@@ -24,14 +35,186 @@ bool CallgrindConverter::init(const std::string& file_name)
 
 void CallgrindConverter::uninit()
 {
-    if (_file.is_open())
+}
+
+void CallgrindConverter::_add_new_calltree(uint32_t thread_id,
+                                           std::string label,
+                                           HT_TimestampNs start_ts,
+                                           HT_TimestampNs duration)
+{
+    auto& _root_calls_for_thread_id = _root_calls[thread_id];
+    auto call = std::find_if(_root_calls_for_thread_id.begin(), _root_calls_for_thread_id.end(),
+            [&label](const std::pair<TreeNode*, int>& call) {
+            return call.first->label == label;
+            });
+    if (call != _root_calls_for_thread_id.end())
     {
-        _file.close();
+        call->first->duration += duration;
+        call->first->start_ts = start_ts;
+        ++call->second;
+    }
+    else
+    {
+        _calls[thread_id] = new TreeNode(label, start_ts, duration);
+        _root_calls_for_thread_id.emplace_back(_calls[thread_id], 1);
+    }
+
+}
+
+void CallgrindConverter::_add_event(uint32_t thread_id,
+                                    std::string label,
+                                    HT_TimestampNs start_ts,
+                                    HT_TimestampNs duration)
+{
+    auto thread_calls = _calls.find(thread_id);
+
+    if (thread_calls == _calls.end())
+    {
+        _add_new_calltree(thread_id, label, start_ts, duration);
+    }
+    else
+    {
+        auto& previous_event = _calls[thread_id];
+
+        while(previous_event != nullptr)
+        {
+            bool previous_event_contains_current_event = 
+                previous_event->start_ts <= start_ts && start_ts + duration <= previous_event->get_stop_ts();
+
+            if (previous_event_contains_current_event)
+            {
+                previous_event->total_children_duration += duration;
+
+                auto call = std::find_if(previous_event->children.begin(), previous_event->children.end(),
+                        [&label](const std::pair<TreeNode*, int>& child) {
+                            return child.first->label == label;
+                        });
+                if (call != previous_event->children.end())
+                {
+                    call->first->duration += duration;
+                    call->first->start_ts = start_ts;
+                    ++call->second;
+                    _calls[thread_id] = call->first;
+                }
+                else
+                {
+                    TreeNode* eventNode = new TreeNode(label, start_ts, duration);
+                    eventNode->father = previous_event;
+                    previous_event->children.emplace_back(eventNode, 1);
+                    _calls[thread_id] = eventNode;
+                }
+
+                break;
+            }
+            else
+            {
+               previous_event = previous_event->father;
+            }
+        }
+        if (previous_event == nullptr)
+        {
+            _add_new_calltree(thread_id, label, start_ts, duration);
+        }
     }
 }
 
 void CallgrindConverter::process_event(const parser::Event& event)
 {
+    std::string label;
+
+    if (_mapping_klass_id == 0 &&
+            event.get_klass()->get_id() == HawkTracer::parser::to_underlying(HawkTracer::parser::WellKnownKlasses::EventKlassInfoEventKlass))
+    {
+        if (event.get_value<char*>("event_klass_name") == _mapping_klass_name)
+        {
+            _mapping_klass_id = event.get_value<HT_EventKlassId>("info_klass_id");
+        }
+    }
+    if (event.get_klass()->get_id() == _mapping_klass_id)
+    {
+        _tracepoint_map->add_map_entry(event.get_value<uint64_t>("identifier"), event.get_value<char*>("label"));
+        return;
+    }
+
+    if (event.has_value("label"))
+    {
+        const parser::Event::Value& value = event.get_raw_value("label");
+        if (value.field->get_type_id() == parser::FieldTypeId::UINT64)
+        {
+            label = _tracepoint_map->get_label_info(value.value.f_UINT64).label;
+        }
+        else if (value.field->get_type_id() == parser::FieldTypeId::STRING)
+        {
+            label = value.value.f_STRING;
+        }
+        else
+        {
+            label = "invalid label type";
+        }
+    }
+    else if (event.has_value("name"))
+    {
+        label = event.get_value<char*>("name");
+    }
+    else
+    {
+        return;
+    }
+
+    uint32_t thread_id = event.get_value_or_default<uint32_t>("thread_id", 0);
+    HT_TimestampNs start_ts = event.get_value<uint64_t>("timestamp");
+    HT_TimestampNs duration = event.get_value_or_default<uint64_t>("duration", 0u);
+    _events.emplace_back(thread_id, TreeNode(label, start_ts, duration));
+}
+
+void CallgrindConverter::_print_function(std::ofstream& file, TreeNode* node, std::string label)
+{
+    label = node->label + "()'" + label;
+    file << "fn=" << label << "\n";
+    file << "1 " << node->duration - node->total_children_duration << "\n";
+    for (auto& child : node->children)
+    {
+        std::string child_label = child.first->label + "()'" + label;
+        file << "cfn=" << child_label << "\n";
+        file << "calls=" << child.second << " 1\n";
+        file << "1 " << child.first->duration << "\n";
+    }
+    for (auto& child : node->children)
+    {
+        _print_function(file, child.first, label);
+    }
+}
+
+bool CallgrindConverter::stop()
+{
+    for (auto it = _events.rbegin(); it != _events.rend(); ++it)
+    {
+        _add_event(it->first, it->second.label, it->second.start_ts, it->second.duration);
+    }
+
+    for (auto& calls : _root_calls)
+    {
+        std::ofstream thread_output_file(_file_name + "." + std::to_string(calls.first));
+        if (thread_output_file.is_open())
+        {
+            thread_output_file<< "# callgrind format\n";
+            thread_output_file << "thread: " << calls.first << "\n\n";
+            thread_output_file << "events: Duration" << "\n";
+
+            for (auto& root : calls.second)
+            {
+                _print_function(thread_output_file, root.first, "");
+            }
+
+            thread_output_file.close();
+        }
+        else
+        {
+            return false;
+        }
+    }
+    uninit();
+    return true;
 }
 
 } // namespace client

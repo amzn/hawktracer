@@ -192,8 +192,15 @@ int main(int argc, char** argv)
 
     reader.wait_for_complete();
     reader.stop();
+    bool conversion_completed = formats[format]->stop();
 
-    std::cout << "Trace file has been saved to: " << out_file << std::endl;
-
+    if (conversion_completed)
+    {
+        std::cout << "Trace file has been saved to: " << out_file << std::endl;
+    }
+    else
+    {
+        std::cerr << "Error on completing conversion" << std::endl;
+    }
     return 0;
 }

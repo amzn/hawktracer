@@ -94,5 +94,11 @@ void ChromeTraceConverter::process_event(const parser::Event& event)
          << "}";
 }
 
+bool ChromeTraceConverter::stop()
+{
+    uninit();
+    return true;
+}
+
 } // namespace client
 } // namespace HawkTracer

@@ -21,6 +21,7 @@ public:
     bool init(const std::string& file_name) override;
     void uninit() override;
     void process_event(const parser::Event& event) override;
+    bool stop() override;
 
 private:
     const std::string _mapping_klass_name; 

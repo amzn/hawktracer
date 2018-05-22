@@ -20,8 +20,10 @@ public:
     virtual void uninit() = 0;
     virtual void process_event(const parser::Event& event) = 0;
     bool set_tracepoint_map(const std::string& map_files);
+    virtual bool stop() = 0;
 
 protected:
+    Converter();
     HT_EventKlassId _mapping_klass_id = 0;
     std::shared_ptr<TracepointMap> _tracepoint_map;
 };
