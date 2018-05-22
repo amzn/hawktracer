@@ -24,6 +24,8 @@ public:
 
 protected:
     Converter();
+    std::string get_label(const parser::Event& event);
+    const std::string _mapping_klass_name; 
     HT_EventKlassId _mapping_klass_id = 0;
     std::shared_ptr<TracepointMap> _tracepoint_map;
 };

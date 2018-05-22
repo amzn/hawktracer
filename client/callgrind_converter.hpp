@@ -16,7 +16,6 @@ namespace client
 class CallgrindConverter : public Converter
 {
 public:
-    CallgrindConverter();
     ~CallgrindConverter() override;
 
     bool init(const std::string& file_name) override;
@@ -25,9 +24,6 @@ public:
     bool stop() override;
 
 private:
-    const std::string _mapping_klass_name; 
-    HT_EventKlassId _mapping_klass_id = 0;
- 
     struct TreeNode
     {
         std::string label;

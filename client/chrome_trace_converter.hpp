@@ -15,7 +15,6 @@ namespace client
 class ChromeTraceConverter : public Converter
 {
 public:
-    ChromeTraceConverter();
     ~ChromeTraceConverter() override;
 
     bool init(const std::string& file_name) override;
@@ -24,8 +23,6 @@ public:
     bool stop() override;
 
 private:
-    const std::string _mapping_klass_name; 
-    HT_EventKlassId _mapping_klass_id = 0;
     std::ofstream _file;
 };
 
