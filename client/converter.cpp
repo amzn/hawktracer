@@ -3,7 +3,8 @@
 
 #include "converter.hpp"
 
-#include "hawktracer/parser/klass_register.hpp"
+#include <hawktracer/parser/klass_register.hpp>
+#include <hawktracer/parser/make_unique.hpp>
 #include <fstream>
 #include <stack>
 
@@ -13,9 +14,9 @@ namespace client
 {
 
 Converter::Converter() :
-    _mapping_klass_name("HT_StringMappingEvent")
+    _mapping_klass_name("HT_StringMappingEvent"),
+    _tracepoint_map(HawkTracer::parser::make_unique<TracepointMap>())
 {
-    _tracepoint_map = std::make_shared<TracepointMap>();
 }
 
 bool Converter::set_tracepoint_map(const std::string& map_files)
