@@ -1,5 +1,6 @@
 add_library(hawktracer_client
     STATIC
+    call_graph.cpp
     callgrind_converter.cpp
     chrome_trace_converter.cpp
     converter.cpp
