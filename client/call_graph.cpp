@@ -11,11 +11,11 @@ void CallGraph::make(std::vector<std::pair<HT_ThreadId, TreeNode>>& events)
 {
     std::sort(events.begin(), events.end(), 
             [](const std::pair<HT_ThreadId, TreeNode>& e1, const std::pair<HT_ThreadId, TreeNode>& e2){
-                return e1.second.start_ts < e2.second.start_ts;
+                return e1.second.last_start_ts < e2.second.last_start_ts;
             });
     for (const auto& event : events)
     {
-        _add_event(event.first, event.second.label, event.second.start_ts, event.second.duration);
+        _add_event(event.first, event.second.label, event.second.last_start_ts, event.second.total_duration);
     }
 }
 
@@ -31,8 +31,9 @@ void CallGraph::_add_new_calltree(HT_ThreadId thread_id,
             });
     if (call != root_calls_for_thread_id.end())
     {
-        call->first->duration += duration;
-        call->first->start_ts = start_ts;
+        call->first->total_duration += duration;
+        call->first->last_start_ts = start_ts;
+        call->first->last_stop_ts = start_ts + duration;
         ++call->second;
     }
     else
@@ -61,7 +62,7 @@ void CallGraph::_add_event(HT_ThreadId thread_id,
         while(previous_event.get())
         {
             bool previous_event_contains_current_event = 
-                previous_event->start_ts <= start_ts && start_ts + duration <= previous_event->get_stop_ts();
+                previous_event->last_start_ts <= start_ts && start_ts + duration <= previous_event->last_stop_ts;
 
             if (previous_event_contains_current_event)
             {
@@ -73,8 +74,9 @@ void CallGraph::_add_event(HT_ThreadId thread_id,
                         });
                 if (call != previous_event->children.end())
                 {
-                    call->first->duration += duration;
-                    call->first->start_ts = start_ts;
+                    call->first->total_duration += duration;
+                    call->first->last_start_ts = start_ts;
+                    call->first->last_stop_ts = start_ts + duration;
                     ++call->second;
                     _calls[thread_id] = call->first;
                 }

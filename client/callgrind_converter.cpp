@@ -42,13 +42,13 @@ void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<Ca
     {
         auto& fnc = fnc_queue.front();
         file << "fn=" << fnc.second << "\n";
-        file << "1 " << fnc.first->duration - fnc.first->total_children_duration << "\n";
+        file << "1 " << fnc.first->total_duration - fnc.first->total_children_duration << "\n";
         for (const auto& child : fnc.first->children)
         {
             std::string child_label = child.first->label + "()'" + fnc.second;
             file << "cfn=" << child_label << "\n";
             file << "calls=" << child.second << " 1\n";
-            file << "1 " << child.first->duration << "\n";
+            file << "1 " << child.first->total_duration << "\n";
             fnc_queue.emplace(child.first, child_label);
         }
         fnc_queue.pop();

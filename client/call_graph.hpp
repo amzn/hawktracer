@@ -15,8 +15,9 @@ public:
     struct TreeNode
     {
         std::string label;
-        HT_TimestampNs start_ts;
-        HT_DurationNs duration;
+        HT_TimestampNs last_start_ts;
+        HT_TimestampNs last_stop_ts;
+        HT_DurationNs total_duration;
         HT_DurationNs total_children_duration;
 
         std::vector<std::pair<std::shared_ptr<TreeNode>, int>> children;
@@ -25,14 +26,10 @@ public:
         TreeNode(std::string name, HT_TimestampNs start, HT_DurationNs dur)
         {
             label = name;
-            start_ts = start;
-            duration = dur;
+            last_start_ts = start;
+            last_stop_ts = start + dur;
+            total_duration = dur;
             total_children_duration = 0u;
-        }
-        
-        HT_TimestampNs get_stop_ts() const
-        {
-            return start_ts + duration;
         }
     };
 
