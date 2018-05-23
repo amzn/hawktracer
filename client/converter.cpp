@@ -68,12 +68,10 @@ std::string Converter::_get_label(const parser::Event& event)
     if (_mapping_klass_id == 0)
     {
         _try_setting_mapping_klass_id(event);
-        label = "";
     }
     else if (event.get_klass()->get_id() == _mapping_klass_id)
     {
         _tracepoint_map->add_map_entry(event.get_value<uint64_t>("identifier"), event.get_value<char*>("label"));
-        label = "";
     } 
     else if (event.has_value("label"))
     {
@@ -82,10 +80,6 @@ std::string Converter::_get_label(const parser::Event& event)
     else if (event.has_value("name"))
     {
         label = event.get_value<char*>("name");
-    }
-    else
-    {
-        label = "";
     }
     return label;
 }
