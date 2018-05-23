@@ -15,15 +15,7 @@ CallgrindConverter::~CallgrindConverter()
 bool CallgrindConverter::init(const std::string& file_name)
 {
     _file_name = file_name;
-    std::ofstream blank_file;
-    blank_file.open(file_name);
-    if (blank_file.is_open())
-    {
-        blank_file << callgrind_header << std::endl;
-        blank_file.close();
-        return true;
-    }
-    return false;
+    return true;
 }
 
 
@@ -80,7 +72,7 @@ bool CallgrindConverter::stop()
         std::ofstream thread_output_file(_file_name + "." + std::to_string(calls.first));
         if (thread_output_file.is_open())
         {
-            thread_output_file<< "# callgrind format\n";
+            thread_output_file << callgrind_header << std::endl;
             thread_output_file << "thread: " << calls.first << "\n\n";
             thread_output_file << "events: Duration" << "\n";
 
