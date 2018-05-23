@@ -28,39 +28,40 @@ private:
     {
         std::string label;
         HT_TimestampNs start_ts;
-        HT_TimestampNs duration;
+        HT_DurationNs duration;
         std::vector<std::pair<TreeNode*, int>> children;
-        TreeNode* father;
-        HT_TimestampNs total_children_duration;
+        TreeNode* parent;
+        HT_DurationNs total_children_duration;
 
-        TreeNode(std::string name, HT_TimestampNs start, HT_TimestampNs dur)
+        TreeNode(std::string name, HT_TimestampNs start, HT_DurationNs dur)
         {
             label = name;
             start_ts = start;
             duration = dur;
-            father = nullptr;
+            parent = nullptr;
             total_children_duration = 0u;
         }
         
-        HT_TimestampNs get_stop_ts()
+        HT_TimestampNs get_stop_ts() const
         {
             return start_ts + duration;
         }
     };
 
+    const std::string callgrind_header = "# callgrind format";
     std::string _file_name;
-    std::unordered_map<uint32_t, TreeNode*> _calls;
-    std::unordered_map<uint32_t, std::vector<std::pair<TreeNode*, int>>> _root_calls;
-    std::vector<std::pair<uint32_t, TreeNode>> _events;
+    std::unordered_map<HT_ThreadId, TreeNode*> _calls;
+    std::unordered_map<HT_ThreadId, std::vector<std::pair<TreeNode*, int>>> _root_calls;
+    std::vector<std::pair<HT_ThreadId, TreeNode>> _events;
 
-    void _add_event(uint32_t thread_id, 
+    void _add_event(HT_ThreadId thread_id, 
                     std::string label,
                     HT_TimestampNs start_ts,
-                    HT_TimestampNs duration);
-    void _add_new_calltree(uint32_t thread_id, 
+                    HT_DurationNs duration);
+    void _add_new_calltree(HT_ThreadId thread_id, 
                            std::string label,
                            HT_TimestampNs start_ts,
-                           HT_TimestampNs duration);
+                           HT_DurationNs duration);
     void _print_function(std::ofstream& file, TreeNode* node, std::string label);
 };
 

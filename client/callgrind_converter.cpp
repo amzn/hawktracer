@@ -19,7 +19,7 @@ bool CallgrindConverter::init(const std::string& file_name)
     blank_file.open(file_name);
     if (blank_file.is_open())
     {
-        blank_file << "# callgrind format\n";
+        blank_file << callgrind_header << std::endl;
         blank_file.close();
         return true;
     }
@@ -31,10 +31,10 @@ void CallgrindConverter::uninit()
 {
 }
 
-void CallgrindConverter::_add_new_calltree(uint32_t thread_id,
+void CallgrindConverter::_add_new_calltree(HT_ThreadId thread_id,
                                            std::string label,
                                            HT_TimestampNs start_ts,
-                                           HT_TimestampNs duration)
+                                           HT_DurationNs duration)
 {
     auto& _root_calls_for_thread_id = _root_calls[thread_id];
     auto call = std::find_if(_root_calls_for_thread_id.begin(), _root_calls_for_thread_id.end(),
@@ -55,10 +55,10 @@ void CallgrindConverter::_add_new_calltree(uint32_t thread_id,
 
 }
 
-void CallgrindConverter::_add_event(uint32_t thread_id,
+void CallgrindConverter::_add_event(HT_ThreadId thread_id,
                                     std::string label,
                                     HT_TimestampNs start_ts,
-                                    HT_TimestampNs duration)
+                                    HT_DurationNs duration)
 {
     auto thread_calls = _calls.find(thread_id);
 
@@ -93,7 +93,7 @@ void CallgrindConverter::_add_event(uint32_t thread_id,
                 else
                 {
                     TreeNode* eventNode = new TreeNode(label, start_ts, duration);
-                    eventNode->father = previous_event;
+                    eventNode->parent = previous_event;
                     previous_event->children.emplace_back(eventNode, 1);
                     _calls[thread_id] = eventNode;
                 }
@@ -102,7 +102,7 @@ void CallgrindConverter::_add_event(uint32_t thread_id,
             }
             else
             {
-               previous_event = previous_event->father;
+               previous_event = previous_event->parent;
             }
         }
         if (previous_event == nullptr)
@@ -114,21 +114,28 @@ void CallgrindConverter::_add_event(uint32_t thread_id,
 
 void CallgrindConverter::process_event(const parser::Event& event)
 {
-    std::string label = get_label(event);
+    std::string label = _get_label(event);
 
     if (label == "")
     {
         return;
     }
-    uint32_t thread_id = event.get_value_or_default<uint32_t>("thread_id", 0);
-    HT_TimestampNs start_ts = event.get_value<uint64_t>("timestamp");
-    HT_TimestampNs duration = event.get_value_or_default<uint64_t>("duration", 0u);
+    HT_ThreadId thread_id = event.get_value_or_default<HT_ThreadId>("thread_id", 0);
+    HT_TimestampNs start_ts = event.get_value<HT_TimestampNs>("timestamp");
+    HT_DurationNs duration = event.get_value_or_default<HT_DurationNs>("duration", 0u);
     _events.emplace_back(thread_id, TreeNode(label, start_ts, duration));
 }
 
 void CallgrindConverter::_print_function(std::ofstream& file, TreeNode* node, std::string label)
 {
-    label = node->label + "()'" + label;
+    if (label != "")
+    {
+        label = node->label + "()'" + label;
+    }
+    else
+    {
+        label = node->label + "()";
+    }
     file << "fn=" << label << "\n";
     file << "1 " << node->duration - node->total_children_duration << "\n";
     for (auto& child : node->children)
