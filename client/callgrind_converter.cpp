@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <queue>
 
 namespace HawkTracer
 {
@@ -32,28 +33,25 @@ void CallgrindConverter::process_event(const parser::Event& event)
     _events.emplace_back(thread_id, CallGraph::TreeNode(label, start_ts, duration));
 }
 
-void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node, std::string label)
+void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> root, std::string label)
 {
-    if (label != "")
+    std::queue<std::pair<std::shared_ptr<CallGraph::TreeNode>, std::string>> fnc_queue;
+    fnc_queue.emplace(root, root->label + "()");
+
+    while (!fnc_queue.empty())
     {
-        label = node->label + "()'" + label;
-    }
-    else
-    {
-        label = node->label + "()";
-    }
-    file << "fn=" << label << "\n";
-    file << "1 " << node->duration - node->total_children_duration << "\n";
-    for (const auto& child : node->children)
-    {
-        std::string child_label = child.first->label + "()'" + label;
-        file << "cfn=" << child_label << "\n";
-        file << "calls=" << child.second << " 1\n";
-        file << "1 " << child.first->duration << "\n";
-    }
-    for (auto& child : node->children)
-    {
-        _print_function(file, child.first, label);
+        auto& fnc = fnc_queue.front();
+        file << "fn=" << fnc.second << "\n";
+        file << "1 " << fnc.first->duration - fnc.first->total_children_duration << "\n";
+        for (const auto& child : fnc.first->children)
+        {
+            std::string child_label = child.first->label + "()'" + fnc.second;
+            file << "cfn=" << child_label << "\n";
+            file << "calls=" << child.second << " 1\n";
+            file << "1 " << child.first->duration << "\n";
+            fnc_queue.emplace(child.first, child_label);
+        }
+        fnc_queue.pop();
     }
 }
 
