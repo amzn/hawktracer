@@ -26,10 +26,14 @@ public:
     virtual bool stop() = 0;
 
 protected:
-    std::string get_label(const parser::Event& event);
+    std::string _get_label(const parser::Event& event);
+    std::unique_ptr<TracepointMap> _tracepoint_map;
+
+private:
+    void _try_setting_mapping_klass_id(const parser::Event& event);
+    std::string _convert_value_to_string(const parser::Event::Value& value);
     const std::string _mapping_klass_name; 
     HT_EventKlassId _mapping_klass_id = 0;
-    std::unique_ptr<TracepointMap> _tracepoint_map;
 };
 
 } // namespace client
