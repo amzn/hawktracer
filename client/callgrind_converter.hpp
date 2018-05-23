@@ -29,7 +29,7 @@ private:
     std::vector<std::pair<HT_ThreadId, CallGraph::TreeNode>> _events;
     CallGraph _call_graph;
 
-    void _print_function(std::ofstream& file, CallGraph::TreeNode* node, std::string label);
+    void _print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node, std::string label);
 };
 
 } // namespace client

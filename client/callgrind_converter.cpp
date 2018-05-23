@@ -47,7 +47,7 @@ void CallgrindConverter::process_event(const parser::Event& event)
     _events.emplace_back(thread_id, CallGraph::TreeNode(label, start_ts, duration));
 }
 
-void CallgrindConverter::_print_function(std::ofstream& file, CallGraph::TreeNode* node, std::string label)
+void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node, std::string label)
 {
     if (label != "")
     {
