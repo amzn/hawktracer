@@ -12,7 +12,6 @@ namespace client
 
 ChromeTraceConverter::~ChromeTraceConverter()
 {
-    uninit();
 }
 
 bool ChromeTraceConverter::init(const std::string& file_name)
@@ -24,15 +23,6 @@ bool ChromeTraceConverter::init(const std::string& file_name)
         return true;
     }
     return false;
-}
-
-void ChromeTraceConverter::uninit()
-{
-    if (_file.is_open())
-    {
-        _file << "]}";
-        _file.close();
-    }
 }
 
 void ChromeTraceConverter::process_event(const parser::Event& event)
@@ -53,10 +43,13 @@ void ChromeTraceConverter::process_event(const parser::Event& event)
          << "}";
 }
 
-bool ChromeTraceConverter::stop()
+void ChromeTraceConverter::stop()
 {
-    uninit();
-    return true;
+    if (_file.is_open())
+    {
+        _file << "]}";
+        _file.close();
+    }
 }
 
 } // namespace client

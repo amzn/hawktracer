@@ -20,10 +20,9 @@ public:
 
     virtual ~Converter() {}
     virtual bool init(const std::string& file_name) = 0;
-    virtual void uninit() = 0;
     virtual void process_event(const parser::Event& event) = 0;
     bool set_tracepoint_map(const std::string& map_files);
-    virtual bool stop() = 0;
+    virtual void stop() = 0;
 
 protected:
     std::string _get_label(const parser::Event& event);

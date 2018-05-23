@@ -1,6 +1,7 @@
 #include "callgrind_converter.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace HawkTracer
 {
@@ -9,7 +10,6 @@ namespace client
 
 CallgrindConverter::~CallgrindConverter()
 {
-    uninit();
 }
 
 bool CallgrindConverter::init(const std::string& file_name)
@@ -17,13 +17,6 @@ bool CallgrindConverter::init(const std::string& file_name)
     _file_name = file_name;
     return true;
 }
-
-
-void CallgrindConverter::uninit()
-{
-}
-
-
 
 void CallgrindConverter::process_event(const parser::Event& event)
 {
@@ -64,7 +57,7 @@ void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<Ca
     }
 }
 
-bool CallgrindConverter::stop()
+void CallgrindConverter::stop()
 {
     _call_graph.make(_events);
     for (auto& calls : _call_graph.root_calls)
@@ -85,11 +78,9 @@ bool CallgrindConverter::stop()
         }
         else
         {
-            return false;
+            std::cerr << "Can't open file: " << _file_name + "." + std::to_string(calls.first);
         }
     }
-    uninit();
-    return true;
 }
 
 } // namespace client

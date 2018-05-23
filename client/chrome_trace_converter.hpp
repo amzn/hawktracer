@@ -18,9 +18,8 @@ public:
     ~ChromeTraceConverter() override;
 
     bool init(const std::string& file_name) override;
-    void uninit() override;
     void process_event(const parser::Event& event) override;
-    bool stop() override;
+    void stop() override;
 
 private:
     std::ofstream _file;

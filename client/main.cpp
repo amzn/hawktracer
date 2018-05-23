@@ -148,8 +148,15 @@ int main(int argc, char** argv)
     else
     {
         auto& converter = formats[format];
-        converter->init(out_file);
-        reader.register_events_listener([&converter] (const parser::Event& event) { converter->process_event(event); });
+        if (converter->init(out_file))
+        {
+            reader.register_events_listener([&converter] (const parser::Event& event) { converter->process_event(event); });
+        }
+        else
+        {
+            std::cerr << "Can't open output file" << std::endl;
+            return 1;
+        }
     }
 
     if (map_files.empty())
@@ -186,15 +193,6 @@ int main(int argc, char** argv)
 
     reader.wait_for_complete();
     reader.stop();
-    bool conversion_completed = formats[format]->stop();
-
-    if (conversion_completed)
-    {
-        std::cout << "Trace file has been saved to: " << out_file << std::endl;
-    }
-    else
-    {
-        std::cerr << "Error on completing conversion" << std::endl;
-    }
+    formats[format]->stop();
     return 0;
 }
