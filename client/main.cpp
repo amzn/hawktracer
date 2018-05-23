@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstring>
 #include <map>
+#include <unistd.h>
 
 using namespace HawkTracer;
 
@@ -193,6 +194,8 @@ int main(int argc, char** argv)
 
     reader.wait_for_complete();
     reader.stop();
-    formats[format]->stop();
+    converter->second->stop();
+
     return 0;
+
 }
