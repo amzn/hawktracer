@@ -30,13 +30,13 @@ void CallgrindConverter::process_event(const parser::Event& event)
     HT_ThreadId thread_id = event.get_value_or_default<HT_ThreadId>("thread_id", 0);
     HT_TimestampNs start_ts = event.get_value<HT_TimestampNs>("timestamp");
     HT_DurationNs duration = event.get_value_or_default<HT_DurationNs>("duration", 0u);
-    _events.emplace_back(thread_id, CallGraph::TreeNode(label, start_ts, duration));
+    _events.emplace_back(thread_id, CallGraph::NodeData(label, start_ts, duration));
 }
 
 void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> root, std::string label)
 {
     std::queue<std::pair<std::shared_ptr<CallGraph::TreeNode>, std::string>> fnc_queue;
-    fnc_queue.emplace(root, root->label + "()");
+    fnc_queue.emplace(root, root->data.label + "()");
 
     while (!fnc_queue.empty())
     {
@@ -45,7 +45,7 @@ void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<Ca
         file << "1 " << fnc.first->total_duration - fnc.first->total_children_duration << "\n";
         for (const auto& child : fnc.first->children)
         {
-            std::string child_label = child.first->label + "()'" + fnc.second;
+            std::string child_label = child.first->data.label + "()'" + fnc.second;
             file << "cfn=" << child_label << "\n";
             file << "calls=" << child.second << " 1\n";
             file << "1 " << child.first->total_duration << "\n";
@@ -57,8 +57,8 @@ void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<Ca
 
 void CallgrindConverter::stop()
 {
-    _call_graph.make(_events);
-    for (auto& calls : _call_graph.root_calls)
+    auto root_calls = _call_graph.make(_events);
+    for (auto& calls : root_calls)
     {
         std::ofstream thread_output_file(_file_name + "." + std::to_string(calls.first));
         if (thread_output_file.is_open())

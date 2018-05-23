@@ -25,7 +25,7 @@ public:
 private:
     const std::string callgrind_header = "# callgrind format";
     std::string _file_name;
-    std::vector<std::pair<HT_ThreadId, CallGraph::TreeNode>> _events;
+    std::vector<std::pair<HT_ThreadId, CallGraph::NodeData>> _events;
     CallGraph _call_graph;
 
     void _print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node, std::string label);
