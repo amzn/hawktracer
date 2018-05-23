@@ -30,10 +30,10 @@ void CallgrindConverter::process_event(const parser::Event& event)
     HT_ThreadId thread_id = event.get_value_or_default<HT_ThreadId>("thread_id", 0);
     HT_TimestampNs start_ts = event.get_value<HT_TimestampNs>("timestamp");
     HT_DurationNs duration = event.get_value_or_default<HT_DurationNs>("duration", 0u);
-    _events.emplace_back(thread_id, CallGraph::NodeData(label, start_ts, duration));
+    _events[thread_id].emplace_back(label, start_ts, duration);
 }
 
-void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> root, std::string label)
+void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> root)
 {
     std::queue<std::pair<std::shared_ptr<CallGraph::TreeNode>, std::string>> fnc_queue;
     fnc_queue.emplace(root, root->data.label + "()");
@@ -57,27 +57,27 @@ void CallgrindConverter::_print_function(std::ofstream& file, std::shared_ptr<Ca
 
 void CallgrindConverter::stop()
 {
-    auto root_calls = _call_graph.make(_events);
-    for (auto& calls : root_calls)
+    for (auto& thread : _events)
     {
-        std::ofstream thread_output_file(_file_name + "." + std::to_string(calls.first));
+        CallGraph _call_graph;
+        auto root_calls = _call_graph.make(thread.second);
+
+        std::ofstream thread_output_file(_file_name + "." + std::to_string(thread.first));
         if (thread_output_file.is_open())
         {
             thread_output_file << callgrind_header << std::endl;
-            thread_output_file << "thread: " << calls.first << "\n\n";
+            thread_output_file << "thread: " << thread.first << "\n\n";
             thread_output_file << "events: Duration" << "\n";
-
-            for (auto& root : calls.second)
+            for (auto& root : root_calls)
             {
-                _print_function(thread_output_file, root.first, "");
+                _print_function(thread_output_file, root.first);
             }
-
-            thread_output_file.close();
         }
         else
         {
-            std::cerr << "Can't open file: " << _file_name + "." + std::to_string(calls.first);
+            std::cerr << "Can't open file: " << _file_name + "." + std::to_string(thread.first);
         }
+        thread_output_file.close();
     }
 }
 

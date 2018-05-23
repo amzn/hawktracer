@@ -25,10 +25,9 @@ public:
 private:
     const std::string callgrind_header = "# callgrind format";
     std::string _file_name;
-    std::vector<std::pair<HT_ThreadId, CallGraph::NodeData>> _events;
-    CallGraph _call_graph;
+    std::unordered_map<HT_ThreadId, std::vector<CallGraph::NodeData>> _events;
 
-    void _print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node, std::string label);
+    void _print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node);
 };
 
 } // namespace client

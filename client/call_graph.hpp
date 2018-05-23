@@ -52,21 +52,17 @@ public:
         }
     };
 
-    std::unordered_map<HT_ThreadId, std::vector<std::pair<std::shared_ptr<TreeNode>, int>>> make(
-            std::vector<std::pair<HT_ThreadId, NodeData>>& events);
+    std::vector<std::pair<std::shared_ptr<TreeNode>, int>> make(std::vector<NodeData>& events);
 
 private:
-    // stores for eached thread a vector with all the root_calls and how many times they are called
-    std::unordered_map<HT_ThreadId, std::vector<std::pair<std::shared_ptr<TreeNode>, int>>> _root_calls;
+    //  vector with all the root calls and how many times they are called
+    std::vector<std::pair<std::shared_ptr<TreeNode>, int>> _root_calls;
 
-    std::unordered_map<HT_ThreadId, std::shared_ptr<TreeNode>> _calls;
+    std::shared_ptr<TreeNode> _current_call;
 
-    void _add_event(HT_ThreadId thread_id,
-                    NodeData node_data);
-    void _add_new_calltree(HT_ThreadId thread_id, 
-                           NodeData& node_data);
-    bool _try_add_event_to_existing_calltree(HT_ThreadId thread_id,
-                                             NodeData& node_data);
+    void _add_event(NodeData node_data);
+    void _add_new_calltree(NodeData& node_data);
+    bool _try_add_event_to_existing_calltree(NodeData& node_data);
     std::shared_ptr<TreeNode> _add_new_event_call(std::shared_ptr<TreeNode>& caller,
                                                   NodeData& node_data);
 

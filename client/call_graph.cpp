@@ -7,40 +7,39 @@ namespace HawkTracer
 namespace client
 {
 
-std::unordered_map<HT_ThreadId, std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>>> 
-    CallGraph::make(std::vector<std::pair<HT_ThreadId, NodeData>>& events)
+std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> 
+    CallGraph::make(std::vector<NodeData>& events)
 {
     std::sort(events.begin(), events.end(), 
-            [](const std::pair<HT_ThreadId, NodeData>& e1, const std::pair<HT_ThreadId, NodeData>& e2){
-                return e1.second.start_ts < e2.second.start_ts;
+            [](const NodeData& e1, const NodeData& e2){
+                return e1.start_ts < e2.start_ts;
             });
     for (const auto& event : events)
     {
-        _add_event(event.first, event.second);
+        _add_event(event);
     }
 
     return _root_calls;
 }
 
-void CallGraph::_add_new_calltree(HT_ThreadId thread_id,
-                                  NodeData& node_data)
+void CallGraph::_add_new_calltree(NodeData& node_data)
 {
-    auto& root_calls_for_thread_id = _root_calls[thread_id];
     std::string label = node_data.label;
-    auto call = std::find_if(root_calls_for_thread_id.begin(), root_calls_for_thread_id.end(),
+    auto call = std::find_if(_root_calls.begin(), _root_calls.end(),
             [&label](const std::pair<std::shared_ptr<TreeNode>, int>& call) {
                 return call.first.get()->data.label == label;
             });
-    if (call != root_calls_for_thread_id.end())
+    if (call != _root_calls.end())
     {
         call->first->total_duration += node_data.get_duration();
         call->first->data = node_data;
         ++call->second;
+        _current_call = call->first;
     }
     else
     {
-        _calls[thread_id] = std::make_shared<TreeNode>(node_data);
-        root_calls_for_thread_id.emplace_back(_calls[thread_id], 1);
+        _current_call = std::make_shared<TreeNode>(node_data);
+        _root_calls.emplace_back(_current_call, 1);
     }
 
 }
@@ -73,46 +72,34 @@ std::shared_ptr<CallGraph::TreeNode> CallGraph::_add_new_event_call(std::shared_
     }
 }
 
-bool CallGraph::_try_add_event_to_existing_calltree(HT_ThreadId thread_id,
-                                                    NodeData& node_data)
+bool CallGraph::_try_add_event_to_existing_calltree(NodeData& node_data)
 {
-    std::shared_ptr<TreeNode> previous_event = _calls[thread_id];
     bool event_added;
 
-    while(previous_event.get() && !event_added)
+    while(_current_call.get() && !event_added)
     {
-        bool previous_event_contains_current_event = 
-            previous_event->data.start_ts <= node_data.start_ts && node_data.stop_ts <= previous_event->data.stop_ts;
+        bool current_call_contains_new_event = 
+            _current_call->data.start_ts <= node_data.start_ts && node_data.stop_ts <= _current_call->data.stop_ts;
 
-        if (previous_event_contains_current_event)
+        if (current_call_contains_new_event)
         {
-            _calls[thread_id] =  _add_new_event_call(previous_event, node_data);
+            _current_call = _add_new_event_call(_current_call, node_data);
             event_added = true;
         }
         else 
         {
-            previous_event = previous_event->parent;
+            _current_call = _current_call->parent;
         }
     }
     return event_added;
 }
 
-void CallGraph::_add_event(HT_ThreadId thread_id,
-                           NodeData node_data)
+void CallGraph::_add_event(NodeData node_data)
 {
-    auto thread_calls = _calls.find(thread_id);
-
-    if (thread_calls == _calls.end())
+    bool added = _try_add_event_to_existing_calltree(node_data);
+    if (!added) 
     {
-        _add_new_calltree(thread_id, node_data);
-    }
-    else
-    {
-        bool added = _try_add_event_to_existing_calltree(thread_id, node_data);
-        if (!added) 
-        {
-            _add_new_calltree(thread_id, node_data);
-        }
+        _add_new_calltree(node_data);
     }
 }
 
