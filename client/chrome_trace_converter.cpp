@@ -12,6 +12,7 @@ namespace client
 
 ChromeTraceConverter::~ChromeTraceConverter()
 {
+    stop();
 }
 
 bool ChromeTraceConverter::init(const std::string& file_name)
