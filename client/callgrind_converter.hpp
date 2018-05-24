@@ -3,10 +3,10 @@
 
 #include <hawktracer/parser/event.hpp>
 #include "converter.hpp"
+#include "call_graph.hpp"
 #include "tracepoint_map.hpp"
 
 #include <fstream>
-#include <stack>
 
 namespace HawkTracer
 {
@@ -19,11 +19,15 @@ public:
     ~CallgrindConverter() override;
 
     bool init(const std::string& file_name) override;
-    void uninit() override;
     void process_event(const parser::Event& event) override;
+    void stop() override;
 
 private:
-    std::ofstream _file;
+    const std::string _callgrind_header = "# callgrind format";
+    std::string _file_name;
+    std::unordered_map<HT_ThreadId, std::vector<CallGraph::NodeData>> _events;
+
+    void _print_function(std::ofstream& file, std::shared_ptr<CallGraph::TreeNode> node);
 };
 
 } // namespace client

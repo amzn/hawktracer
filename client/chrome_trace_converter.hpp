@@ -15,16 +15,13 @@ namespace client
 class ChromeTraceConverter : public Converter
 {
 public:
-    ChromeTraceConverter();
     ~ChromeTraceConverter() override;
 
     bool init(const std::string& file_name) override;
-    void uninit() override;
     void process_event(const parser::Event& event) override;
+    void stop() override;
 
 private:
-    const std::string _mapping_klass_name; 
-    HT_EventKlassId _mapping_klass_id = 0;
     std::ofstream _file;
 };
 

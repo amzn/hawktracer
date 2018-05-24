@@ -145,17 +145,14 @@ int main(int argc, char** argv)
         std::cerr << "Unknown format: " << format << ". Supported formats are: " << supported_formats(formats) << std::endl;
         return 1;
     }
+    if (converter->second->init(out_file))
+    {
+        reader.register_events_listener([&converter] (const parser::Event& event) { converter->second->process_event(event); });
+    }
     else
     {
-        auto& converter = formats[format];
-        converter->init(out_file);
-        reader.register_events_listener([&converter] (const parser::Event& event) { converter->process_event(event); });
-
-        // CallgringConverter not fully implemented
-        if (format == "callgrind")
-        {
-            std::cout << "Support for callgrind format is not implemented yet!!!" << std::endl;
-        }
+        std::cerr << "Can't open output file" << std::endl;
+        return 1;
     }
 
     if (map_files.empty())
@@ -192,8 +189,8 @@ int main(int argc, char** argv)
 
     reader.wait_for_complete();
     reader.stop();
-
-    std::cout << "Trace file has been saved to: " << out_file << std::endl;
+    converter->second->stop();
 
     return 0;
+
 }
