@@ -39,8 +39,8 @@ void ChromeTraceConverter::process_event(const parser::Event& event)
     // so we need to convert from nano to micro
     _file << ",{\"name\": \"" << label
          << "\", \"ph\": \"X\", \"ts\": " << ns_to_ms(event.get_value<HT_TimestampNs>("timestamp"))
-         << ", \"dur\": " << ns_to_ms(event.get_timestamp())
-         << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<HT_ThreadId>("thread_id", 0u)
+         << ", \"dur\": " << ns_to_ms(event.get_value_or_default<HT_DurationNs>("duration", 0u))
+         << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<HT_ThreadId>("thread_id", 0)
          << "}";
 }
 
