@@ -22,39 +22,16 @@ std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>>
     return _root_calls;
 }
 
-void CallGraph::_add_new_calltree(NodeData& node_data)
+std::shared_ptr<CallGraph::TreeNode> CallGraph::_add_new_call(const NodeData& node_data,
+                                                              const std::shared_ptr<TreeNode>& parent,
+                                                              std::vector<std::pair<std::shared_ptr<TreeNode>, int>>& calls)
 {
     std::string label = node_data.label;
-    auto call = std::find_if(_root_calls.begin(), _root_calls.end(),
+    auto call = std::find_if(calls.begin(), calls.end(),
             [&label](const std::pair<std::shared_ptr<TreeNode>, int>& call) {
-                return call.first.get()->data.label == label;
+                return call.first->data.label == label;
             });
-    if (call != _root_calls.end())
-    {
-        call->first->total_duration += node_data.get_duration();
-        call->first->data = node_data;
-        ++call->second;
-        _current_call = call->first;
-    }
-    else
-    {
-        _current_call = std::make_shared<TreeNode>(node_data);
-        _root_calls.emplace_back(_current_call, 1);
-    }
-
-}
-
-std::shared_ptr<CallGraph::TreeNode> CallGraph::_add_new_event_call(std::shared_ptr<TreeNode>& caller,
-                                                                    NodeData& node_data)
-{
-    caller->total_children_duration += node_data.get_duration();
-
-    std::string label = node_data.label;
-    auto call = std::find_if(caller->children.begin(), caller->children.end(),
-            [&label](const std::pair<std::shared_ptr<TreeNode>, int>& child) {
-                return child.first.get()->data.label == label;
-            });
-    if (call != caller->children.end())
+    if (call != calls.end())
     {
         call->first->total_duration += node_data.get_duration();
         call->first->data = node_data;
@@ -64,37 +41,47 @@ std::shared_ptr<CallGraph::TreeNode> CallGraph::_add_new_event_call(std::shared_
     }
     else
     {
-        auto eventNode = std::make_shared<TreeNode>(node_data);
-        eventNode->parent = caller;
-        caller->children.emplace_back(eventNode, 1);
+        std::shared_ptr<TreeNode> event_node = std::make_shared<TreeNode>(node_data);
+        event_node->parent = parent;
+        calls.emplace_back(event_node, 1);
 
-        return eventNode;
+        return event_node;
     }
 }
 
-bool CallGraph::_try_add_event_to_existing_calltree(NodeData& node_data)
+void CallGraph::_add_new_calltree(const NodeData& node_data)
 {
-    bool event_added;
+    _current_call = _add_new_call(node_data, nullptr, _root_calls);
+}
 
-    while(_current_call.get() && !event_added)
+void CallGraph::_add_new_event_call(const std::shared_ptr<TreeNode>& caller,
+                                    const NodeData& node_data)
+{
+    caller->total_children_duration += node_data.get_duration();
+    _current_call = _add_new_call(node_data, caller, caller->children);
+}
+
+bool CallGraph::_try_add_event_to_existing_calltree(const NodeData& node_data)
+{
+    while(_current_call) 
     {
         bool current_call_contains_new_event = 
             _current_call->data.start_ts <= node_data.start_ts && node_data.stop_ts <= _current_call->data.stop_ts;
 
         if (current_call_contains_new_event)
         {
-            _current_call = _add_new_event_call(_current_call, node_data);
-            event_added = true;
+            _add_new_event_call(_current_call, node_data);
+            return true;
         }
         else 
         {
             _current_call = _current_call->parent;
         }
     }
-    return event_added;
+    return false;
 }
 
-void CallGraph::_add_event(NodeData node_data)
+void CallGraph::_add_event(const NodeData& node_data)
 {
     bool added = _try_add_event_to_existing_calltree(node_data);
     if (!added) 

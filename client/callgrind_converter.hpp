@@ -23,7 +23,7 @@ public:
     void stop() override;
 
 private:
-    const std::string callgrind_header = "# callgrind format";
+    const std::string _callgrind_header = "# callgrind format";
     std::string _file_name;
     std::unordered_map<HT_ThreadId, std::vector<CallGraph::NodeData>> _events;
 

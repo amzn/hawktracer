@@ -27,8 +27,8 @@ void CallgrindConverter::process_event(const parser::Event& event)
     {
         return;
     }
-    HT_ThreadId thread_id = event.get_value_or_default<HT_ThreadId>("thread_id", 0);
-    HT_TimestampNs start_ts = event.get_value<HT_TimestampNs>("timestamp");
+    HT_ThreadId thread_id = event.get_value_or_default<HT_ThreadId>("thread_id", 0u);
+    HT_TimestampNs start_ts = event.get_timestamp();
     HT_DurationNs duration = event.get_value_or_default<HT_DurationNs>("duration", 0u);
     _events[thread_id].emplace_back(label, start_ts, duration);
 }
@@ -62,10 +62,11 @@ void CallgrindConverter::stop()
         CallGraph _call_graph;
         auto root_calls = _call_graph.make(thread.second);
 
-        std::ofstream thread_output_file(_file_name + "." + std::to_string(thread.first));
+        std::string thread_file_name = _file_name + "." + std::to_string(thread.first);
+        std::ofstream thread_output_file(thread_file_name);
         if (thread_output_file.is_open())
         {
-            thread_output_file << callgrind_header << std::endl;
+            thread_output_file << _callgrind_header << std::endl;
             thread_output_file << "thread: " << thread.first << "\n\n";
             thread_output_file << "events: Duration" << "\n";
             for (auto& root : root_calls)
@@ -75,7 +76,7 @@ void CallgrindConverter::stop()
         }
         else
         {
-            std::cerr << "Can't open file: " << _file_name + "." + std::to_string(thread.first);
+            std::cerr << "Can't open file: " << thread_file_name << std::endl;
         }
         thread_output_file.close();
     }

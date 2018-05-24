@@ -45,20 +45,15 @@ void Converter::_try_setting_mapping_klass_id(const parser::Event& event)
 
 std::string Converter::_convert_value_to_string(const parser::Event::Value& value)
 {
-    std::string label;
-    if (value.field->get_type_id() == parser::FieldTypeId::UINT64)
+    switch (value.field->get_type_id())
     {
-        label = _tracepoint_map->get_label_info(value.value.f_UINT64).label;
+    case parser::FieldTypeId::UINT64:
+        return _tracepoint_map->get_label_info(value.value.f_UINT64).label;
+    case parser::FieldTypeId::STRING:
+        return value.value.f_STRING;
+    default:
+        return "invalid label type";
     }
-    else if (value.field->get_type_id() == parser::FieldTypeId::STRING)
-    {
-        label = value.value.f_STRING;
-    }
-    else
-    {
-        label = "invalid label type";
-    }
-    return label;
 }
 
 std::string Converter::_get_label(const parser::Event& event)

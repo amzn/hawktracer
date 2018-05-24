@@ -60,11 +60,14 @@ private:
 
     std::shared_ptr<TreeNode> _current_call;
 
-    void _add_event(NodeData node_data);
-    void _add_new_calltree(NodeData& node_data);
-    bool _try_add_event_to_existing_calltree(NodeData& node_data);
-    std::shared_ptr<TreeNode> _add_new_event_call(std::shared_ptr<TreeNode>& caller,
-                                                  NodeData& node_data);
+    void _add_event(const NodeData& node_data);
+    void _add_new_calltree(const NodeData& node_data);
+    bool _try_add_event_to_existing_calltree(const NodeData& node_data);
+    void _add_new_event_call(const std::shared_ptr<TreeNode>& caller,
+                             const NodeData& node_data);
+    std::shared_ptr<TreeNode> _add_new_call(const NodeData& node_data,
+                                            const std::shared_ptr<TreeNode>& parent,
+                                            std::vector<std::pair<std::shared_ptr<TreeNode>, int>>& calls);
 
 };
 
