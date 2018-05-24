@@ -82,7 +82,7 @@ class LanguageSupport:
 
         label_regex = re.compile(self._parameters.get_regex())
 
-        for root, dir_names, file_names in os.walk(self._parameters.get_search_dir()):
+        for root, _, file_names in os.walk(self._parameters.get_search_dir()):
             file_paths = [os.path.abspath(os.path.join(root, file_path)) for file_path in file_names]
             for file_path in filter(file_regex.match, file_paths):
                 for label_match in self._get_matches(file_path, label_regex):

@@ -75,7 +75,9 @@ if not GitInfo.is_master_branch():
 
 tags = GitInfo.get_most_recent_tags()
 
-assert len(tags) >= 2
+if len(tags) >= 2:
+    print('Expected to find at least 2 git tags, but found {}'.format(len(tags)))
+    sys.exit(1)
 
 current_tag = tags[0]
 current_version = current_tag[1:]
