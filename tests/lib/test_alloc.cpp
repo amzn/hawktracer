@@ -10,7 +10,7 @@ struct TestAllocInfo
 
 static void* test_realloc_function(void* ptr, size_t size, void* user_data)
 {
-    TestAllocInfo* info = (TestAllocInfo*)user_data;
+    TestAllocInfo* info = static_cast<TestAllocInfo*>(user_data);
 
     info->ptr = ptr;
     info->size = size;

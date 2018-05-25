@@ -69,7 +69,7 @@ ht_timeline_listener_container_register_listener(
         HT_TimelineListenerCallback callback,
         void* user_data)
 {
-    HT_ErrorCode error_code = HT_ERR_OK;
+    HT_ErrorCode error_code;
     ht_mutex_lock(container->mutex);
     /* weird cast because of ISO C forbids passing argument 2 of
        ‘ht_bag_add’ between function pointer and ‘void *’ */

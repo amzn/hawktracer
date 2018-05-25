@@ -9,7 +9,7 @@ struct ThreadIdGenerator
         _current_thread_id = ++_thread_id;
     }
 
-    inline HT_ThreadId get_id() { return _thread_id; }
+    inline HT_ThreadId get_id() { return _current_thread_id; }
 
 private:
     static std::atomic<HT_ThreadId> _thread_id;

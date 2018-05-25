@@ -11,7 +11,7 @@ namespace parser {
 class FileStream : public Stream
 {
 public:
-    FileStream(std::string file_name);
+    explicit FileStream(std::string file_name);
     ~FileStream();
 
     bool start() override;
