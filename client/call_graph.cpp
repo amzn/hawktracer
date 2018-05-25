@@ -75,7 +75,7 @@ bool CallGraph::_try_add_event_to_existing_calltree(const NodeData& node_data)
         }
         else 
         {
-            _current_call = _current_call->parent;
+            _current_call = _current_call->parent.lock();
         }
     }
     return false;
