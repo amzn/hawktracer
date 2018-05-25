@@ -1,0 +1,30 @@
+7
+#ID   LABEL   CNT_CALLS   LAST_START_TS   LAST_STOP_TS   TOTAL_DUR   TOTAL_CHILDREN_DUR
+1      root           1               0           1300        1300                 1000
+2      fnc1           0             100            600         500                  200
+3      fnc2           0             700           1200         500                  200
+4      fnc3           0             200            300         100                    0
+5      fnc4           0             400            500         100                    0
+6      fnc5           0             800            900         100                    0
+7      fnc6           0            1000           1100         100                    0
+
+7
+#ID   PARENT_ID   CNT_CHILDREN   (CHILD_ID, CNT_CALLS)
+1             0              2    2 1   3 1
+2             1              2    4 1   5 1 
+3             1              2    6 1   7 1
+4             2              0
+5             2              0
+6             3              0
+7             3              0
+
+7
+#LABEL   START_TS   DURATION
+root            0       1300
+fnc1          100        500
+fnc2          700        500
+fnc3          200        100
+fnc4          400        100
+fnc5          800        100
+fnc6         1000        100
+
