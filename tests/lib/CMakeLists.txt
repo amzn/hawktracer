@@ -4,6 +4,7 @@ set(hawktracer_gtest_tests_SOURCE
     test_alloc.cpp
     test_allocator.cpp
     test_bag.cpp
+    test_duration_conversion.cpp
     test_feature_cached_string.cpp
     test_feature_callstack.cpp
     test_common.cpp

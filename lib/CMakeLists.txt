@@ -6,6 +6,7 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/alloc.h
     include/hawktracer/base_types.h
     include/hawktracer/core_events.h
+    include/hawktracer/duration_conversion.h
     include/hawktracer/event_id_provider.h
     include/hawktracer/event_macros.h
     include/hawktracer/event_macros_impl.h
