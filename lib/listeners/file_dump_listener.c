@@ -1,6 +1,6 @@
 #include "hawktracer/listeners/file_dump_listener.h"
 #include "hawktracer/alloc.h"
-#include "hawktracer/registry.h"
+#include "hawktracer/timeline_listener.h"
 
 #include "internal/listener_buffer.h"
 #include "internal/mutex.h"
@@ -54,7 +54,7 @@ ht_file_dump_listener_create(const char* filename, size_t buffer_size, HT_ErrorC
     }
     else
     {
-        ht_registry_push_registry_klasses_to_listener(ht_file_dump_listener_callback, listener, HT_TRUE);
+        ht_timeline_listener_push_metadata(ht_file_dump_listener_callback, listener, HT_TRUE);
         goto done;
     }
 

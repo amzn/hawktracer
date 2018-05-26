@@ -5,10 +5,13 @@
 
 HT_DECLS_BEGIN
 
+HT_DECLARE_EVENT_KLASS(HT_EndiannessInfoEvent, HT_Event,
+                       (INTEGER, uint8_t, endianness))
+
 HT_DECLARE_EVENT_KLASS(HT_EventKlassInfoEvent, HT_Event,
                        (INTEGER, HT_EventKlassId, info_klass_id),
                        (STRING, const char*, event_klass_name),
-                       (INTEGER, int8_t, field_count))
+                       (INTEGER, uint8_t, field_count))
 HT_DECLARE_EVENT_KLASS(HT_EventKlassFieldInfoEvent, HT_Event,
                        (INTEGER, HT_EventKlassId, info_klass_id),
                        (STRING, const char*, field_type),
@@ -31,6 +34,11 @@ HT_DECLARE_EVENT_KLASS(HT_CallstackStringEvent, HT_CallstackBaseEvent,
 HT_DECLARE_EVENT_KLASS(HT_StringMappingEvent, HT_Event,
                        (INTEGER, uint64_t, identifier),
                        (STRING, const char*, label))
+
+HT_DECLARE_EVENT_KLASS(HT_SystemInfoEvent, HT_Event,
+                       (INTEGER, uint8_t, version_major),
+                       (INTEGER, uint8_t, version_minor),
+                       (INTEGER, uint8_t, version_patch))
 
 HT_DECLS_END
 

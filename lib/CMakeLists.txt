@@ -24,6 +24,7 @@ set(HAWKTRACER_CORE_HEADERS
     include/hawktracer/scoped_tracepoint.h
     include/hawktracer/scoped_tracepoint.hpp
     include/hawktracer/string_scoped_tracepoint.h
+    include/hawktracer/system_info.h
     include/hawktracer/task_scheduler.h
     include/hawktracer/thread.h
     include/hawktracer/timeline.h
@@ -39,6 +40,7 @@ set(HAWKTRACER_CORE_SOURCES
     alloc.c
     bag.c
     event_id_provider.cpp
+    event_utils.c
     events.c
     feature_cached_string.c
     feature_callstack.c
@@ -50,6 +52,7 @@ set(HAWKTRACER_CORE_SOURCES
     registry.c
     scoped_tracepoint.c
     stack.c
+    system_info.c
     task_scheduler.c
     tcp_server.cpp
     thread.cpp

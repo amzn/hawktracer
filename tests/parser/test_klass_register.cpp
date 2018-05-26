@@ -52,8 +52,9 @@ TEST(TestKlassRegister, ConstructorShouldCreateAllWellKnownTypes)
     KlassRegister klass_register;
 
     // Assert
-    ASSERT_EQ(3u, klass_register.get_klasses().size());
+    ASSERT_EQ(4u, klass_register.get_klasses().size());
     ASSERT_TRUE(klass_register.get_klass(to_underlying(WellKnownKlasses::EventKlass)));
+    ASSERT_TRUE(klass_register.get_klass(to_underlying(WellKnownKlasses::EndiannessInfoEventKlass)));
     ASSERT_TRUE(klass_register.get_klass(to_underlying(WellKnownKlasses::EventKlassInfoEventKlass)));
     ASSERT_TRUE(klass_register.get_klass(to_underlying(WellKnownKlasses::EventKlassFieldInfoEventKlass)));
 }
@@ -127,7 +128,7 @@ TEST(TestKlassRegister, RegisterShouldSilentlySkipHandlingNonRegisterEvents)
     // Act & Assert
     // We don't expect crash here
     klass_register.handle_register_events(non_register_event);
-    ASSERT_EQ(3u, klass_register.get_klasses().size());
+    ASSERT_EQ(4u, klass_register.get_klasses().size());
 }
 
 TEST(TestKlassRegister, KlassEventShouldCreateNewKlassInRegister)
@@ -162,7 +163,7 @@ TEST(TestKlassRegister, SecondKlassWithTheSameIdShouldNotBeAddedToRegistry)
     klass_register.handle_register_events(klass_event2);
 
     // Assert
-    ASSERT_EQ(4u, klass_register.get_klasses().size());
+    ASSERT_EQ(5u, klass_register.get_klasses().size());
     auto klass = klass_register.get_klass(new_klass_id);
     ASSERT_TRUE(klass);
     ASSERT_STREQ(new_klass_name1, klass->get_name().c_str());

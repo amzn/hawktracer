@@ -5,6 +5,7 @@
 #include "internal/registry.h"
 #include "internal/mutex.h"
 #include "internal/timeline_listener_container.h"
+#include "internal/event_utils.h"
 
 #include <assert.h>
 #include <string.h>
@@ -188,22 +189,6 @@ ht_feature_disable(HT_Timeline *timeline, uint32_t id)
 #define REGISTRY_LISETNER_BUFF_SIZE 4096
 
 static void
-_ht_registry_serialize_event_to_buffer(HT_Event* event, HT_Byte* data, size_t* data_pos, HT_Boolean serialize)
-{
-    HT_EventKlass* klass = HT_EVENT_GET_CLASS(event);
-
-    if (serialize)
-    {
-        *data_pos += klass->serialize(event, data + *data_pos);
-    }
-    else
-    {
-        memcpy(data + *data_pos, event, klass->type_info->size);
-        *data_pos += klass->type_info->size;
-    }
-}
-
-static void
 _ht_registry_init_event_klass_info_event(HT_EventKlass* klass, HT_EventKlassInfoEvent* event)
 {
     event->base.id = ht_event_id_provider_next(ht_event_id_provider_get_default());
@@ -251,7 +236,7 @@ _ht_registry_push_class_to_listener(HT_EventKlass* klass, HT_Byte* data, size_t*
         *data_pos = 0;
     }
 
-    _ht_registry_serialize_event_to_buffer(HT_EVENT(&event), data, data_pos, serialize);
+    *data_pos += ht_event_utils_serialize_event_to_buffer(HT_EVENT(&event), data + *data_pos, serialize);
 
     for (j = 0; j < klass->type_info->fields_count; j++)
     {
@@ -265,7 +250,7 @@ _ht_registry_push_class_to_listener(HT_EventKlass* klass, HT_Byte* data, size_t*
             *data_pos = 0;
         }
 
-        _ht_registry_serialize_event_to_buffer(HT_EVENT(&field_event), data, data_pos, serialize);
+        *data_pos += ht_event_utils_serialize_event_to_buffer(HT_EVENT(&field_event), data + *data_pos, serialize);
     }
 
     return total_size;

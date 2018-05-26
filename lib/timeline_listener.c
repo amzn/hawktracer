@@ -1,6 +1,7 @@
 #include "hawktracer/timeline_listener.h"
 
 #include "hawktracer/alloc.h"
+#include "hawktracer/system_info.h"
 #include "internal/registry.h"
 #include "internal/mutex.h"
 #include "internal/timeline_listener_container.h"
@@ -128,4 +129,16 @@ ht_find_or_create_listener(const char* name)
     }
 
     return container;
+}
+
+size_t
+ht_timeline_listener_push_metadata(HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize)
+{
+    size_t size = 0;
+
+    size += ht_system_info_push_endianness_info_to_listener(callback, listener, serialize);
+    size += ht_registry_push_registry_klasses_to_listener(callback, listener, serialize);
+    size += ht_system_info_push_system_info_to_listener(callback, listener, serialize);
+
+    return size;
 }

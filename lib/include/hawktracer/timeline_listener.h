@@ -12,7 +12,16 @@ typedef struct _HT_TimelineListenerContainer HT_TimelineListenerContainer;
 typedef void(*HT_TimelineListenerCallback)(
         TEventPtr events, size_t event_count, HT_Boolean serialized, void* user_data);
 
-/* TODO: init instead? */
+/**
+ * Pushes all metadata events (registry klasses, system information) to a listener.
+ * @param callback a listener callback.
+ * @param listener a pointer to the listener
+ * @param serialize indicates whether events should be serialized before pushing to listener or not.
+ *
+ * @return number of bytes which have been pushed to a listener.
+ */
+HT_API size_t ht_timeline_listener_push_metadata(HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize);
+
 HT_API HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
 
 HT_API void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);

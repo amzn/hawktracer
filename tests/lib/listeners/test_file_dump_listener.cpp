@@ -10,7 +10,7 @@ class TestFileDumpListener : public ::testing::Test
 protected:
     static void SetUpTestCase()
     {
-        _registry_klass_bytes = ht_registry_push_registry_klasses_to_listener(
+        _registry_klass_bytes = ht_timeline_listener_push_metadata(
                     [](TEventPtr, size_t, HT_Boolean, void*){}, nullptr, HT_TRUE);
     }
 

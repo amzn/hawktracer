@@ -13,6 +13,10 @@ KlassRegister::KlassRegister()
     base_event->add_field(make_unique<EventKlassField>("id", "uint64_t", FieldTypeId::UINT64));
     _add_klass(std::move(base_event));
 
+    auto endianness_event = make_unique<EventKlass>("HT_EndiannessInfoEvent", to_underlying(WellKnownKlasses::EndiannessInfoEventKlass));
+    endianness_event->add_field(make_unique<EventKlassField>("endianness", "uint8_t", FieldTypeId::UINT8));
+    _add_klass(std::move(endianness_event));
+
     auto klass_info_event = make_unique<EventKlass>("HT_EventKlassInfoEvent", to_underlying(WellKnownKlasses::EventKlassInfoEventKlass));
     klass_info_event->add_field(make_unique<EventKlassField>("info_klass_id", "uint32_t", FieldTypeId::UINT32));
     klass_info_event->add_field(make_unique<EventKlassField>("event_klass_name", "const char*", FieldTypeId::STRING));

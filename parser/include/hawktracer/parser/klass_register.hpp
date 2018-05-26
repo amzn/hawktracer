@@ -13,8 +13,9 @@ namespace parser {
 enum class WellKnownKlasses : HT_EventKlassId
 {
     EventKlass = 1,
-    EventKlassInfoEventKlass = 2,
-    EventKlassFieldInfoEventKlass = 3
+    EndiannessInfoEventKlass = 2,
+    EventKlassInfoEventKlass = 3,
+    EventKlassFieldInfoEventKlass = 4,
 };
 
 class KlassRegister

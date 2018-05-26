@@ -1,6 +1,6 @@
 #include "hawktracer/listeners/tcp_listener.h"
 #include "hawktracer/alloc.h"
-#include "hawktracer/registry.h"
+#include "hawktracer/timeline_listener.h"
 #include "internal/listener_buffer.h"
 #include "internal/listeners/tcp_server.hpp"
 
@@ -34,7 +34,7 @@ private:
     {
         HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
         listener->_last_client_sock_fd = sock_fd;
-        ht_registry_push_registry_klasses_to_listener(ht_tcp_listener_callback, user_data, HT_TRUE);
+        ht_timeline_listener_push_metadata(ht_tcp_listener_callback, user_data, HT_TRUE);
     }
 
     static void _f_flush(void* listener)

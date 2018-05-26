@@ -20,6 +20,7 @@
 #include <hawktracer/registry.h>
 #include <hawktracer/scoped_tracepoint.h>
 #include <hawktracer/string_scoped_tracepoint.h>
+#include <hawktracer/system_info.h>
 #include <hawktracer/task_scheduler.h>
 #include <hawktracer/thread.h>
 #include <hawktracer/timeline.h>

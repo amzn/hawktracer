@@ -58,6 +58,15 @@ typedef enum
     HT_ERR_CANT_CREATE_LISTENER_CONTAINER
 } HT_ErrorCode;
 
+/** Defines supported byte ordering */
+typedef enum
+{
+    /** Little-endian order. */
+    HT_ENDIANNESS_LITTLE = 0,
+    /** Big-endian order. */
+    HT_ENDIANNESS_BIG = 1
+} HT_Endianness;
+
 HT_DECLS_END
 
 /** Defines list of data types of event fields. */
