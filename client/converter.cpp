@@ -14,8 +14,8 @@ namespace client
 {
 
 Converter::Converter() :
-    _mapping_klass_name("HT_StringMappingEvent"),
-    _tracepoint_map(HawkTracer::parser::make_unique<TracepointMap>())
+    _tracepoint_map(HawkTracer::parser::make_unique<TracepointMap>()),
+    _mapping_klass_name("HT_StringMappingEvent")
 {
 }
 

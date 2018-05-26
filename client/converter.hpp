@@ -17,7 +17,6 @@ class Converter
 public:
     Converter();
 
-
     virtual ~Converter() {}
     virtual bool init(const std::string& file_name) = 0;
     virtual void process_event(const parser::Event& event) = 0;
@@ -31,7 +30,7 @@ protected:
 private:
     void _try_setting_mapping_klass_id(const parser::Event& event);
     std::string _convert_value_to_string(const parser::Event::Value& value);
-    const std::string _mapping_klass_name; 
+    const std::string _mapping_klass_name;
     HT_EventKlassId _mapping_klass_id = 0;
 };
 
