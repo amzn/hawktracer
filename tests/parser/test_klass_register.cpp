@@ -30,7 +30,7 @@ static Event create_klass_event(KlassRegister* klass_register, HT_EventKlassId k
 
 static Event create_field_event(
         KlassRegister* klass_register, HT_EventKlassId klass_id, const char* field_type,
-        const char* field_name, uint64_t type_size, MKCREFLECT_Types data_type)
+        const char* field_name, uint64_t type_size, HT_MKCREFLECT_Types_Ext data_type)
 {
     auto event_field_info = klass_register->get_klass(to_underlying(WellKnownKlasses::EventKlassFieldInfoEventKlass));
     Event field_event(event_field_info);
@@ -39,7 +39,7 @@ static Event create_field_event(
     field_event.set_value(event_field_info->get_field("field_type", true).get(), ht_strdup(field_type));
     field_event.set_value(event_field_info->get_field("field_name", true).get(), ht_strdup(field_name));
     field_event.set_value(event_field_info->get_field("size", true).get(), type_size);
-    field_event.set_value(event_field_info->get_field("data_type", true).get(), static_cast<uint8_t>(data_type));
+    field_event.set_value(event_field_info->get_field("data_type", true).get(), static_cast<uint8_t>(data_type));;
 
     return field_event;
 }
@@ -176,7 +176,7 @@ TEST(TestKlassRegister, FieldEventShouldAddFieldToKlassInRegistry)
     const char* field_name = "field-name";
     Event klass_event = create_klass_event(&klass_register, new_klass_id, "new_klass", 3u);
     klass_register.handle_register_events(klass_event);
-    Event field_event = create_field_event(&klass_register, new_klass_id, "field_type", field_name, 4, MKCREFLECT_TYPES_INTEGER);
+    Event field_event = create_field_event(&klass_register, new_klass_id, "field_type", field_name, 4, HT_MKCREFLECT_TYPES_EXT_INTEGER);
 
     // Act
     klass_register.handle_register_events(field_event);
@@ -198,8 +198,8 @@ TEST(TestKlassRegister, SecondFieldEventWithTheSameNameShouldNotAddFieldToKlassI
     const char* field_type2 = "field-type2";
     Event klass_event = create_klass_event(&klass_register, new_klass_id, "new_klass", 3u);
     klass_register.handle_register_events(klass_event);
-    Event field_event1 = create_field_event(&klass_register, new_klass_id, field_type1, field_name, 4, MKCREFLECT_TYPES_INTEGER);
-    Event field_event2 = create_field_event(&klass_register, new_klass_id, field_type2, field_name, 4, MKCREFLECT_TYPES_INTEGER);
+    Event field_event1 = create_field_event(&klass_register, new_klass_id, field_type1, field_name, 4, HT_MKCREFLECT_TYPES_EXT_INTEGER);
+    Event field_event2 = create_field_event(&klass_register, new_klass_id, field_type2, field_name, 4, HT_MKCREFLECT_TYPES_EXT_INTEGER);
     klass_register.handle_register_events(field_event1);
 
     // Act
@@ -221,7 +221,7 @@ TEST(TestKlassRegister, StructFieldEventShouldSetKlassToField)
     const char* type_name = "HT_Event";
     Event klass_event = create_klass_event(&klass_register, new_klass_id, "new_klass", 3u);
     klass_register.handle_register_events(klass_event);
-    Event field_event = create_field_event(&klass_register, new_klass_id, type_name, field_name, 4, MKCREFLECT_TYPES_STRUCT);
+    Event field_event = create_field_event(&klass_register, new_klass_id, type_name, field_name, 4, HT_MKCREFLECT_TYPES_EXT_STRUCT);
 
     // Act
     klass_register.handle_register_events(field_event);
@@ -240,7 +240,7 @@ TEST(TestKlassRegister, FieldEventShouldNotUpdateWellKnownKlasses)
     KlassRegister klass_register;
     const char* field_name = "test-name";
     auto base_klass = klass_register.get_klass(to_underlying(WellKnownKlasses::EventKlass));
-    Event field_event = create_field_event(&klass_register, base_klass->get_id(), "type", field_name, 4, MKCREFLECT_TYPES_INTEGER);
+    Event field_event = create_field_event(&klass_register, base_klass->get_id(), "type", field_name, 4, HT_MKCREFLECT_TYPES_EXT_STRUCT);
 
     // Act
     klass_register.handle_register_events(field_event);

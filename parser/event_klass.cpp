@@ -49,23 +49,37 @@ void EventKlass::add_field(std::unique_ptr<EventKlassField> field)
     }
 }
 
-FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type)
+FieldTypeId get_type_id(uint64_t type_size, HT_MKCREFLECT_Types_Ext data_type)
 {
     switch (data_type)
     {
-    case MKCREFLECT_TYPES_POINTER:
+    case HT_MKCREFLECT_TYPES_EXT_POINTER:
         return FieldTypeId::POINTER;
-    case MKCREFLECT_TYPES_STRING:
+    case HT_MKCREFLECT_TYPES_EXT_STRING:
         return FieldTypeId::STRING;
-    case MKCREFLECT_TYPES_INTEGER:
+    case HT_MKCREFLECT_TYPES_EXT_UNSIGNED_INTEGER:
         switch (type_size)
         {
         case 1: return FieldTypeId::UINT8;
         case 2: return FieldTypeId::UINT16;
         case 4: return FieldTypeId::UINT32;
         case 8: return FieldTypeId::UINT64;
+        default:
+            throw std::runtime_error("invalid size of unsigned integer");
         }
-    case MKCREFLECT_TYPES_STRUCT:
+        break;
+    case HT_MKCREFLECT_TYPES_EXT_INTEGER:
+        switch (type_size)
+        {
+        case 1: return FieldTypeId::INT8;
+        case 2: return FieldTypeId::INT16;
+        case 4: return FieldTypeId::INT32;
+        case 8: return FieldTypeId::INT64;
+        default:
+            throw std::runtime_error("invalid size of signed integer");
+        }
+        break;
+    case HT_MKCREFLECT_TYPES_EXT_STRUCT:
         return FieldTypeId::STRUCT;
     default: assert(0); // TODO other types
         throw std::runtime_error("invalid type id");

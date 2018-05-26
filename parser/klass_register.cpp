@@ -56,10 +56,10 @@ void KlassRegister::handle_register_events(const Event& event)
         auto klass_id = event.get_value<HT_EventKlassId>("info_klass_id");
         if (!KlassRegister::is_well_known_klass(klass_id))
         {
-            auto type = static_cast<MKCREFLECT_Types>(event.get_value<uint8_t>("data_type"));
+            auto type = static_cast<HT_MKCREFLECT_Types_Ext>(event.get_value<uint8_t>("data_type"));
             const char* field_type = event.get_value<char*>("field_type");
             std::shared_ptr<const EventKlass> type_klass;
-            if (type == MKCREFLECT_TYPES_STRUCT)
+            if (type == HT_MKCREFLECT_TYPES_EXT_STRUCT)
             {
                 type_klass = get_klass(field_type);
             }

@@ -2,6 +2,7 @@
 #define HAWKTRACER_BASE_TYPES_H
 
 #include <hawktracer/macros.h>
+#include <hawktracer/mkcreflect.h>
 
 #include <inttypes.h>
 
@@ -58,5 +59,25 @@ typedef enum
 } HT_ErrorCode;
 
 HT_DECLS_END
+
+/** Defines list of data types of event fields. */
+typedef enum
+{
+    /** Data type struct. */
+    HT_MKCREFLECT_TYPES_EXT_STRUCT = MKCREFLECT_TYPES_STRUCT,
+    /** Data type string. */
+    HT_MKCREFLECT_TYPES_EXT_STRING = MKCREFLECT_TYPES_STRING,
+    /** Data type integer. */
+    HT_MKCREFLECT_TYPES_EXT_INTEGER = MKCREFLECT_TYPES_INTEGER,
+    /** Data type float. */
+    HT_MKCREFLECT_TYPES_EXT_FLOAT = MKCREFLECT_TYPES_FLOAT,
+    /** Data type double. */
+    HT_MKCREFLECT_TYPES_EXT_DOUBLE = MKCREFLECT_TYPES_DOUBLE,
+    /** Data type pointer. */
+    HT_MKCREFLECT_TYPES_EXT_POINTER = MKCREFLECT_TYPES_POINTER,
+
+    /** Data type unsigned integer. */
+    HT_MKCREFLECT_TYPES_EXT_UNSIGNED_INTEGER = 99
+} HT_MKCREFLECT_Types_Ext;
 
 #endif /* HAWKTRACER_BASE_TYPES_H */

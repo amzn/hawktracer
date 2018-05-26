@@ -122,14 +122,45 @@ TEST(TestEventKlassField, ShouldReturnCorrectSizeBasedOnType)
 TEST(TestEventKlass, GetTypeIdShouldReturnCorrectIntTypeBasedOnSizeAndDataType)
 {
     // Arrange
-    uint64_t input[] = {1, 2, 4, 8};
+    uint64_t input_size[] = {1, 2, 4, 8};
+    FieldTypeId expected[] = {FieldTypeId::INT8, FieldTypeId::INT16, FieldTypeId::INT32, FieldTypeId::INT64};
+
+    // Act & Assert
+    for (size_t i = 0; i < sizeof(input_size)/sizeof(input_size[0]); i++)
+    {
+        ASSERT_EQ(expected[i], get_type_id(input_size[i], HT_MKCREFLECT_TYPES_EXT_INTEGER));
+    }
+}
+
+TEST(TestEventKlass, ShouldThrowExceptionIfInvalidSizeOfIntegerType)
+{
+    // Arrange
+    uint64_t size = 123;
+
+    // Act & Assert
+    ASSERT_ANY_THROW(get_type_id(size, HT_MKCREFLECT_TYPES_EXT_INTEGER));
+}
+
+TEST(TestEventKlass, GetTypeIdShouldReturnCorrectUnsignedIntTypeBasedOnSizeAndDataType)
+{
+    // Arrange
+    uint64_t input_size[] = {1, 2, 4, 8};
     FieldTypeId expected[] = {FieldTypeId::UINT8, FieldTypeId::UINT16, FieldTypeId::UINT32, FieldTypeId::UINT64};
 
     // Act & Assert
-    for (size_t i = 0; i < sizeof(input)/sizeof(input[0]); i++)
+    for (size_t i = 0; i < sizeof(input_size)/sizeof(input_size[0]); i++)
     {
-        ASSERT_EQ(expected[i], get_type_id(input[i], MKCREFLECT_TYPES_INTEGER));
+        ASSERT_EQ(expected[i], get_type_id(input_size[i], HT_MKCREFLECT_TYPES_EXT_UNSIGNED_INTEGER));
     }
+}
+
+TEST(TestEventKlass, ShouldThrowExceptionIfInvalidSizeOfUnsignedIntegerType)
+{
+    // Arrange
+    uint64_t size = 123;
+
+    // Act & Assert
+    ASSERT_ANY_THROW(get_type_id(size, HT_MKCREFLECT_TYPES_EXT_UNSIGNED_INTEGER));
 }
 
 TEST(TestEventKlass, GetTypeIdShouldReturnPointerWhenDataTypeIsPointer)
@@ -137,8 +168,8 @@ TEST(TestEventKlass, GetTypeIdShouldReturnPointerWhenDataTypeIsPointer)
     // Arrange
 
     // Act & Assert
-    ASSERT_EQ(FieldTypeId::POINTER, get_type_id(23, MKCREFLECT_TYPES_POINTER));
-    ASSERT_EQ(FieldTypeId::POINTER, get_type_id(0, MKCREFLECT_TYPES_POINTER));
+    ASSERT_EQ(FieldTypeId::POINTER, get_type_id(23, HT_MKCREFLECT_TYPES_EXT_POINTER));
+    ASSERT_EQ(FieldTypeId::POINTER, get_type_id(0, HT_MKCREFLECT_TYPES_EXT_POINTER));
 }
 
 TEST(TestEventKlass, GetTypeIdShouldReturnStringWhenDataTypeIsString)
@@ -146,6 +177,6 @@ TEST(TestEventKlass, GetTypeIdShouldReturnStringWhenDataTypeIsString)
     // Arrange
 
     // Act & Assert
-    ASSERT_EQ(FieldTypeId::STRING, get_type_id(9999, MKCREFLECT_TYPES_STRING));
-    ASSERT_EQ(FieldTypeId::STRING, get_type_id(0, MKCREFLECT_TYPES_STRING));
+    ASSERT_EQ(FieldTypeId::STRING, get_type_id(9999, HT_MKCREFLECT_TYPES_EXT_STRING));
+    ASSERT_EQ(FieldTypeId::STRING, get_type_id(0, HT_MKCREFLECT_TYPES_EXT_STRING));
 }

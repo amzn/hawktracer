@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <mutex>
 
-#include <hawktracer/mkcreflect.h>
+#include <hawktracer/base_types.h>
 
 namespace HawkTracer {
 namespace parser {
@@ -41,7 +41,7 @@ enum class FieldTypeId
     STRUCT
 };
 
-FieldTypeId get_type_id(uint64_t type_size, MKCREFLECT_Types data_type);
+FieldTypeId get_type_id(uint64_t type_size, HT_MKCREFLECT_Types_Ext data_type);
 
 class EventKlass;
 

@@ -220,7 +220,16 @@ _ht_registry_init_event_klass_field_info_event(HT_EventKlass* klass, size_t fiel
     MKCREFLECT_FieldInfo* info = &klass->type_info->fields[field_id];
     event->base.id = ht_event_id_provider_next(ht_event_id_provider_get_default());
     event->base.timestamp = ht_monotonic_clock_get_timestamp();
-    event->data_type = info->data_type;
+
+    if (info->data_type == MKCREFLECT_TYPES_INTEGER && !info->is_signed)
+    {
+        event->data_type = HT_MKCREFLECT_TYPES_EXT_UNSIGNED_INTEGER;
+    }
+    else
+    {
+        event->data_type = (HT_MKCREFLECT_Types_Ext)info->data_type;
+    }
+
     event->info_klass_id = klass->klass_id;
     event->field_name = info->field_name;
     event->field_type = info->field_type;
