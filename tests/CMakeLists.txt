@@ -18,13 +18,13 @@ ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include ${source_dir}/googlemock/include)
 
 ExternalProject_Get_Property(googletest binary_dir)
-set(GTEST_LIBS_DIRS ${binary_dir}/googlemock/gtest)
+set(GTEST_LIBS_DIR ${binary_dir}/googlemock)
 
 if(MSVC)
-    set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIRS}/$(Configuration)/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIR}/$(Configuration)/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
 else()
-    set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIR}/googlemock/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    set(GMOCK_LIBRARY_PATH "${GTEST_LIBS_DIR}/googlemock/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIR}/gtest/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(GMOCK_LIBRARY_PATH "${GTEST_LIBS_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}")
 endif()
 
 set(GTEST_LIBRARY hawktracer_gtest)
@@ -56,4 +56,7 @@ endfunction(DEFINE_HT_TEST)
 
 add_subdirectory(lib)
 add_subdirectory(parser)
-add_subdirectory(viewer)
+
+if(ENABLE_VIEWER)
+    add_subdirectory(viewer)
+endif(ENABLE_VIEWER)

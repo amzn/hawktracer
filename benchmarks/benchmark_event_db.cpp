@@ -43,12 +43,11 @@ static void handle_event(const HawkTracer::parser::Event& event, HawkTracer::vie
 static void BenchmarkEventDbGetData(benchmark::State& state)
 {
     // Create timeline
-    HT_Timeline timeline;
-    ht_timeline_init(&timeline, 1024, HT_FALSE, HT_FALSE, nullptr);
+    HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, nullptr, nullptr);
 
-    HT_FileDumpListener file_dump_listener;
     const char* filename = "test_output.htdump";
-    HT_ErrorCode error_code = ht_file_dump_listener_init(&file_dump_listener, filename, 4096u);
+    HT_ErrorCode error_code;
+    HT_FileDumpListener* file_dump_listener = ht_file_dump_listener_create(filename, 4096u, &error_code);
     if (error_code != HT_ERR_OK)
     {
         char buffer[100];
@@ -56,14 +55,14 @@ static void BenchmarkEventDbGetData(benchmark::State& state)
         state.SkipWithError(buffer);
         return;
     }
-    ht_timeline_register_listener(&timeline, ht_file_dump_listener_callback, &file_dump_listener);
+    ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, file_dump_listener);
 
     // Add events
-    ht_registry_push_all_klass_info_events(&timeline);
-    generate_test_tracepoints(&timeline, state.range(0));
+    ht_timeline_listener_push_metadata(ht_file_dump_listener_callback, file_dump_listener, HT_FALSE);
+    generate_test_tracepoints(timeline, state.range(0));
 
-    ht_timeline_deinit(&timeline);
-    ht_file_dump_listener_deinit(&file_dump_listener);
+    ht_timeline_destroy(timeline);
+    ht_file_dump_listener_destroy(file_dump_listener);
 
     // Arrange
     auto stream = HawkTracer::parser::make_unique<HawkTracer::parser::FileStream>(filename);

@@ -33,13 +33,21 @@ set_target_properties(${BENCHMARK_LIBRARY} PROPERTIES
     IMPORTED_LOCATION ${BENCHMARK_LIBRARY_PATH})
 add_dependencies(${BENCHMARK_LIBRARY} googlebenchmark)
 
-add_executable(hawktracer_benchmarks
+set(BENCHMARK_SOURCES
     benchmark_main.cpp
-    benchmark_timeline.cpp
-    benchmark_event_db.cpp)
+    benchmark_timeline.cpp)
+
+set(BENCHMARK_LIBS ${BENCHMARK_LIBRARY} hawktracer)
+
+if(ENABLE_VIEWER)
+    list(APPEND BENCHMARK_SOURCES benchmark_event_db.cpp)
+    list(APPEND BENCHMARK_LIBS hawktracer_viewer)
+endif(ENABLE_VIEWER)
+
+add_executable(hawktracer_benchmarks ${BENCHMARK_SOURCES})
 
 target_include_directories(hawktracer_benchmarks PRIVATE ${BENCHMARK_INCLUDE_DIRS})
-target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBRARY} hawktracer hawktracer_viewer)
+target_link_libraries(hawktracer_benchmarks ${BENCHMARK_LIBS})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries(hawktracer_benchmarks Shlwapi)

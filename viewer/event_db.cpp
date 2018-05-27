@@ -42,7 +42,7 @@ static void append_events(std::vector<EventRef>& dst,
     {
         dst.push_back(*it);
     }
-
+}
 
 std::vector<EventRef> EventDB::get_data(HT_TimestampNs start_ts,
                                         HT_TimestampNs stop_ts,
