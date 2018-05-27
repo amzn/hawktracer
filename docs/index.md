@@ -28,4 +28,4 @@ Currently the only way to contact the community is to join the Gitter channel [a
 For feature requests or bug reports, please use [GitHub form](https://github.com/amzn/hawktracer/issues/new). 
 
 ## Development
-All development on %HawkTracer is done on the [GitHub project](https://github.com/amzn/hawktracer). Instructions for contributing can be found on the @subpage contributing "contribution page".
+All development on %HawkTracer is done on the [GitHub project](https://github.com/amzn/hawktracer). Instructions for contributing can be found on the @subpage docs/CONTRIBUTING.md page.

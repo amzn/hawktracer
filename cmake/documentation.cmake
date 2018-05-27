@@ -17,6 +17,9 @@ if (DOXYGEN_FOUND)
 
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 
+    file(COPY "${CMAKE_SOURCE_DIR}/CONTRIBUTING.md"
+        DESTINATION "${CMAKE_BINARY_DIR}/docs")
+    
     add_custom_target(doc_doxygen ALL
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
