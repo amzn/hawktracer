@@ -1,6 +1,7 @@
 #include "hawktracer/parser/protocol_reader.hpp"
 #include "hawktracer/parser/klass_register.hpp"
 #include "hawktracer/parser/event.hpp"
+#include "hawktracer/parser/endianness_convert.hpp"
 
 #include <cassert>
 #include <cstring>
@@ -95,6 +96,11 @@ void ProtocolReader::_read_events()
             break;
         }
 
+        if (klass_id == to_underlying(WellKnownKlasses::EndiannessInfoEventKlass))
+        {
+            _endianness = static_cast<HT_Endianness>(event.get_value<uint8_t>("endianness"));
+        }
+
         _call_callbacks(event);
     }
 
@@ -167,7 +173,7 @@ bool ProtocolReader::_read_numeric(FieldType& value, const EventKlassField& fiel
 
     switch (field.get_type_id())
     {
-#define SET_VALUE(field_id, c_type) case FieldTypeId::field_id: value.f_##field_id = *((c_type*)buff); break
+#define SET_VALUE(field_id, c_type) case FieldTypeId::field_id: value.f_##field_id = convert_endianness_to_native(*((c_type*)buff), _endianness); break
     SET_VALUE(UINT8, uint8_t);
     SET_VALUE(INT8, int8_t);
     SET_VALUE(UINT16, uint16_t);
@@ -176,8 +182,10 @@ bool ProtocolReader::_read_numeric(FieldType& value, const EventKlassField& fiel
     SET_VALUE(INT32, int32_t);
     SET_VALUE(UINT64, uint64_t);
     SET_VALUE(INT64, int64_t);
-    SET_VALUE(POINTER, void*);
 #undef SET_VALUE
+    case FieldTypeId::POINTER:
+        throw std::runtime_error("Pointers are not supported yet");
+        break;
     default: assert(0); return false;
     }
 

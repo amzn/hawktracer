@@ -1,5 +1,6 @@
 set(hawktracer_parser_tests
     main_tests.cpp
+    test_endianness_convert.cpp
     test_event_klass.cpp
     test_event.cpp
     test_file_stream.cpp

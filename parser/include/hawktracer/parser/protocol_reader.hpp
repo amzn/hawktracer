@@ -48,6 +48,7 @@ private:
     std::condition_variable _cv;
     std::mutex _mtx_cv;
     bool _flat_events;
+    HT_Endianness _endianness = HT_ENDIANNESS_LITTLE;
 };
 
 } // namespace parser
