@@ -1,6 +1,7 @@
 set(hawktracer_client_tests
     main_tests.cpp
     test_call_graph.cpp
+    test_file_loader.cpp
     test_path.cpp)
     
 file(COPY test_multiple_calls.txt
