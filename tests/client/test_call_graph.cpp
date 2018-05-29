@@ -1,10 +1,10 @@
 #include "test_path.hpp"
+#include "test_file_loader.hpp"
 #include <client/call_graph.hpp>
 
 #include <gtest/gtest.h>
 
 #include <queue>
-#include <fstream>
 #include <iostream>
 
 using HawkTracer::client::CallGraph;
@@ -26,15 +26,14 @@ using HawkTracer::client::CallGraph;
 
     while (!actual_fnc_queue.empty())
     {
-        auto& actual_fnc = actual_fnc_queue.front();
-        auto& expected_fnc = expected_fnc_queue.front();
+        const auto& actual_fnc = actual_fnc_queue.front();
+        const auto& expected_fnc = expected_fnc_queue.front();
 
         if (expected_fnc->data.label != actual_fnc->data.label)
         {
             return ::testing::AssertionFailure() << std::endl 
                 << "Expected label: " << expected_fnc->data.label << std::endl
                 << "Actual label: " << actual_fnc->data.label << std::endl;
-
         }
         if (expected_fnc->data.start_ts != actual_fnc->data.start_ts)
         {
@@ -81,99 +80,17 @@ using HawkTracer::client::CallGraph;
 }
 
 void init(std::vector<CallGraph::NodeData>& events,
-        std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>>& tree,
-        std::string file_name)
+          std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>>& tree,
+          std::string file_name)
 {
-    std::ifstream file;
-    file.open(file_name);
-    if (file.is_open())
-    {
-        std::string line;
-        std::unordered_map<unsigned int, std::pair<std::shared_ptr<CallGraph::TreeNode>, unsigned int>> nodes;
-
-        // Read tree nodes
-        size_t cnt_lines;
-        file >> cnt_lines;
-        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::getline(file, line);
-
-        // ID LABEL CNT_CALLS LAST_START_TS LAST_STOP_TS TOTAL_DUR TOTAL_CHILDREN_DUR
-        for (size_t i = 0; i < cnt_lines; ++i) 
-        {
-            unsigned int id;
-            std::string label;
-            unsigned int cnt_calls;
-            HT_TimestampNs last_start_ts;
-            HT_TimestampNs last_stop_ts;
-            HT_DurationNs total_dur;
-            HT_DurationNs total_children_dur;
-
-            file >> id >> label >> cnt_calls >> last_start_ts >> last_stop_ts >> total_dur >> total_children_dur; 
-
-            std::shared_ptr<CallGraph::TreeNode> node = 
-                std::make_shared<CallGraph::TreeNode>(CallGraph::NodeData(label, last_start_ts, last_stop_ts - last_start_ts));
-            node->total_children_duration = total_children_dur;
-            node->total_duration = total_dur;
-            nodes[id] = make_pair(node, cnt_calls);
-
-        }
-
-        // Read tree edges
-        file >> cnt_lines;
-        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::getline(file, line);
-
-        // ID  PARENT_ID  CNT_CHILDREN (CHILD_ID, CNT_CALLS)
-        for (size_t i = 0; i < cnt_lines; ++i)
-        {
-            unsigned int id;
-            unsigned int parent_id;
-            unsigned int cnt_children;
-
-            file >> id >> parent_id >> cnt_children;
-
-            if (parent_id == 0)
-            {
-                tree.emplace_back(nodes[id].first, nodes[id].second);
-            }
-
-            else
-            {
-                nodes[id].first->parent = nodes[parent_id].first;
-            }
-            for (size_t i = 0; i < cnt_children; ++i)
-            {
-                unsigned int child_id;
-                unsigned int cnt_calls;
-
-                file >> child_id >> cnt_calls;
-                nodes[id].first->children.emplace_back(nodes[child_id].first, cnt_calls);
-            }
-
-        }
-
-        // Read events data
-        file >> cnt_lines;
-        file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::getline(file, line);
-
-        // LABEL   START_TS   DURATION
-        for (size_t i = 0; i < cnt_lines; ++i)
-        { 
-            std::string label;
-            HT_TimestampNs start_ts = 0;
-            HT_DurationNs dur = 0;
-
-            file >> label >> start_ts >> dur;
-
-            events.emplace_back(label, start_ts, dur);
-        }
-    }
-
-    else
+    TestFileLoader file_loader;
+    if (!file_loader.init(file_name))
     {
         std::cout << "File not open\n";
+        return;
     }
+    tree = file_loader.get_tree();
+    events = file_loader.get_events();
 }
 
 TEST(TestCallGraph, EmptyVectorOfEventShouldReturnEmptyGraph)
