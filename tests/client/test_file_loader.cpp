@@ -24,7 +24,6 @@ std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> TestFileLoader
 std::string TestFileLoader::_next_valid_line()
 {
     std::string line;
-    std::getline(_file, line);
     while (std::getline(_file, line))
     {
         if (!(line[0] == '#' || line.find_first_not_of(" \n") == std::string::npos))
