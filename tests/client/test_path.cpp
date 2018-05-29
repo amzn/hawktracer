@@ -3,6 +3,12 @@
 
 #include "test_path.hpp"
 
+#ifdef _WIN32
+#define PATH_SEPARATOR "\\"
+#else
+#define PATH_SEPARATOR "/"
+#endif
+
 TestPath::TestPath()
 {
 }
@@ -15,7 +21,7 @@ TestPath& TestPath::get()
 
 void TestPath::set_application_path(const std::string& app_path)
 {
-    size_t pos = app_path.rfind('/');
+    size_t pos = app_path.rfind(PATH_SEPARATOR);
     if (pos != std::string::npos)
     {
         _tests_dir= app_path.substr(0, pos + 1);
