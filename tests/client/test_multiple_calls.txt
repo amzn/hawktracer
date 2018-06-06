@@ -1,0 +1,62 @@
+# This file contains information about the expected call tree that CallGraph should build for
+# a specific sequence of events.
+#
+#
+# Each block is being proceded by the the number of lines it contains.
+#
+#
+# First block describes the expected node data. Each node has
+# ID - unique id
+# LABEL - event's label
+# CNT_CALLS - number of times this node is called if it's root
+# LAST_START_TS - the start time of the last call
+# LAST_STOP_TS - the end time of the last call
+# TOTAL_DUR - sum of durations of all calls 
+# TOTAL_CHILDREN_DUR - total duration of its children
+#
+#
+# Second block describes the edges between these nodes. They need to form a tree
+# ID - unique id of the node being described
+# PARENT_ID - unique id of the parent of the node
+# CNT_CHILDREN - number of children 
+# (CHILD_ID, CNT_CALLS) - sequence of pairs describing the children; they need to be in 
+#                         the order you expect CallGraph to build (increasing order by
+#                         their first start time)
+#       CHILD_ID - unique id of the child
+#       CNT_CALLS - total number of times it is being called by parent
+#
+#
+# Third block describes the sequence of events that you are passing to CallGraph.make()
+# LABEL - event's label
+# START_TS - start event time
+# DURATION - event's duration
+
+5
+#ID   LABEL   CNT_CALLS   LAST_START_TS   LAST_STOP_TS   TOTAL_DUR   TOTAL_CHILDREN_DUR
+1      root           2            1100           2000        1900                 1100
+2      fnc1           0             500            700         500                  180
+3      fnc2           0             800            900         100                    0
+4      fnc3           0             650            680         180                    0
+5      fnc3           0            1500           1800         500                    0
+
+5
+#ID   PARENT_ID   CNT_CHILDREN    (CHILD_ID, CNT_CALLS)
+1             0              3     2 2   3 1   5 2
+2             1              1     4 3
+3             1              0 
+4             2              0
+5             1              0
+
+10
+#LABEL   START_TS   DURATION
+root            0       1000
+root         1100        900
+fnc1          100        300
+fnc1          500        200
+fnc3          200        100
+fnc3          550         50
+fnc3          650         30
+fnc3         1200        200
+fnc3         1500        300
+fnc2          800        100
+

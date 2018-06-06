@@ -42,7 +42,7 @@ public:
         HT_DurationNs total_children_duration;
 
         std::vector<std::pair<std::shared_ptr<TreeNode>, int>> children;
-        std::shared_ptr<TreeNode> parent;
+        std::weak_ptr<TreeNode> parent;
 
         TreeNode(NodeData node_data)
         {
