@@ -61,6 +61,7 @@ endif(ENABLE_DOC)
 add_subdirectory(lib)
 add_subdirectory(parser)
 add_subdirectory(client)
+add_subdirectory(anomaly)
 
 add_subdirectory(tools_integration)
 
