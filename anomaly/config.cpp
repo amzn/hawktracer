@@ -1,5 +1,4 @@
 #include "config.hpp"
-#include "jsonxx.h"
 
 namespace HawkTracer
 {
@@ -25,17 +24,17 @@ bool Config::load_from_file(const std::string& file_name)
     return true;
 }
 
-int Config::get_insert_cost()
+unsigned int Config::get_insert_cost()
 {
     return _insert_cost;
 }
 
-int Config::get_delete_cost()
+unsigned int Config::get_delete_cost()
 {
     return _delete_cost;
 }
 
-int Config::get_relabel_cost()
+unsigned int Config::get_relabel_cost()
 {
     return _relabel_cost;
 }
@@ -57,9 +56,9 @@ void Config::try_get_value(const std::string& field_name, T& field)
 void Config::_load_file()
 {
     _json_obj.parse(_file);
-    try_get_value<int, jsonxx::Number>("insert_cost", _insert_cost);
-    try_get_value<int, jsonxx::Number>("delete_cost", _delete_cost);
-    try_get_value<int, jsonxx::Number>("relabel_cost", _relabel_cost);
+    try_get_value<unsigned int, jsonxx::Number>("insert_cost", _insert_cost);
+    try_get_value<unsigned int, jsonxx::Number>("delete_cost", _delete_cost);
+    try_get_value<unsigned int, jsonxx::Number>("relabel_cost", _relabel_cost);
     try_get_value<bool, jsonxx::Boolean>("ordered_tree", _ordered_tree);
 }
 

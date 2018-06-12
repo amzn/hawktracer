@@ -16,12 +16,12 @@ class PatternMatching
 public:
     PatternMatching(std::shared_ptr<Config> config,
                     std::shared_ptr<Patterns> patterns);
-    std::vector<int> get_matching_scores(std::shared_ptr<TreeNode> tree);
+    std::vector<unsigned int> get_matching_scores(std::shared_ptr<TreeNode> tree);
 
 private:
     std::shared_ptr<Config> _config;
     std::shared_ptr<Patterns> _patterns;
-    std::vector<int> _edit_distance;
+    std::vector<unsigned int> _edit_distance;
 
     void _compute_matching_scores(std::shared_ptr<TreeNode> tree);
 };

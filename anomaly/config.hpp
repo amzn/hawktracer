@@ -14,17 +14,17 @@ class Config
 public:
     Config();
     bool load_from_file(const std::string& file_name);
-    int get_insert_cost();
-    int get_delete_cost();
-    int get_relabel_cost();
+    unsigned int get_insert_cost();
+    unsigned int get_delete_cost();
+    unsigned int get_relabel_cost();
     bool get_ordered_tree();
 
 private:
     jsonxx::Object _json_obj;
     std::ifstream _file;
-    int _insert_cost;
-    int _delete_cost;
-    int _relabel_cost;
+    unsigned int _insert_cost;
+    unsigned int _delete_cost;
+    unsigned int _relabel_cost;
     bool _ordered_tree;
 
     void _load_file();

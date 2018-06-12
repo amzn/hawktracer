@@ -20,7 +20,7 @@ public:
     OrderedTreeEditingDistance(std::shared_ptr<Config> config,
                                std::shared_ptr<TreeNode> src_tree,
                                std::shared_ptr<TreeNode> dst_tree);
-    int get();
+    unsigned int get();
 
 private:
     bool _computed = false;
@@ -35,11 +35,11 @@ private:
     std::vector<int> _left_most_leaf_src;
     std::vector<int> _left_most_leaf_dst;
 
-    int _zhang_shasha_algorithm();
-    int _tree_dist(int src_node,
-                   int dst_node,
-                   std::vector<std::vector<int>>& treedist,
-                   std::vector<std::vector<bool>>& computed);
+    unsigned int _zhang_shasha_algorithm();
+    unsigned int _tree_dist(int src_node,
+                            int dst_node,
+                            std::vector<std::vector<unsigned int>>& treedist,
+                            std::vector<std::vector<bool>>& computed);
 };
 
 } // namespace anomaly

@@ -14,7 +14,7 @@ PatternMatching::PatternMatching(std::shared_ptr<Config> config,
     _edit_distance.resize(_patterns->get_patterns().size());
 }
 
-std::vector<int> PatternMatching::get_matching_scores(std::shared_ptr<TreeNode> tree)
+std::vector<unsigned int> PatternMatching::get_matching_scores(std::shared_ptr<TreeNode> tree)
 {
     _compute_matching_scores(tree);
     return _edit_distance;

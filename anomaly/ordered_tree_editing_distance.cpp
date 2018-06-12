@@ -14,7 +14,7 @@ OrderedTreeEditingDistance::OrderedTreeEditingDistance(std::shared_ptr<Config> c
 {
 }
 
-int OrderedTreeEditingDistance::get()
+unsigned int OrderedTreeEditingDistance::get()
 {
     if (!_computed)
     {
@@ -55,12 +55,12 @@ static int _precompute(std::shared_ptr<TreeNode> node,
     return post_order.size() - 1;
 }
 
-int OrderedTreeEditingDistance::_tree_dist(int src_node, 
-                                           int dst_node,
-                                           std::vector<std::vector<int>>& treedist,
-                                           std::vector<std::vector<bool>>& computed)
+unsigned int OrderedTreeEditingDistance::_tree_dist(int src_node, 
+                                                    int dst_node,
+                                                    std::vector<std::vector<unsigned int>>& treedist,
+                                                    std::vector<std::vector<bool>>& computed)
 {
-    std::vector<std::vector<int>> forestdist(src_node + 2, std::vector<int>(dst_node + 2));
+    std::vector<std::vector<unsigned int>> forestdist(src_node + 2, std::vector<unsigned int>(dst_node + 2));
 
     forestdist[0][0] = 0;
     for (size_t i = _left_most_leaf_src[src_node]; i <= src_node; ++i)
@@ -106,7 +106,7 @@ int OrderedTreeEditingDistance::_tree_dist(int src_node,
     return forestdist[src_node + 1][dst_node + 1];
 }
 
-int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
+unsigned int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
 {
     _precompute(_src_tree, _post_order_src, _left_most_leaf_src, _lr_key_roots_src);
     _precompute(_dst_tree, _post_order_dst, _left_most_leaf_dst, _lr_key_roots_dst);
@@ -115,10 +115,9 @@ int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
     _lr_key_roots_dst.push_back(_post_order_dst.size() - 1);
 
 
-    std::vector<std::vector<int>> treedist(_post_order_src.size(), std::vector<int>(_post_order_dst.size()));
+    std::vector<std::vector<unsigned int>> treedist(_post_order_src.size(), std::vector<unsigned int>(_post_order_dst.size()));
     std::vector<std::vector<bool>> computed(_post_order_src.size(), std::vector<bool>(_post_order_dst.size(), false));
    
-    printf("%d %d %d\n", _config->get_delete_cost(), _config->get_insert_cost(), _config->get_relabel_cost());
     for (size_t i = 0; i < _lr_key_roots_src.size(); ++i)
     {
         for (size_t j = 0; j < _lr_key_roots_dst.size(); ++j)
