@@ -7,11 +7,11 @@ namespace anomaly
 {
 
 PatternMatching::PatternMatching(std::shared_ptr<Config> config,
-                                 std::shared_ptr<Patterns> patterns) :
+                                 std::shared_ptr<Graphs> patterns) :
     _config(std::move(config)),
     _patterns(std::move(patterns))
 {
-    _edit_distance.resize(_patterns->get_patterns().size());
+    _edit_distance.resize(_patterns->get_trees().size());
 }
 
 std::vector<unsigned int> PatternMatching::get_matching_scores(std::shared_ptr<TreeNode> tree)
@@ -25,7 +25,7 @@ void PatternMatching::_compute_matching_scores(std::shared_ptr<TreeNode> tree)
 {
     if (_config->get_ordered_tree())
     {
-        const auto& patterns = _patterns->get_patterns();
+        const auto& patterns = _patterns->get_trees();
         for (size_t i = 0 ; i < patterns.size(); ++i)
         {
             OrderedTreeEditingDistance distance(_config, tree, patterns[i].first);

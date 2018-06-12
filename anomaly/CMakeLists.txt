@@ -1,10 +1,9 @@
 add_library(hawktracer_anomaly
     STATIC
     config.cpp
+    graphs.cpp
     ordered_tree_editing_distance.cpp
     pattern_matching.cpp
-    patterns.cpp
-    source.cpp
     tree_file_loader.cpp)
 
 target_include_directories(hawktracer_anomaly PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
