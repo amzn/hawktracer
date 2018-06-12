@@ -62,6 +62,7 @@ add_subdirectory(lib)
 add_subdirectory(parser)
 add_subdirectory(client)
 add_subdirectory(anomaly)
+add_subdirectory(thirdparty)
 
 add_subdirectory(tools_integration)
 

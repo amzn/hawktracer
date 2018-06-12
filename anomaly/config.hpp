@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_ANOMALY_CONFIG_HPP
 #define HAWKTRACER_ANOMALY_CONFIG_HPP
 
-#include "jsonxx.h"
+#include <thirdparty/jsonxx/jsonxx.h>
 #include <fstream>
 
 namespace HawkTracer
