@@ -8,8 +8,8 @@ namespace anomaly
 
 PatternMatching::PatternMatching(std::shared_ptr<Config> config,
                                  std::shared_ptr<Patterns> patterns) :
-    _config(config),
-    _patterns(patterns)
+    _config(std::move(config)),
+    _patterns(std::move(patterns))
 {
     _edit_distance.resize(_patterns->get_patterns().size());
 }

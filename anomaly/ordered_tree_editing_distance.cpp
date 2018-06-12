@@ -8,9 +8,9 @@ namespace anomaly
 OrderedTreeEditingDistance::OrderedTreeEditingDistance(std::shared_ptr<Config> config,
                                                        std::shared_ptr<TreeNode> src_tree,
                                                        std::shared_ptr<TreeNode> dst_tree) :
-    _config(config),
-    _src_tree(src_tree),
-    _dst_tree(dst_tree)
+    _config(std::move(config)),
+    _src_tree(std::move(src_tree)),
+    _dst_tree(std::move(dst_tree))
 {
 }
 
