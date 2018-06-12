@@ -15,7 +15,7 @@ namespace anomaly
 class Source
 {
 public:
-    bool init(const std::string& file_name);
+    bool load_from_file(const std::string& file_name);
     std::vector<std::pair<std::shared_ptr<client::CallGraph::TreeNode>, int>> get_trees();
 
 private:

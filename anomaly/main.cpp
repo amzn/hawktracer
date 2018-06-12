@@ -33,19 +33,19 @@ int main(int argc, char** argv)
     }
 
     auto config = std::make_shared<anomaly::Config>();
-    if (!config->init(config_file))
+    if (!config->load_from_file(config_file))
     {
         std::cerr << "Could not open config file" << std::endl;
     }
 
     auto patterns = std::make_shared<anomaly::Patterns>();
-    if (!patterns->init(patterns_file))
+    if (!patterns->load_from_file(patterns_file))
     {
         std::cerr << "Could not open patterns file" << std::endl;
     }
 
     auto source = std::make_shared<anomaly::Source>();
-    if (!source->init(source_file))
+    if (!source->load_from_file(source_file))
     {
         std::cerr << "Could not open source file" << std::endl;
     }

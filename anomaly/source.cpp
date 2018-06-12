@@ -5,7 +5,7 @@ namespace HawkTracer
 namespace anomaly
 {
 
-bool Source::init(const std::string& file_name)
+bool Source::load_from_file(const std::string& file_name)
 {
     if (!_file_loader.init(file_name))
     {

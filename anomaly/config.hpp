@@ -11,7 +11,7 @@ namespace anomaly
 class Config
 {
 public:
-    bool init(const std::string& file_name);
+    bool load_from_file(const std::string& file_name);
     int get_insert_cost();
     int get_delete_cost();
     int get_relabel_cost();

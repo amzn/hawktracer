@@ -6,7 +6,7 @@ namespace HawkTracer
 namespace anomaly
 {
 
-bool Config::init(const std::string& file_name)
+bool Config::load_from_file(const std::string& file_name)
 {
     _file.open(file_name);
     if (!_file.is_open())
