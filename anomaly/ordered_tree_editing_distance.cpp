@@ -106,6 +106,10 @@ unsigned int OrderedTreeEditingDistance::_tree_dist(int src_node,
     return forestdist[src_node + 1][dst_node + 1];
 }
 
+// Implementation of Zhang and Shasha algorithm for finding the editing distance
+// between two trees. Original paper:
+// http://www.grantjenks.com/wiki/_media/ideas:simple_fast_algorithms_for_the_editing_distance_between_tree_and_related_problems.pdf
+
 unsigned int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
 {
     _precompute(_src_tree, _post_order_src, _left_most_leaf_src, _lr_key_roots_src);
