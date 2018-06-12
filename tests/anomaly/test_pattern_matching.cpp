@@ -1,6 +1,6 @@
 #include <anomaly/pattern_matching.hpp>
 #include <anomaly/source.hpp>
-#include "test_path.hpp"
+#include <tests/client/test_path.hpp>
 #include <gtest/gtest.h>
 
 TEST(TestPatternMatching, TestOneRelabel)

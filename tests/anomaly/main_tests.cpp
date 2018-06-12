@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <hawktracer/init.h>
-
-#include "test_path.hpp"
+#include <tests/client/test_path.hpp>
 
 int main(int argc, char** argv)
 {

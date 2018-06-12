@@ -1,6 +1,6 @@
 set(hawktracer_anomaly_tests
     main_tests.cpp
-    test_path.cpp
+    ../client/test_path.cpp
     test_pattern_matching.cpp)
 
 file(COPY test1_config.json
