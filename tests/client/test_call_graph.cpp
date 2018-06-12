@@ -89,7 +89,7 @@ void init(std::vector<CallGraph::NodeData>& events,
         std::cout << "File not open\n";
         return;
     }
-    tree = file_loader.get_tree();
+    tree = file_loader.get_trees();
     events = file_loader.get_events();
 }
 
