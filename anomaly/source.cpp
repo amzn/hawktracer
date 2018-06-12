@@ -1,6 +1,3 @@
-#ifndef HAWKTRACER_ANOMALY_SOURCE_CPP
-#define HAWKTRACER_ANOMALY_SOURCE_CPP
-
 #include "source.hpp"
 
 namespace HawkTracer
@@ -27,4 +24,3 @@ std::vector<std::pair<std::shared_ptr<client::CallGraph::TreeNode>, int>> Source
 } // namespace anomaly
 } // namespace HawkTracer
 
-#endif // HAWKTRACER_ANOMALY_SOURCE_CPP

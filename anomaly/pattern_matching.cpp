@@ -1,6 +1,3 @@
-#ifndef HAWKTRACER_ANOMALY_PATTERN_MATCHING_CPP
-#define HAWKTRACER_ANOMALY_PATTERN_MATCHING_CPP
-
 #include "ordered_tree_editing_distance.hpp"
 #include "pattern_matching.hpp"
 
@@ -39,5 +36,3 @@ void PatternMatching::_compute_matching_scores(std::shared_ptr<TreeNode> tree)
 
 } // namespace anomaly
 } // namespace HawkTracer
-
-#endif // HAWKTRACER_ANOMALY_PATTERN_MATCHING_CPP

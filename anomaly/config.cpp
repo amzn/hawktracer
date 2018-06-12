@@ -1,6 +1,3 @@
-#ifndef HAWKTRACER_ANOMALY_CONFIG_CPP
-#define HAWKTRACER_ANOMALY_CONFIG_CPP
-
 #include "config.hpp"
 #include "jsonxx.h"
 
@@ -61,5 +58,3 @@ void Config::_load_file()
 
 } // namespace anomaly
 } // namespace HawkTracer
-
-#endif // HAWKTRACER_ANOMALY_CONFIG_CPP

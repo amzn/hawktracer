@@ -1,6 +1,3 @@
-#ifndef HAWKTRACER_ANOMALY_TREE_FILE_LOADER_CPP
-#define HAWKTRACER_ANOMALY_TREE_FILE_LOADER_CPP
-
 #include "tree_file_loader.hpp"
 #include <sstream>
 
@@ -104,6 +101,3 @@ void TreeFileLoader::_parse_file()
 
 } // namespace anomaly
 } // namespace HawkTracer
-
-#endif // HAWKTRACER_ANOMALY_TREE_FILE_LOADER_CPP
-

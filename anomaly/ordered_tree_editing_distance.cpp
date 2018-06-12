@@ -1,6 +1,3 @@
-#ifndef HAWKTRACER_ANOMALY_ORDERED_TREE_EDITING_DISTANCE_CPP
-#define HAWKTRACER_ANOMALY_ORDERED_TREE_EDITING_DISTANCE_CPP
-
 #include "ordered_tree_editing_distance.hpp"
 
 namespace HawkTracer
@@ -143,5 +140,3 @@ int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
 
 } // namespace anomaly
 } // namespace HawkTracer
-
-#endif // HAWKTRACER_ANOMALY_ORDRED_TREE_EDITING_DISTANCE_CPP
