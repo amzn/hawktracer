@@ -35,25 +35,28 @@ int main(int argc, char** argv)
     if (!config->load_from_file(config_file))
     {
         std::cerr << "Could not open config file" << std::endl;
+        return 1;
     }
 
     auto patterns = std::make_shared<anomaly::Graphs>();
     if (!patterns->load_from_file(patterns_file))
     {
         std::cerr << "Could not open patterns file" << std::endl;
+        return 1;
     }
 
-    auto source = std::make_shared<anomaly::Graphs>();
-    if (!source->load_from_file(source_file))
+    anomaly::Graphs source;
+    if (!source.load_from_file(source_file))
     {
         std::cerr << "Could not open source file" << std::endl;
+        return 1;
     }
 
     anomaly::PatternMatching pattern_matcher(config, patterns);   
-    const auto& sources = source->get_trees();
-    for (const auto& source : sources)
+    const auto& sources = source.get_trees();
+    for (const auto& tree : sources)
     {
-        auto ans = pattern_matcher.get_matching_scores(source.first);
+        auto ans = pattern_matcher.get_matching_scores(tree.first);
         for (auto score : ans)
             std::cout << score << " ";
         std::cout << std::endl;
