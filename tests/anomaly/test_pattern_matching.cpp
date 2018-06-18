@@ -15,6 +15,8 @@ TEST(TestPatternMatching, TestOneRelabel)
     source->load_from_file(TestPath::get().get_input_file_path("test1_source.txt"));
     
     const auto& sources = source->get_trees();
+    ASSERT_TRUE(patterns->get_trees().size() == 1);
+    ASSERT_TRUE(sources.size() == 1);
     for (const auto& source : sources)
     {
         auto ans = pattern_matcher.get_matching_scores(source.first);
@@ -36,6 +38,8 @@ TEST(TestPatternMatching, TestSameTree)
     source->load_from_file(TestPath::get().get_input_file_path("test2_source.txt"));
     
     const auto& sources = source->get_trees();
+    ASSERT_TRUE(patterns->get_trees().size() == 1);
+    ASSERT_TRUE(sources.size() == 1);
     for (const auto& source : sources)
     {
         auto ans = pattern_matcher.get_matching_scores(source.first);
@@ -57,6 +61,8 @@ TEST(TestPatternMatching, TestOneDelete)
     source->load_from_file(TestPath::get().get_input_file_path("test3_source.txt"));
     
     const auto& sources = source->get_trees();
+    ASSERT_TRUE(patterns->get_trees().size() == 1);
+    ASSERT_TRUE(sources.size() == 1);
     for (const auto& source : sources)
     {
         auto ans = pattern_matcher.get_matching_scores(source.first);
@@ -69,6 +75,7 @@ TEST(TestPatternMatching, TestOneDeleteAndOneInsert)
 {
     auto patterns = std::make_shared<HawkTracer::anomaly::Graphs>();
     patterns->load_from_file(TestPath::get().get_input_file_path("test4_pattern.txt"));
+    ASSERT_TRUE(patterns->get_trees().size() == 1);
 
     auto config = std::make_shared<HawkTracer::anomaly::Config>();
     config->load_from_file(TestPath::get().get_input_file_path("test4_config.json"));
@@ -78,6 +85,8 @@ TEST(TestPatternMatching, TestOneDeleteAndOneInsert)
     source->load_from_file(TestPath::get().get_input_file_path("test4_source.txt"));
     
     const auto& sources = source->get_trees();
+    ASSERT_TRUE(patterns->get_trees().size() == 1);
+    ASSERT_TRUE(sources.size() == 1);
     for (const auto& source : sources)
     {
         auto ans = pattern_matcher.get_matching_scores(source.first);
@@ -99,6 +108,8 @@ TEST(TestPatternMatching, TestReverseChildrenOrder)
     source->load_from_file(TestPath::get().get_input_file_path("test5_source.txt"));
     
     const auto& sources = source->get_trees();
+    ASSERT_TRUE(patterns->get_trees().size() == 1);
+    ASSERT_TRUE(sources.size() == 1);
     for (const auto& source : sources)
     {
         auto ans = pattern_matcher.get_matching_scores(source.first);
