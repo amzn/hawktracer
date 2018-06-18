@@ -7,7 +7,6 @@ class TestFileLoader : public HawkTracer::anomaly::TreeFileLoader
 {
 
 public:
-    bool init(std::string file_name);
     std::vector<CallGraph::NodeData> get_events();
 
 private:

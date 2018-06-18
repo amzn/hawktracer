@@ -24,9 +24,7 @@ protected:
     std::ifstream _file;
     std::unordered_map<unsigned int, std::pair<std::shared_ptr<HawkTracer::client::CallGraph::TreeNode>, unsigned int>> _nodes;
     std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> _trees;
-
-private:
-    void _parse_file();
+    virtual void _parse_file();
 };
 
 } // namespace anomaly

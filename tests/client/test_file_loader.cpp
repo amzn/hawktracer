@@ -1,16 +1,6 @@
 #include "test_file_loader.hpp"
 #include <sstream>
 
-bool TestFileLoader::init(std::string file_name)
-{
-    _file.open(file_name);
-    if (_file.is_open())
-    {
-        _parse_file();
-    }
-    return _file.is_open();
-}
-
 std::vector<CallGraph::NodeData> TestFileLoader::get_events()
 {
     return _events;
@@ -37,8 +27,6 @@ void TestFileLoader::_read_events_data()
 
 void TestFileLoader::_parse_file()
 {
-
-    _read_tree_nodes();
-    _read_tree_edges();
+    TreeFileLoader::_parse_file();
     _read_events_data();
 }
