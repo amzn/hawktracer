@@ -5,14 +5,6 @@ namespace HawkTracer
 namespace anomaly
 {
 
-Config::Config() : 
-    _insert_cost(0),
-    _delete_cost(0),
-    _relabel_cost(0),
-    _ordered_tree(true)
-{
-}
-
 bool Config::load_from_file(const std::string& file_name)
 {
     _file.open(file_name);

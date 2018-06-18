@@ -12,7 +12,6 @@ namespace anomaly
 class Config
 {
 public:
-    Config();
     bool load_from_file(const std::string& file_name);
     unsigned int get_insert_cost();
     unsigned int get_delete_cost();
@@ -22,10 +21,10 @@ public:
 private:
     jsonxx::Object _json_obj;
     std::ifstream _file;
-    unsigned int _insert_cost;
-    unsigned int _delete_cost;
-    unsigned int _relabel_cost;
-    bool _ordered_tree;
+    unsigned int _insert_cost = 0;
+    unsigned int _delete_cost = 0;
+    unsigned int _relabel_cost = 0;
+    bool _ordered_tree = true;
 
     void _load_file();
     template<typename T, typename json_T>
