@@ -16,6 +16,9 @@ public:
     unsigned int get_insert_cost();
     unsigned int get_delete_cost();
     unsigned int get_relabel_cost();
+
+    // Returns true if the children of any node are considered ordered,
+    // false otherwise.
     bool get_ordered_tree();
 
 private:
