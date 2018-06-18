@@ -36,7 +36,7 @@ std::string TreeFileLoader::_next_valid_line()
 
 void TreeFileLoader::_read_tree_nodes()
 {
-    size_t cnt_lines = stoi(_next_valid_line());
+    size_t cnt_lines = std::stoi(_next_valid_line());
 
     // ID LABEL CNT_CALLS LAST_START_TS LAST_STOP_TS TOTAL_DUR TOTAL_CHILDREN_DUR
     for (size_t i = 0; i < cnt_lines; ++i) 
@@ -62,7 +62,7 @@ void TreeFileLoader::_read_tree_nodes()
 
 void TreeFileLoader::_read_tree_edges()
 {
-    size_t cnt_lines = stoi(_next_valid_line());
+    size_t cnt_lines = std::stoi(_next_valid_line());
 
     // ID  PARENT_ID  CNT_CHILDREN (CHILD_ID, CNT_CALLS)
     for (size_t i = 0; i < cnt_lines; ++i)
