@@ -1,9 +1,8 @@
 #include <hawktracer/parser/file_stream.hpp>
 
 #include "config.hpp"
+#include "graphs.hpp"
 #include "pattern_matching.hpp"
-#include "patterns.hpp"
-#include "source.hpp"
 
 #include <cstring>
 #include <iostream>
@@ -38,13 +37,13 @@ int main(int argc, char** argv)
         std::cerr << "Could not open config file" << std::endl;
     }
 
-    auto patterns = std::make_shared<anomaly::Patterns>();
+    auto patterns = std::make_shared<anomaly::Graphs>();
     if (!patterns->load_from_file(patterns_file))
     {
         std::cerr << "Could not open patterns file" << std::endl;
     }
 
-    auto source = std::make_shared<anomaly::Source>();
+    auto source = std::make_shared<anomaly::Graphs>();
     if (!source->load_from_file(source_file))
     {
         std::cerr << "Could not open source file" << std::endl;

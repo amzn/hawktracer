@@ -2,6 +2,7 @@ add_library(hawktracer_anomaly
     STATIC
     config.cpp
     graphs.cpp
+    json_trees_file_loader.cpp
     ordered_tree_editing_distance.cpp
     pattern_matching.cpp
     tree_file_loader.cpp)
