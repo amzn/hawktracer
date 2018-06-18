@@ -29,7 +29,7 @@ void PatternMatching::_compute_matching_scores(std::shared_ptr<TreeNode> tree)
         for (size_t i = 0 ; i < patterns.size(); ++i)
         {
             OrderedTreeEditingDistance distance(_config, tree, patterns[i].first);
-            _edit_distance[i] = distance.get(); 
+            _edit_distance[i] = distance.get_distance(); 
         }
     }
 }

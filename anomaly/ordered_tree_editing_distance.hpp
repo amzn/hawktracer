@@ -20,7 +20,7 @@ public:
     OrderedTreeEditingDistance(std::shared_ptr<Config> config,
                                std::shared_ptr<TreeNode> src_tree,
                                std::shared_ptr<TreeNode> dst_tree);
-    unsigned int get();
+    unsigned int get_distance();
 
 private:
     bool _computed = false;

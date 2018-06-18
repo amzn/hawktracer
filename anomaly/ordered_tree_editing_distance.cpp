@@ -14,7 +14,7 @@ OrderedTreeEditingDistance::OrderedTreeEditingDistance(std::shared_ptr<Config> c
 {
 }
 
-unsigned int OrderedTreeEditingDistance::get()
+unsigned int OrderedTreeEditingDistance::get_distance()
 {
     if (!_computed)
     {

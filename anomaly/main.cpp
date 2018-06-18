@@ -58,7 +58,9 @@ int main(int argc, char** argv)
     {
         auto ans = pattern_matcher.get_matching_scores(tree.first);
         for (auto score : ans)
+        {
             std::cout << score << " ";
+        }
         std::cout << std::endl;
     }
     return 0;
