@@ -22,16 +22,12 @@ public:
     bool get_ordered_tree();
 
 private:
-    jsonxx::Object _json_obj;
-    std::ifstream _file;
     unsigned int _insert_cost = 0;
     unsigned int _delete_cost = 0;
     unsigned int _relabel_cost = 0;
     bool _ordered_tree = true;
 
-    void _load_file();
-    template<typename T, typename json_T>
-    void try_get_value(const std::string& field_name, T& field);
+    void _load_file(std::ifstream& file);
 };
 
 } // namespace anomaly

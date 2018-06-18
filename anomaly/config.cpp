@@ -1,5 +1,8 @@
 #include "config.hpp"
 
+#include <thirdparty/jsonxx/jsonxx.h>
+#include <fstream>
+
 namespace HawkTracer
 {
 namespace anomaly
@@ -7,12 +10,13 @@ namespace anomaly
 
 bool Config::load_from_file(const std::string& file_name)
 {
-    _file.open(file_name);
-    if (!_file.is_open())
+    std::ifstream file;
+    file.open(file_name);
+    if (!file.is_open())
     {
         return false;
     }
-    _load_file();
+    _load_file(file);
     return true;
 }
 
@@ -37,21 +41,22 @@ bool Config::get_ordered_tree()
 }
 
 template<typename T, typename json_T>
-void Config::try_get_value(const std::string& field_name, T& field)
+static void try_get_value(const jsonxx::Object& json_obj, const std::string& field_name, T& field)
 {
-    if (_json_obj.has<json_T>(field_name))
+    if (json_obj.has<json_T>(field_name))
     {
-        field = _json_obj.get<json_T>(field_name);
+        field = json_obj.get<json_T>(field_name);
     }
 }
 
-void Config::_load_file()
+void Config::_load_file(std::ifstream& file)
 {
-    _json_obj.parse(_file);
-    try_get_value<unsigned int, jsonxx::Number>("insert_cost", _insert_cost);
-    try_get_value<unsigned int, jsonxx::Number>("delete_cost", _delete_cost);
-    try_get_value<unsigned int, jsonxx::Number>("relabel_cost", _relabel_cost);
-    try_get_value<bool, jsonxx::Boolean>("ordered_tree", _ordered_tree);
+    jsonxx::Object json_obj;
+    json_obj.parse(file);
+    try_get_value<unsigned int, jsonxx::Number>(json_obj, "insert_cost", _insert_cost);
+    try_get_value<unsigned int, jsonxx::Number>(json_obj, "delete_cost", _delete_cost);
+    try_get_value<unsigned int, jsonxx::Number>(json_obj, "relabel_cost", _relabel_cost);
+    try_get_value<bool, jsonxx::Boolean>(json_obj, "ordered_tree", _ordered_tree);
 }
 
 } // namespace anomaly
