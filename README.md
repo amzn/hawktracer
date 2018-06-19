@@ -31,6 +31,7 @@ This sample code is made available under the MIT license.
 ### Building library
 ```bash
 $ mkdir build       # It'll be different on Windows
+$ cd build
 $ cmake ..
 $ cmake --build .   # This instead of make, so we don't need extra instructions for Windows
 ```
