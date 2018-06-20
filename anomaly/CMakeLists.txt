@@ -4,8 +4,7 @@ add_library(hawktracer_anomaly
     graphs.cpp
     json_trees_file_loader.cpp
     ordered_tree_editing_distance.cpp
-    pattern_matching.cpp
-    tree_file_loader.cpp)
+    pattern_matching.cpp)
 
 target_include_directories(hawktracer_anomaly PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
