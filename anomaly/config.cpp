@@ -1,6 +1,7 @@
 #include "config.hpp"
 
 #include <thirdparty/jsonxx/jsonxx.h>
+#include <thirdparty/jsonxx/jsonxx_utils.h>
 #include <fstream>
 
 namespace HawkTracer
@@ -33,15 +34,6 @@ unsigned int Config::get_delete_cost()
 unsigned int Config::get_relabel_cost()
 {
     return _relabel_cost;
-}
-
-template<typename T, typename json_T>
-static void try_get_value(const jsonxx::Object& json_obj, const std::string& field_name, T& field)
-{
-    if (json_obj.has<json_T>(field_name))
-    {
-        field = json_obj.get<json_T>(field_name);
-    }
 }
 
 void Config::_load_file(std::ifstream& file)
