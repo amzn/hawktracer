@@ -16,10 +16,10 @@ public:
 
 private:
     std::string _next_valid_line();
-    void _read_tree_nodes();
-    void _read_tree_edges();
-    void _read_events_data();
-    void _parse_file();
+    bool _read_tree_nodes();
+    bool _read_tree_edges();
+    bool _read_events_data();
+    bool _parse_file();
 
     std::ifstream _file;
     std::unordered_map<unsigned int, std::pair<std::shared_ptr<HawkTracer::client::CallGraph::TreeNode>, unsigned int>> _nodes;

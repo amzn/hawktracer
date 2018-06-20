@@ -79,18 +79,18 @@ using HawkTracer::client::CallGraph;
     return ::testing::AssertionSuccess();
 }
 
-void init(std::vector<CallGraph::NodeData>& events,
+bool init(std::vector<CallGraph::NodeData>& events,
           std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>>& tree,
           std::string file_name)
 {
     TestFileLoader file_loader;
     if (!file_loader.init(file_name))
     {
-        std::cout << "File not open\n";
-        return;
+        return false;
     }
     tree = file_loader.get_trees();
     events = file_loader.get_events();
+    return true;
 }
 
 TEST(TestCallGraph, EmptyVectorOfEventShouldReturnEmptyGraph)
@@ -112,7 +112,10 @@ TEST(TestCallGraph, Test3LevelsCallStackWithSimpleCalls)
     // Arrange
     std::vector<CallGraph::NodeData> events;
     std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> correct_response;
-    init(events, correct_response, TestPath::get().get_input_file_path("test_3_lvls_stack_simple_calls.txt"));
+    if (!init(events, correct_response, TestPath::get().get_input_file_path("test_3_lvls_stack_simple_calls.txt")))
+    {
+        FAIL();
+    }
 
     CallGraph call_graph;
 
@@ -132,7 +135,10 @@ TEST(TestCallGraph, TestMultpleCalls)
     // Arrange
     std::vector<CallGraph::NodeData> events;
     std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> correct_response;
-    init(events, correct_response, TestPath::get().get_input_file_path("test_multiple_calls.txt"));
+    if (!init(events, correct_response, TestPath::get().get_input_file_path("test_multiple_calls.txt")))
+    {
+        FAIL();
+    }
 
     CallGraph call_graph;
 
