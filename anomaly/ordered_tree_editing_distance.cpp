@@ -26,8 +26,8 @@ unsigned int OrderedTreeEditingDistance::get_distance()
 
 static int _precompute(std::shared_ptr<TreeNode> node,
                        std::vector<std::string>& post_order,
-                       std::vector<int>& left_most_leaf,
-                       std::vector<int>& lr_key_roots)
+                       std::vector<unsigned int>& left_most_leaf,
+                       std::vector<unsigned int>& lr_key_roots)
 {
     int left_most_child_pos;
     for (auto child = node->children.begin(); child != node->children.end(); ++child)
@@ -44,7 +44,7 @@ static int _precompute(std::shared_ptr<TreeNode> node,
     }
 
     post_order.push_back(node->data.label);
-    if (node->children.size() == 0)
+    if (node->children.empty())
     {
         left_most_leaf.push_back(post_order.size() - 1);
     }
@@ -55,8 +55,8 @@ static int _precompute(std::shared_ptr<TreeNode> node,
     return post_order.size() - 1;
 }
 
-unsigned int OrderedTreeEditingDistance::_tree_dist(int src_node, 
-                                                    int dst_node,
+unsigned int OrderedTreeEditingDistance::_tree_dist(unsigned int src_node, 
+                                                    unsigned int dst_node,
                                                     std::vector<std::vector<unsigned int>>& treedist,
                                                     std::vector<std::vector<bool>>& computed)
 {
