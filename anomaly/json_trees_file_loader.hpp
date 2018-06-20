@@ -19,10 +19,10 @@ public:
     bool init(const std::string& file_name);
     std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> get_trees();
 private:
-    void _parse_file();
-    void _parse_tree(const jsonxx::Value& tree);
-    void _parse_node_data(const jsonxx::Value& node);
-    void _parse_node_edges(const jsonxx::Value& node);
+    bool _parse_file();
+    bool _parse_tree(const jsonxx::Value& tree);
+    bool _parse_node_data(const jsonxx::Value& node);
+    bool _parse_node_edges(const jsonxx::Value& node);
  
     std::ifstream _file;
     jsonxx::Object _json_obj;

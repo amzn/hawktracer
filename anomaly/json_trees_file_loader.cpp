@@ -12,9 +12,9 @@ bool JsonTreesFileLoader::init(const std::string& file_name)
     _file.open(file_name);
     if (_file.is_open())
     {
-        _parse_file();
+        return _parse_file();
     }
-    return _file.is_open();
+    return false;
 }
 
 std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> JsonTreesFileLoader::get_trees()
@@ -22,30 +22,41 @@ std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> JsonTreesFileL
     return _trees;
 }
 
-void JsonTreesFileLoader::_parse_file()
+bool JsonTreesFileLoader::_parse_file()
 {
     _json_obj.parse(_file);
     jsonxx::Array trees;
     try_get_value<jsonxx::Array, jsonxx::Array>(_json_obj, "trees", trees);
     for (const auto& tree : trees.values())
     {
-        _parse_tree(*tree);
+        if (!_parse_tree(*tree))
+        {
+            return false;
+        }
     }
+    return true;
 }
 
-void JsonTreesFileLoader::_parse_tree(const jsonxx::Value& tree)
+bool JsonTreesFileLoader::_parse_tree(const jsonxx::Value& tree)
 {
     for (const auto& node : tree.array_value_->values())
     {
-        _parse_node_data(*node);
+        if (!_parse_node_data(*node))
+        {
+            return false;
+        }
     } 
     for (const auto& node : tree.array_value_->values())
     {
-        _parse_node_edges(*node);
+        if (!_parse_node_edges(*node))
+        {
+            return false;
+        }
     }   
+    return true;
 }
 
-void JsonTreesFileLoader::_parse_node_data(const jsonxx::Value& node)
+bool JsonTreesFileLoader::_parse_node_data(const jsonxx::Value& node)
 {
     int id;
     int cnt_calls;
@@ -55,6 +66,10 @@ void JsonTreesFileLoader::_parse_node_data(const jsonxx::Value& node)
     int total_children_dur;
     std::string label;
 
+    if (!node.object_value_->has<jsonxx::String>("label") || !node.object_value_->has<jsonxx::Number>("id"))
+    {
+        return false;
+    }
     try_get_value<std::string, jsonxx::String>(*node.object_value_, "label", label);
     try_get_value<int, jsonxx::Number>(*node.object_value_, "id", id);
     try_get_value<int, jsonxx::Number>(*node.object_value_, "cnt_calls", cnt_calls);
@@ -67,12 +82,20 @@ void JsonTreesFileLoader::_parse_node_data(const jsonxx::Value& node)
     tree_node->total_children_duration = total_children_dur;
     tree_node->total_duration = total_dur;
     _nodes[id] = make_pair(tree_node, cnt_calls);
+
+    return true;
 }
 
-void JsonTreesFileLoader::_parse_node_edges(const jsonxx::Value& node)
+bool JsonTreesFileLoader::_parse_node_edges(const jsonxx::Value& node)
 {
     int parent_id;
     int id;
+
+    if (!node.object_value_->has<jsonxx::Number>("id") || !node.object_value_->has<jsonxx::Number>("parent_id"))
+    {
+        return false;
+    }
+
     try_get_value<int, jsonxx::Number>(*node.object_value_, "id", id);
     try_get_value<int, jsonxx::Number>(*node.object_value_, "parent_id", parent_id);
     if (parent_id == 0)
@@ -95,6 +118,7 @@ void JsonTreesFileLoader::_parse_node_edges(const jsonxx::Value& node)
 
         _nodes[id].first->children.emplace_back(_nodes[child_id].first, cnt_calls);
     }
+    return true;
 }
 
 } // namespace anomaly
