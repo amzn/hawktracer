@@ -11,7 +11,7 @@ public:
 
 private:
     void _read_events_data();
-    void _parse_file();
+    void _parse_file() override;
     std::vector<CallGraph::NodeData> _events;
 };
 
