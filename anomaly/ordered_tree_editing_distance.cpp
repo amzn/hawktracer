@@ -24,35 +24,64 @@ unsigned int OrderedTreeEditingDistance::get_distance()
     return _result;
 }
 
-static int _precompute(std::shared_ptr<TreeNode> node,
-                       std::vector<std::string>& post_order,
-                       std::vector<unsigned int>& left_most_leaf,
-                       std::vector<unsigned int>& lr_key_roots)
+static void _precompute_post_order(std::shared_ptr<TreeNode> node,
+                                   std::vector<std::string>& post_order)
+{
+    for (auto child = node->children.begin(); child != node->children.end(); ++child)
+    {
+        _precompute_post_order(child->first, post_order);
+    }
+
+    post_order.push_back(node->data.label);
+}
+
+static int _precompute_left_most_leaves(std::shared_ptr<TreeNode> node,
+                                        int& index_last_node,
+                                        std::vector<unsigned int>& left_most_leaf)
 {
     int left_most_child_pos;
     for (auto child = node->children.begin(); child != node->children.end(); ++child)
     {
         if (child == node->children.begin()) 
         {
-            left_most_child_pos = _precompute(child->first, post_order, left_most_leaf, lr_key_roots);
+            left_most_child_pos = _precompute_left_most_leaves(child->first, index_last_node, left_most_leaf);
         }
         else
         {
-            int child_pos = _precompute(child->first, post_order, left_most_leaf, lr_key_roots);
-            lr_key_roots.push_back(child_pos);
+            _precompute_left_most_leaves(child->first, index_last_node, left_most_leaf);
         }
     }
 
-    post_order.push_back(node->data.label);
+    ++index_last_node;
     if (node->children.empty())
     {
-        left_most_leaf.push_back(post_order.size() - 1);
+        left_most_leaf.push_back(index_last_node);
     }
     else
     {
         left_most_leaf.push_back(left_most_leaf[left_most_child_pos]);
     }
-    return post_order.size() - 1;
+    return index_last_node;
+}
+
+static void _precompute_key_roots(std::shared_ptr<TreeNode> node,
+                                  int& index_last_node,
+                                  std::vector<unsigned int>& lr_key_roots)
+{
+    int left_most_child_pos;
+    for (auto child = node->children.begin(); child != node->children.end(); ++child)
+    {
+        if (child == node->children.begin()) 
+        {
+            _precompute_key_roots(child->first, index_last_node, lr_key_roots);
+        }
+        else
+        {
+            _precompute_key_roots(child->first, index_last_node, lr_key_roots);
+            lr_key_roots.push_back(index_last_node);
+        }
+    }
+    ++index_last_node;
 }
 
 unsigned int OrderedTreeEditingDistance::_tree_dist(unsigned int src_node, 
@@ -112,8 +141,17 @@ unsigned int OrderedTreeEditingDistance::_tree_dist(unsigned int src_node,
 
 unsigned int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
 {
-    _precompute(_src_tree, _post_order_src, _left_most_leaf_src, _lr_key_roots_src);
-    _precompute(_dst_tree, _post_order_dst, _left_most_leaf_dst, _lr_key_roots_dst);
+    _precompute_post_order(_src_tree, _post_order_src);
+    int index_last_node = -1;
+    _precompute_left_most_leaves(_src_tree, index_last_node, _left_most_leaf_src);
+    index_last_node = -1;
+    _precompute_key_roots(_src_tree, index_last_node, _lr_key_roots_src);
+
+    _precompute_post_order(_dst_tree, _post_order_dst);
+    index_last_node = -1;
+    _precompute_left_most_leaves(_dst_tree, index_last_node, _left_most_leaf_dst);
+    index_last_node = -1;
+    _precompute_key_roots(_dst_tree, index_last_node, _lr_key_roots_dst);
 
     _lr_key_roots_src.push_back(_post_order_src.size() - 1);
     _lr_key_roots_dst.push_back(_post_order_dst.size() - 1);
