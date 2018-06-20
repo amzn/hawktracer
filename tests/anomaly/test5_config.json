@@ -1,6 +1,5 @@
 {
     "insert_cost": 3,
     "delete_cost": 5,
-    "relabel_cost": 7,
-    "ordered_tree": true
+    "relabel_cost": 7
 }
