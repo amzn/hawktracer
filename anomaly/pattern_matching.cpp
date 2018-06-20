@@ -23,14 +23,11 @@ std::vector<unsigned int> PatternMatching::get_matching_scores(std::shared_ptr<T
 
 void PatternMatching::_compute_matching_scores(std::shared_ptr<TreeNode> tree)
 {
-    if (_config->get_ordered_tree())
+    const auto& patterns = _patterns->get_trees();
+    for (size_t i = 0 ; i < patterns.size(); ++i)
     {
-        const auto& patterns = _patterns->get_trees();
-        for (size_t i = 0 ; i < patterns.size(); ++i)
-        {
-            OrderedTreeEditingDistance distance(_config, tree, patterns[i].first);
-            _edit_distance[i] = distance.get_distance(); 
-        }
+        OrderedTreeEditingDistance distance(_config, tree, patterns[i].first);
+        _edit_distance[i] = distance.get_distance(); 
     }
 }
 

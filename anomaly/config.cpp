@@ -35,11 +35,6 @@ unsigned int Config::get_relabel_cost()
     return _relabel_cost;
 }
 
-bool Config::get_ordered_tree()
-{
-    return _ordered_tree;
-}
-
 template<typename T, typename json_T>
 static void try_get_value(const jsonxx::Object& json_obj, const std::string& field_name, T& field)
 {
@@ -56,7 +51,6 @@ void Config::_load_file(std::ifstream& file)
     try_get_value<unsigned int, jsonxx::Number>(json_obj, "insert_cost", _insert_cost);
     try_get_value<unsigned int, jsonxx::Number>(json_obj, "delete_cost", _delete_cost);
     try_get_value<unsigned int, jsonxx::Number>(json_obj, "relabel_cost", _relabel_cost);
-    try_get_value<bool, jsonxx::Boolean>(json_obj, "ordered_tree", _ordered_tree);
 }
 
 } // namespace anomaly
