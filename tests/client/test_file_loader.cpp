@@ -21,12 +21,24 @@ std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> TestFileLoader
     return _trees;
 }
 
+static bool empty_line(std::string& line)
+{
+    for (auto ch : line)
+    {
+        if (!std::isspace(ch))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::string TestFileLoader::_next_valid_line()
 {
     std::string line;
     while (std::getline(_file, line))
     {
-        if (!(line[0] == '#' || line.find_first_not_of(" \n") == std::string::npos))
+        if (!(line[0] == '#' || empty_line(line)))
         {
             break;
         }
