@@ -21,7 +21,14 @@ public:
                                std::shared_ptr<TreeNode> src_tree,
                                std::shared_ptr<TreeNode> dst_tree);
     unsigned int get_distance();
-
+    static void compute_post_order(std::shared_ptr<TreeNode> node,
+                                   std::vector<std::string>& post_order);
+    static int compute_left_most_leaves(std::shared_ptr<TreeNode> node,
+                                        int& index_last_node,
+                                        std::vector<unsigned int>& left_most_leaf);
+    static void compute_key_roots(std::shared_ptr<TreeNode> root,
+                                  int& index_last_node,
+                                  std::vector<unsigned int>& lr_key_roots);
 private:
     bool _computed = false;
     unsigned int _result;
@@ -38,8 +45,11 @@ private:
     unsigned int _zhang_shasha_algorithm();
     unsigned int _tree_dist(unsigned int src_node,
                             unsigned int dst_node,
-                            std::vector<std::vector<unsigned int>>& treedist,
-                            std::vector<std::vector<bool>>& computed);
+                            std::vector<std::vector<unsigned int>>& treedist);
+    static void _compute_key_roots(std::shared_ptr<TreeNode> node,
+                                   int& index_last_node,
+                                   std::vector<unsigned int>& lr_key_roots);
+ 
 };
 
 } // namespace anomaly
