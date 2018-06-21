@@ -1,6 +1,7 @@
 set(hawktracer_anomaly_tests
     main_tests.cpp
     ../client/test_path.cpp
+    test_ordered_tree_editing_distance.cpp
     test_pattern_matching.cpp)
     
 file(GLOB TEST_FILES test[1-5]_config.json test[1-5]_pattern.json test[1-5]_source.json)
