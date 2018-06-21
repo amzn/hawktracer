@@ -68,7 +68,6 @@ void OrderedTreeEditingDistance::_compute_key_roots(std::shared_ptr<TreeNode> no
                                                     int& index_last_node,
                                                     std::vector<unsigned int>& lr_key_roots)
 {
-    int left_most_child_pos;
     for (auto child = node->children.begin(); child != node->children.end(); ++child)
     {
         if (child == node->children.begin()) 
@@ -94,7 +93,7 @@ void OrderedTreeEditingDistance::compute_key_roots(std::shared_ptr<TreeNode> roo
 
 unsigned int OrderedTreeEditingDistance::_tree_dist(unsigned int src_node, 
                                                     unsigned int dst_node,
-                                                    std::vector<std::vector<unsigned int>>& treedist)
+                                                    std::vector<std::vector<int>>& treedist)
 {
     std::vector<std::vector<unsigned int>> forestdist(src_node + 2, std::vector<unsigned int>(dst_node + 2));
 
@@ -122,8 +121,7 @@ unsigned int OrderedTreeEditingDistance::_tree_dist(unsigned int src_node,
                 forestdist[i + 1][j + 1] = std::min(
                         forestdist[prev_i][j + 1] + _config->get_delete_cost(),
                std::min(forestdist[i + 1][prev_j] + _config->get_insert_cost(),
-                        forestdist[prev_i][prev_j] + 
-                        (_post_order_src[i] == _post_order_dst[j] ? 0 : _config->get_relabel_cost())));
+                        forestdist[prev_i][prev_j] + _config->get_relabel_cost(_post_order_src[i], _post_order_dst[j])));
                 treedist[i][j] = forestdist[i + 1][j + 1];
             }
             else
@@ -135,6 +133,8 @@ unsigned int OrderedTreeEditingDistance::_tree_dist(unsigned int src_node,
                         forestdist[prev_i][j + 1] + _config->get_delete_cost(),
                std::min(forestdist[i + 1][prev_j] + _config->get_insert_cost(),
                         forestdist[prev_left_most_leaf_src][prev_left_most_leaf_dst] + treedist[i][j]));
+                if (treedist[i][j] == -1)
+                    std::cout << "WTF\n";
             }
         }
     }
@@ -159,7 +159,7 @@ unsigned int OrderedTreeEditingDistance::_zhang_shasha_algorithm()
     index_last_node = -1;
     compute_key_roots(_dst_tree, index_last_node, _lr_key_roots_dst);
 
-    std::vector<std::vector<unsigned int>> treedist(_post_order_src.size(), std::vector<unsigned int>(_post_order_dst.size(), -1));
+    std::vector<std::vector<int>> treedist(_post_order_src.size(), std::vector<int>(_post_order_dst.size(), -1));
    
     for (size_t i = 0; i < _lr_key_roots_src.size(); ++i)
     {

@@ -45,7 +45,7 @@ private:
     unsigned int _zhang_shasha_algorithm();
     unsigned int _tree_dist(unsigned int src_node,
                             unsigned int dst_node,
-                            std::vector<std::vector<unsigned int>>& treedist);
+                            std::vector<std::vector<int>>& treedist);
     static void _compute_key_roots(std::shared_ptr<TreeNode> node,
                                    int& index_last_node,
                                    std::vector<unsigned int>& lr_key_roots);
