@@ -15,7 +15,7 @@ public:
     bool load_from_file(const std::string& file_name);
     unsigned int get_insert_cost();
     unsigned int get_delete_cost();
-    unsigned int get_relabel_cost();
+    unsigned int get_relabel_cost(std::string& src, std::string& dst);
 
 private:
     unsigned int _insert_cost = 0;

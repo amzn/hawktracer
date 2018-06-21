@@ -31,8 +31,12 @@ unsigned int Config::get_delete_cost()
     return _delete_cost;
 }
 
-unsigned int Config::get_relabel_cost()
+unsigned int Config::get_relabel_cost(std::string& src, std::string& dst)
 {
+    if (src == dst)
+    {
+        return 0;
+    }
     return _relabel_cost;
 }
 
