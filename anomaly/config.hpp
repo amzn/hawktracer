@@ -16,7 +16,6 @@ public:
     unsigned int get_insert_cost();
     unsigned int get_delete_cost();
     unsigned int get_relabel_cost();
-    unsigned int get_relabel_cost(const std::string& src, const std::string& dst);
 
     // Conditions for checking anomalies
     bool get_consider_dur();

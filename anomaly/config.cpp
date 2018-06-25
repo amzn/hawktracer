@@ -36,15 +36,6 @@ unsigned int Config::get_relabel_cost()
     return _relabel_cost;
 }
 
-unsigned int Config::get_relabel_cost(const std::string& src, const std::string& dst)
-{
-    if (src == dst)
-    {
-        return 0;
-    }
-    return _relabel_cost;
-}
-
 bool Config::get_consider_dur()
 {
     return _consider_dur;
