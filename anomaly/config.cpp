@@ -1,7 +1,7 @@
 #include "config.hpp"
 
 #include <thirdparty/jsonxx/jsonxx.h>
-#include <thirdparty/jsonxx/jsonxx_utils.h>
+#include <utils/json/jsonxx_utils.hpp>
 #include <fstream>
 
 namespace HawkTracer
@@ -31,7 +31,7 @@ unsigned int Config::get_delete_cost()
     return _delete_cost;
 }
 
-unsigned int Config::get_relabel_cost(std::string& src, std::string& dst)
+unsigned int Config::get_relabel_cost(const std::string& src, const std::string& dst)
 {
     if (src == dst)
     {
@@ -44,9 +44,9 @@ void Config::_load_file(std::ifstream& file)
 {
     jsonxx::Object json_obj;
     json_obj.parse(file);
-    try_get_value<unsigned int, jsonxx::Number>(json_obj, "insert_cost", _insert_cost);
-    try_get_value<unsigned int, jsonxx::Number>(json_obj, "delete_cost", _delete_cost);
-    try_get_value<unsigned int, jsonxx::Number>(json_obj, "relabel_cost", _relabel_cost);
+    HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "insert_cost", _insert_cost);
+    HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "delete_cost", _delete_cost);
+    HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "relabel_cost", _relabel_cost);
 }
 
 } // namespace anomaly
