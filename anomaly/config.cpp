@@ -66,9 +66,9 @@ unsigned int Config::get_max_deletions()
     return _max_deletions;
 }
 
-unsigned int Config::get_max_relable()
+unsigned int Config::get_max_relabel()
 {
-    return _max_relable;
+    return _max_relabel;
 }
 
 void Config::_load_file(std::ifstream& file)
@@ -84,7 +84,7 @@ void Config::_load_file(std::ifstream& file)
     HawkTracer::utils::get_value<double, jsonxx::Number>(json_obj, "anomaly_score_threshold", _anomaly_score_threshold);
     HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "max_insertions", _max_insertions);
     HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "max_deletions", _max_deletions);
-    HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "max_relable", _max_relable);
+    HawkTracer::utils::get_value<unsigned int, jsonxx::Number>(json_obj, "max_relabel", _max_relabel);
 }
 
 } // namespace anomaly

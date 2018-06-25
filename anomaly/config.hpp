@@ -30,7 +30,7 @@ public:
     // allowed in searching patterns
     unsigned int get_max_insertions();
     unsigned int get_max_deletions();
-    unsigned int get_max_relable();
+    unsigned int get_max_relabel();
 
 private:
     unsigned int _insert_cost = 0;
@@ -42,7 +42,7 @@ private:
     double _anomaly_score_threshold = 0.1;
     unsigned int _max_insertions = 4;
     unsigned int _max_deletions = 4;
-    unsigned int _max_relable = 4;
+    unsigned int _max_relabel = 4;
 
     void _load_file(std::ifstream& file);
 };
