@@ -1,0 +1,110 @@
+{
+    "trees" : [
+        [{
+            "id": 1,
+            "label": "E",
+            "cnt_calls": 1,
+            "last_start_ts": 0,
+            "last_stop_ts": 100,
+            "total_dur": 100,
+            "total_children_dur": 70,
+            "parent_id": 0,
+            "children": [
+                {
+                    "id": 2,
+                    "cnt_calls": 1
+                },
+                {
+                    "id": 3,
+                    "cnt_calls": 1
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "label": "F",
+            "cnt_calls": 0,
+            "last_start_ts": 10,
+            "last_stop_ts": 50,
+            "total_dur": 40,
+            "total_children_dur": 20,
+            "parent_id": 1,
+            "children": [
+                {
+                    "id": 4,
+                    "cnt_calls": 1
+                },
+                {
+                    "id": 5,
+                    "cnt_calls": 1
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "label": "G",
+            "cnt_calls": 0,
+            "last_start_ts": 60,
+            "last_stop_ts": 90,
+            "total_dur": 30,
+            "total_children_dur": 15,
+            "parent_id": 1,
+            "children": [
+                {
+                    "id": 6,
+                    "cnt_calls": 1
+                },
+                {
+                    "id": 7,
+                    "cnt_calls": 1
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "label": "J",
+            "cnt_calls": 0,
+            "last_start_ts": 20,
+            "last_stop_ts": 30,
+            "total_dur": 10,
+            "total_children_dur": 0,
+            "parent_id": 2,
+            "children": []
+        },
+        {
+            "id": 5,
+            "label": "K",
+            "cnt_calls": 0,
+            "last_start_ts": 40,
+            "last_stop_ts": 50,
+            "total_dur": 10,
+            "total_children_dur": 0,
+            "parent_id": 2,
+            "children": []
+        },
+        {
+            "id": 6,
+            "label": "H",
+            "cnt_calls": 0,
+            "last_start_ts": 65,
+            "last_stop_ts": 75,
+            "total_dur": 10,
+            "total_children_dur": 0,
+            "parent_id": 3,
+            "children": []
+
+        },
+        {
+            "id": 7,
+            "label": "I",
+            "cnt_calls": 0,
+            "last_start_ts": 80,
+            "last_stop_ts": 85,
+            "total_dur": 5,
+            "total_children_dur": 0,
+            "parent_id": 3,
+            "children": []
+        }
+     ]
+  ]
+}

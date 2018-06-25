@@ -10,5 +10,5 @@ file(COPY test_multiple_calls.txt
 
 DEFINE_HT_TEST(NAME client
     SOURCES ${hawktracer_client_tests}
-    LINK_LIBS ${GTEST_LIBRARY} hawktracer_client
+    LINK_LIBS ${GTEST_LIBRARY} hawktracer_client hawktracer_anomaly
     RUN_PARAMS --gtest_output=xml:hawktracer_client_tests.xml)
