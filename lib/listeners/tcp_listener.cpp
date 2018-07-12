@@ -4,6 +4,7 @@
 #include "internal/listener_buffer.h"
 #include "internal/listeners/tcp_server.hpp"
 
+#include <cassert>
 #include <new>
 
 inline static void
@@ -34,7 +35,13 @@ private:
     {
         HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
         listener->_last_client_sock_fd = sock_fd;
-        ht_timeline_listener_push_metadata(ht_tcp_listener_callback, user_data, HT_TRUE);
+        ht_timeline_listener_push_metadata(
+                    [](TEventPtr e, size_t c, HT_Boolean serialized, void* user_data) {
+            assert(serialized);
+            HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
+            std::lock_guard<std::mutex> l(listener->_push_action_mutex);
+            listener->_tcp_server.write_to_socket(listener->_last_client_sock_fd, (char*)e, c);
+        }, user_data, HT_TRUE);
     }
 
     static void _f_flush(void* listener)

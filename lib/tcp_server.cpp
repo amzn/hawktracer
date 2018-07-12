@@ -157,8 +157,8 @@ void TCPServer::_run(OnClientConnected client_connected, void* user_data)
 
         if (client_fd >= 0)
         {
-            std::lock_guard<std::mutex> l(_client_mutex);
             client_connected(client_fd, user_data);
+            std::lock_guard<std::mutex> l(_client_mutex);
             _client_sock_fd.insert(client_fd);
         }
     }
