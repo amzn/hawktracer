@@ -7,10 +7,10 @@ TEST(TestTcpListener, ApplicationShouldNotCrashWhenCreatingListenerFails)
     // Arrange
     const int port = 8787;
     HT_ErrorCode err;
-    HT_TCPListener* listener1 = ht_tcp_listener_create(port, nullptr);
+    HT_TCPListener* listener1 = ht_tcp_listener_create(port, 2048, nullptr);
 
     // Act
-    HT_TCPListener* listener2 = ht_tcp_listener_create(port, &err);
+    HT_TCPListener* listener2 = ht_tcp_listener_create(port, 2048, &err);
 
     // Assert
     ht_tcp_listener_destroy(listener1);

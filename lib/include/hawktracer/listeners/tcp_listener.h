@@ -7,11 +7,9 @@
 
 HT_DECLS_BEGIN
 
-#define HT_TCP_LISTENER_BUFFER_SIZE 4096 /* TODO make configurable */
-
 typedef struct _HT_TCPListener HT_TCPListener;
 
-HT_API HT_TCPListener* ht_tcp_listener_create(int port, HT_ErrorCode* out_err);
+HT_API HT_TCPListener* ht_tcp_listener_create(int port, size_t buffer_size, HT_ErrorCode* out_err);
 
 HT_API void ht_tcp_listener_destroy(HT_TCPListener* listener);
 

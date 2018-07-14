@@ -20,7 +20,7 @@ struct _HT_TCPListener
 {
 public:
     ~_HT_TCPListener();
-    HT_ErrorCode init(int port);
+    HT_ErrorCode init(int port, size_t buffer_size);
     void push_events(TEventPtr events, size_t size, HT_Boolean serialized);
 
 private:
@@ -60,9 +60,9 @@ private:
     bool _was_flushed = false;
 };
 
-HT_ErrorCode HT_TCPListener::init(int port)
+HT_ErrorCode HT_TCPListener::init(int port, size_t buffer_size)
 {
-    HT_ErrorCode error_code = ht_listener_buffer_init(&_buffer, HT_TCP_LISTENER_BUFFER_SIZE);
+    HT_ErrorCode error_code = ht_listener_buffer_init(&_buffer, buffer_size);
     if (error_code != HT_ERR_OK)
     {
         return error_code;
@@ -108,7 +108,7 @@ void _HT_TCPListener::push_events(TEventPtr events, size_t size, HT_Boolean seri
     }
 }
 
-HT_TCPListener* ht_tcp_listener_create(int port, HT_ErrorCode* out_err)
+HT_TCPListener* ht_tcp_listener_create(int port, size_t buffer_size, HT_ErrorCode* out_err)
 {
     HT_TCPListener* listener = HT_CREATE_TYPE(HT_TCPListener);
     if (!listener)
@@ -119,7 +119,7 @@ HT_TCPListener* ht_tcp_listener_create(int port, HT_ErrorCode* out_err)
 
     new(listener) HT_TCPListener();
 
-    HT_ErrorCode error_code = listener->init(port);
+    HT_ErrorCode error_code = listener->init(port, buffer_size);
     if (error_code != HT_ERR_OK)
     {
         ht_tcp_listener_destroy(listener);
