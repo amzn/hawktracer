@@ -9,6 +9,7 @@ option(ENABLE_CODE_COVERAGE "Enable code coverage" OFF)
 option(ENABLE_BENCHMARKS "Enable benchmarks" OFF)
 option(ENABLE_EXAMPLES "Enable examples" OFF)
 option(ENABLE_DOC "Build documentation" ON)
+option(ENABLE_CLIENT "Enable client application for parsing HawkTracer stream" ON)
 
 option(BUILD_STATIC_LIB "Build static hawktracer library" OFF)
 
@@ -59,8 +60,11 @@ if(ENABLE_DOC)
 endif(ENABLE_DOC)
 
 add_subdirectory(lib)
-add_subdirectory(parser)
-add_subdirectory(client)
+
+if(ENABLE_CLIENT)
+    add_subdirectory(parser)
+    add_subdirectory(client)
+endif(ENABLE_CLIENT)
 
 add_subdirectory(tools_integration)
 

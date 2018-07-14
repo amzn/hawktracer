@@ -47,5 +47,8 @@ function(DEFINE_HT_TEST)
 endfunction(DEFINE_HT_TEST)
 
 add_subdirectory(lib)
-add_subdirectory(parser)
-add_subdirectory(client)
+
+if(ENABLE_CLIENT)
+    add_subdirectory(parser)
+    add_subdirectory(client)
+endif(ENABLE_CLIENT)
