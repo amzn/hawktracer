@@ -1,6 +1,7 @@
 set(hawktracer_gtest_tests_SOURCE
     main_gtest_tests.cpp
     listeners/test_file_dump_listener.cpp
+    listeners/test_tcp_listener.cpp
     test_alloc.cpp
     test_allocator.cpp
     test_bag.cpp

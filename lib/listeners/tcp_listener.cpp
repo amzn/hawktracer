@@ -73,8 +73,6 @@ HT_ErrorCode HT_TCPListener::init(int port)
         return HT_ERR_OK;
     }
 
-    ht_listener_buffer_deinit(&_buffer);
-
     return HT_ERR_CANT_START_TCP_SERVER;
 }
 
