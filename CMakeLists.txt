@@ -63,6 +63,7 @@ add_subdirectory(lib)
 
 if(ENABLE_CLIENT)
     add_subdirectory(parser)
+    add_subdirectory(client_utils)
     add_subdirectory(client)
 endif(ENABLE_CLIENT)
 

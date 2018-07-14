@@ -65,6 +65,8 @@ public:
     virtual void stop()
     {
     }
+
+    virtual bool is_continuous() = 0;
 };
 
 } // namespace parser

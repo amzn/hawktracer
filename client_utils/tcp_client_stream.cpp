@@ -12,7 +12,7 @@
 
 namespace HawkTracer
 {
-namespace client
+namespace ClientUtils
 {
 #define BUFSIZE 1024
 
@@ -179,5 +179,5 @@ bool TCPClientStream::read_data(char* buff, size_t size)
     return true;
 }
 
-} // namespace client
+} // namespace ClientUtils
 } // namespace HawkTracer

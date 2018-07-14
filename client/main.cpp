@@ -1,35 +1,17 @@
 #include "callgrind_converter.hpp" 
 #include "chrome_trace_converter.hpp" 
-#include "tcp_client_stream.hpp" 
-#include <hawktracer/parser/file_stream.hpp>
+
 #include <hawktracer/parser/protocol_reader.hpp>
 #include <hawktracer/parser/make_unique.hpp>
 
+#include "client_utils/command_line_parser.hpp"
+#include "client_utils/stream_factory.hpp"
+
 #include <iostream>
-#include <cstring>
 #include <map>
 
 using namespace HawkTracer;
-
-bool file_exists(const char* name)
-{
-    std::ifstream f(name);
-    return f.good();
-}
-
-bool scan_ip_address(const std::string& address, std::string& out_ip, uint16_t& out_port, uint16_t default_port)
-{
-    unsigned n1, n2, n3, n4, port;
-    int num = sscanf(address.c_str(), "%u.%u.%u.%u:%u", &n1, &n2, &n3, &n4, &port);
-
-    if (num >= 4)
-    {
-        out_ip = address.substr(0, address.find(':'));
-        out_port = (num == 5) ? (uint16_t)port : default_port;
-        return true;
-    }
-    return false;
-}
+using ClientUtils::CommandLineParser;
 
 std::string create_output_path(const char* path)
 {
@@ -52,16 +34,6 @@ std::string supported_formats(std::map<std::string, std::unique_ptr<client::Conv
     return supported_formats;
 }
 
-void print_help(const char* app_name, std::map<std::string, std::unique_ptr<client::Converter>>& formats)
-{
-    std::cout << "usage: " << app_name << " [OPTION]..." << std::endl
-              << "  --format    supported formats are: " << supported_formats(formats) << "(default is chrome-tracing)" << std::endl
-              << "  --source    data source description (either filename, or server address)" << std::endl
-              << "  --output    an output Chrome Tracing Json file" << std::endl
-              << "  --map       comma-separated list of map files" << std::endl
-              << "  --help      print this text" << std::endl;
-}
-
 void init_supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
 {
     formats["chrome-tracing"] = parser::make_unique<client::ChromeTraceConverter>();
@@ -70,68 +42,31 @@ void init_supported_formats(std::map<std::string, std::unique_ptr<client::Conver
 
 int main(int argc, char** argv)
 {
-    std::string format = "chrome-tracing";
-    std::string output_path = "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace";
-    std::string source;
-    std::string map_files;
     std::map<std::string, std::unique_ptr<client::Converter>> formats;
 
     init_supported_formats(formats);
     
-    for (int i = 1; i < argc; i++)
-    {
-        if (strcmp(argv[i], "--format") == 0 && i < argc - 1)
-        {
-            format = argv[++i];
-        }
-        else if (strcmp(argv[i], "--output") == 0 && i < argc - 1)
-        {
-            output_path = argv[++i];
-        }
-        else if (strcmp(argv[i], "--source") == 0 && i < argc - 1)
-        {
-            source = argv[++i];
-        }
-        else if (strcmp(argv[i], "--map") == 0 && i < argc - 1)
-        {
-            map_files = argv[++i];
-        }
-        else
-        {
-            int ret = 0;
-            if (strcmp(argv[i], "--help") != 0)
-            {
-                std::cerr << "unrecognized option '" << argv[i] << "'" << std::endl;
-                ret = 1;
-            }
-            print_help(argv[0], formats);
-            return ret;
-        }
-    }
+    CommandLineParser parser("--", argv[0]);
+    parser.register_option("format", CommandLineParser::OptionInfo(false, false, "Output format. Supported formats: " + supported_formats(formats)));
+    parser.register_option("output", CommandLineParser::OptionInfo(false, false, "Output file"));
+    parser.register_option("source", CommandLineParser::OptionInfo(false, true, "Data source description (either filename, or server address)"));
+    parser.register_option("map", CommandLineParser::OptionInfo(false, false, "Comma-separated list of map files"));
+    parser.register_option("help", CommandLineParser::OptionInfo(true, false, "Print this help"));
 
-    if (source.empty())
+    if (!parser.parse(argc, argv) || parser.has_value("help"))
     {
-        std::cerr << "--source parameter is mandatory" << std::endl;
-        print_help(argv[0], formats);
+        parser.print_help(std::cerr);
         return 1;
     }
 
-    std::unique_ptr<parser::Stream> stream;
-    std::string ip;
-    uint16_t port;
-    bool is_network = false;
-    if (file_exists(source.c_str()))
+    std::string format = parser.get_value("format", "chrome-tracing");
+    std::string output_path = parser.get_value("output", "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace");
+    std::string source = parser.get_value("source", "");
+    std::string map_files = parser.get_value("map", "");
+
+    std::unique_ptr<parser::Stream> stream = ClientUtils::make_stream_from_string(source);
+    if (!stream)
     {
-        stream = parser::make_unique<parser::FileStream>(source);
-    }
-    else if (scan_ip_address(source, ip, port, 8765))
-    {
-        stream = parser::make_unique<client::TCPClientStream>(ip, port);
-        is_network = true;
-    }
-    else
-    {
-        std::cerr << "Invalid stream: " << source << std::endl;
         return 1;
     }
 
@@ -176,7 +111,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (is_network)
+    if (stream->is_continuous())
     {
         std::cout << "Hit [Enter] to finish the trace..." << std::endl;
         getchar();

@@ -1,5 +1,5 @@
-#ifndef HAWKTRACER_CLIENT_TCP_CLIENT_STREAM_HPP
-#define HAWKTRACER_CLIENT_TCP_CLIENT_STREAM_HPP
+#ifndef HAWKTRACER_CLIENT_UTILS_TCP_CLIENT_STREAM_HPP
+#define HAWKTRACER_CLIENT_UTILS_TCP_CLIENT_STREAM_HPP
 
 #include <hawktracer/parser/stream.hpp>
 
@@ -11,7 +11,7 @@
 
 namespace HawkTracer
 {
-namespace client
+namespace ClientUtils
 {
 
 class TCPClientStream : public parser::Stream
@@ -27,6 +27,8 @@ public:
 
     int read_byte() override;
     bool read_data(char* buff, size_t size) override;
+
+    bool is_continuous() override { return true; }
 
 private:
     void _run();
@@ -47,7 +49,7 @@ private:
     bool _wait_for_server;
 };
 
-} // namespace client
+} // namespace ClientUtils
 } // namespace HawkTracer
 
-#endif // HAWKTRACER_CLIENT_TCP_CLIENT_STREAM_HPP
+#endif // HAWKTRACER_CLIENT_UTILS_TCP_CLIENT_STREAM_HPP

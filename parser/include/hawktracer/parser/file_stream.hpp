@@ -19,6 +19,8 @@ public:
     bool read_data(char* buff, size_t size) override;
     int read_byte() override;
 
+    bool is_continuous() override { return false; }
+
 private:
     FILE* _file = nullptr;
     std::string _file_name;
