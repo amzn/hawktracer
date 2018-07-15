@@ -31,7 +31,9 @@ if(NOT XDG_OPEN_PATH)
 endif()
 
 add_custom_target(coverage_base
-    COMMAND ${LCOV_PATH} --directory . --capture --output-file coverage.info
+    COMMAND ${LCOV_PATH} --initial --directory . --capture --output-file base_coverage.info
+    COMMAND ${LCOV_PATH} --directory . --capture --output-file test_coverage.info
+    COMMAND ${LCOV_PATH} -a base_coverage.info -a test_coverage.info -o coverage.info
     COMMAND ${LCOV_PATH} -r coverage.info /usr/\\*include/\\* \\*tests/\\* \\*benchmarks/\\* -o coverage.info)
 
 add_custom_target(coverage
