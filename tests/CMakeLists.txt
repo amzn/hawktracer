@@ -1,3 +1,5 @@
+set(HT_TEST_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
 set(GTEST_BIN_DIR "${CMAKE_CURRENT_BINARY_DIR}/googletest")
 
 include(ExternalProject)
@@ -32,19 +34,11 @@ set_target_properties(${GTEST_LIBRARY} PROPERTIES
   IMPORTED_LOCATION ${GTEST_LIBRARY_PATH})
 add_dependencies(${GTEST_LIBRARY} googletest)
 
-function(DEFINE_HT_TEST)
-    set(MULTI_PARAM SOURCES LINK_LIBS RUN_PARAMS)
-    cmake_parse_arguments(ht "" "NAME" "${MULTI_PARAM}" ${ARGN})
-    set(EXE_NAME hawktracer_test_${ht_NAME})
-    add_executable(${EXE_NAME} ${ht_SOURCES})
-    target_link_libraries(${EXE_NAME} ${ht_LINK_LIBS} hawktracer)
-    target_include_directories(${EXE_NAME} PRIVATE ${GTEST_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR})
-    if ("${ht_RUN_PARAMS}" STREQUAL "")
-        add_test(${ht_NAME} ${EXE_NAME})
-    else()
-        add_test(${ht_NAME} ${EXE_NAME} COMMAND hawktracer_tests ${ht_RUN_PARAMS})
-    endif()
-endfunction(DEFINE_HT_TEST)
+set(HAWKTRACER_GTEST_TEST_LIBS
+    ${GTEST_LIBRARY})
+set(HAWKTRACER_GTEST_TEST_SOURCES
+    main_gtest_tests.cpp
+    test_path.cpp)
 
 add_subdirectory(lib)
 
@@ -53,3 +47,8 @@ if(ENABLE_CLIENT)
     add_subdirectory(client_utils)
     add_subdirectory(client)
 endif(ENABLE_CLIENT)
+
+add_executable(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_SOURCES})
+target_link_libraries(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_LIBS})
+target_include_directories(hawktracer_gtest_tests PRIVATE ${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
+add_test(gtest_tests hawktracer_gtest_tests --gtest_output=xml:hawktracer_gtest_tests.xml)

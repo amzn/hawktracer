@@ -1,9 +1,11 @@
-set(hawktracer_client_utils_tests
-    main_tests.cpp
-    test_command_line_parser.cpp
-    test_stream_factory.cpp)
+set(HAWKTRACER_GTEST_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_command_line_parser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_stream_factory.cpp
 
-DEFINE_HT_TEST(NAME client_utils
-    SOURCES ${hawktracer_client_utils_tests}
-    LINK_LIBS ${GTEST_LIBRARY} client_utils
-    RUN_PARAMS --gtest_output=xml:hawktracer_client_utils_tests.xml)
+    ${HAWKTRACER_GTEST_TEST_SOURCES}
+    PARENT_SCOPE)
+
+set(HAWKTRACER_GTEST_TEST_LIBS
+    client_utils
+    ${HAWKTRACER_GTEST_TEST_LIBS}
+    PARENT_SCOPE)

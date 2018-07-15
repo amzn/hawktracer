@@ -4,7 +4,7 @@
 
 #define _BUFF_TO_TYPE(buffer, type) *(type*)(buffer)
 
-TEST(TestEvent, CallstackIntEventSerialize)
+TEST(TestParserEvent, CallstackIntEventSerialize)
 {
     // Arrange
     HT_DECL_EVENT(HT_CallstackIntEvent, event)
@@ -33,7 +33,7 @@ TEST(TestEvent, CallstackIntEventSerialize)
     ASSERT_EQ(_BUFF_TO_TYPE(buffer + offset, HT_CallstackEventLabel), event.label);
 }
 
-TEST(TestEvent, CallstackStringEventSerialize)
+TEST(TestParserEvent, CallstackStringEventSerialize)
 {
     // Arrange
     HT_DECL_EVENT(HT_CallstackStringEvent, event)

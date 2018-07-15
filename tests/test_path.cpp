@@ -24,7 +24,7 @@ void TestPath::set_application_path(const std::string& app_path)
     size_t pos = app_path.rfind(PATH_SEPARATOR);
     if (pos != std::string::npos)
     {
-        _tests_dir= app_path.substr(0, pos + 1);
+        _tests_dir = app_path.substr(0, pos + 1);
     }
 }
 

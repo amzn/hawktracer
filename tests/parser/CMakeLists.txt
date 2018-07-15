@@ -1,12 +1,14 @@
-set(hawktracer_parser_tests
-    main_tests.cpp
-    test_endianness_convert.cpp
-    test_event_klass.cpp
-    test_event.cpp
-    test_file_stream.cpp
-    test_klass_register.cpp)
+set(HAWKTRACER_GTEST_TEST_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_endianness_convert.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_event_klass.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_event.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_file_stream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_klass_register.cpp
 
-DEFINE_HT_TEST(NAME parser
-    SOURCES ${hawktracer_parser_tests}
-    LINK_LIBS ${GTEST_LIBRARY} hawktracer_parser
-    RUN_PARAMS --gtest_output=xml:hawktracer_parser_tests.xml)
+    ${HAWKTRACER_GTEST_TEST_SOURCES}
+    PARENT_SCOPE)
+
+set(HAWKTRACER_GTEST_TEST_LIBS
+    hawktracer_parser
+    ${HAWKTRACER_GTEST_TEST_LIBS}
+    PARENT_SCOPE)

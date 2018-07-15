@@ -84,11 +84,7 @@ void init(std::vector<CallGraph::NodeData>& events,
           std::string file_name)
 {
     TestFileLoader file_loader;
-    if (!file_loader.init(file_name))
-    {
-        std::cout << "File not open\n";
-        return;
-    }
+    ASSERT_TRUE(file_loader.init(file_name));
     tree = file_loader.get_tree();
     events = file_loader.get_events();
 }
