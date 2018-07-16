@@ -1,3 +1,5 @@
+#include "test_allocator.h"
+
 #include <hawktracer/events.h>
 #include <internal/listener_buffer.h>
 
@@ -40,4 +42,17 @@ TEST(TestListenerBuffer, ShouldCallCallbackForUnserializedEvent)
     // Assert
     ASSERT_EQ(2, num_calls);
     ht_listener_buffer_deinit(&buffer);
+}
+
+TEST(TestListenerBuffer, InitShouldFailIfMallocReturnsNull)
+{
+    // Arrange
+    HT_ListenerBuffer buffer;
+    ScopedSetAlloc allocator(ht_test_null_realloc);
+
+    // Act
+    HT_ErrorCode error_code = ht_listener_buffer_init(&buffer, 4);
+
+    // Assert
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
 }

@@ -1,6 +1,8 @@
 #include <hawktracer/task_scheduler.h>
 #include <hawktracer/monotonic_clock.h>
 
+#include "test_allocator.h"
+
 #include <gtest/gtest.h>
 
 #include <thread>
@@ -33,6 +35,48 @@ TEST_F(TestTaskScheduler, RegisterNullCallbackShouldFail)
     // Arrange
     // Act
     HT_TaskId task_id = ht_task_scheduler_schedule_task(_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, 10, NULL, NULL);
+
+    // Assert
+    ASSERT_EQ(HT_TASK_SCHEDULER_INVALID_TASK_ID, task_id);
+}
+
+TEST_F(TestTaskScheduler, CreateShouldFailIfMallocReturnsNull)
+{
+    // Arrange
+    ScopedSetAlloc allocator(ht_test_null_realloc);
+    HT_ErrorCode err;
+
+    // Act
+    HT_TaskScheduler* scheduler = ht_task_scheduler_create(&err);
+
+    // Assert
+    ASSERT_EQ(nullptr, scheduler);
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, err);
+}
+
+TEST_F(TestTaskScheduler, CreateShouldFailIfThereIsOnlyEnoughMemoryForTaskObject)
+{
+    // Arrange
+    LimitedSizeAllocator alloc_data(64);
+    ScopedSetAlloc allocator(&LimitedSizeAllocator::realloc, &alloc_data);
+    HT_ErrorCode err;
+
+    // Act
+    HT_TaskScheduler* scheduler = ht_task_scheduler_create(&err);
+
+    // Assert
+    ASSERT_EQ(nullptr, scheduler);
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, err);
+}
+
+TEST_F(TestTaskScheduler, ScheduleTaskShouldFailIfThereIsNotEnoughMemory)
+{
+    // Arrange
+    LimitedSizeAllocator alloc_data(16);
+    ScopedSetAlloc allocator(&LimitedSizeAllocator::realloc, &alloc_data);
+
+    // Act
+    HT_TaskId task_id = ht_task_scheduler_schedule_task(_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, 10, test_callback, nullptr);
 
     // Assert
     ASSERT_EQ(HT_TASK_SCHEDULER_INVALID_TASK_ID, task_id);

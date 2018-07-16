@@ -1,5 +1,6 @@
 #include <hawktracer/scoped_tracepoint.h>
 
+#include "test_allocator.h"
 #include "test_common.h"
 #include "test_test_events.h"
 
@@ -23,11 +24,14 @@ protected:
 
     void TearDown() override
     {
-        ht_timeline_unregister_all_listeners(_timeline);
-        ht_timeline_destroy(_timeline);
+        if (_timeline)
+        {
+            ht_timeline_unregister_all_listeners(_timeline);
+            ht_timeline_destroy(_timeline);
+        }
     }
 
-    HT_Timeline* _timeline;
+    HT_Timeline* _timeline = nullptr;
 };
 
 TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
@@ -59,6 +63,38 @@ TEST_F(TestFeatureCallstack, SimpleIntCallstackTest)
     {
         ASSERT_EQ(3 - i, info.values[i].label);
     }
+}
+
+TEST_F(TestFeatureCallstack, EnableShouldFailIfMallocReturnsNull)
+{
+    // Arrange
+    HT_Timeline* tm = ht_timeline_create(16u, HT_FALSE, HT_FALSE, nullptr, nullptr);
+
+    ScopedSetAlloc allocator(ht_test_null_realloc);
+
+    // Act
+    HT_ErrorCode err = ht_feature_callstack_enable(tm);
+
+    // Assert
+    allocator.reset();
+    ht_timeline_destroy(tm);
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, err);
+}
+
+TEST_F(TestFeatureCallstack, EnableShouldFailIfThereIsOnlyEnoughMemoryForFeatureCallstackObject)
+{
+    // Arrange
+    HT_Timeline* tm = ht_timeline_create(16u, HT_FALSE, HT_FALSE, nullptr, nullptr);
+    LimitedSizeAllocator alloc_data(64);
+    ScopedSetAlloc allocator(&LimitedSizeAllocator::realloc, &alloc_data);
+
+    // Act
+    HT_ErrorCode err = ht_feature_callstack_enable(tm);
+
+    // Assert
+    allocator.reset();
+    ht_timeline_destroy(tm);
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, err);
 }
 
 TEST_F(TestFeatureCallstack, CallstackTimelinesRunOnDifferentThreadsShouldGenerateDifferentThreadID)

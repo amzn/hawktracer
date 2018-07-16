@@ -108,6 +108,20 @@ TEST(TestStack, InitShouldFailIfMallocReturnsNull)
     ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
 }
 
+TEST(TestStack, InitShouldFailIfInternalInitializationFails)
+{
+    // Arrange
+    HT_Stack stack;
+    LimitedSizeAllocator alloc_data(16u);
+    ScopedSetAlloc allocator(&LimitedSizeAllocator::realloc, &alloc_data);
+
+    // Act
+    HT_ErrorCode error_code = ht_stack_init(&stack, 8, 1024);
+
+    // Assert
+    ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
+}
+
 TEST(TestStack, PushShouldFailIfMallocReturnsNull)
 {
     // Arrange
@@ -124,6 +138,28 @@ TEST(TestStack, PushShouldFailIfMallocReturnsNull)
     // Assert
     ASSERT_EQ(HT_ERR_OK, error_code_1);
     ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code_2);
+    allocator.reset();
+    ht_stack_deinit(&stack);
+}
+
+TEST(TestStack, PushShouldFailIfMallocReturnsNullInternal)
+{
+    // Arrange
+    HT_Stack stack;
+    ht_stack_init(&stack, sizeof(int), 1);
+    LimitedSizeAllocator alloc_data(16u);
+    ScopedSetAlloc allocator(&LimitedSizeAllocator::realloc, &alloc_data);
+
+    // Act
+    HT_ErrorCode error_code = HT_ERR_OK;
+
+    do {
+        int v = 2;
+        error_code = ht_stack_push(&stack, &v, sizeof(v));
+    } while (error_code == HT_ERR_OK);
+
+    // Assert
+    EXPECT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
     allocator.reset();
     ht_stack_deinit(&stack);
 }
