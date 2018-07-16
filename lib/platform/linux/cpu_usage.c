@@ -31,9 +31,9 @@ _get_process_time(unsigned long* total_time, int pid)
     char state;
     int int_data[5];
     unsigned int flags;
-    unsigned long int long_data[3];
+    unsigned long int long_data[4];
+    unsigned long int utime;
     unsigned long int stime;
-    long int cutime;
     char buf[1024];
 
     snprintf(buf, 32, "/proc/%d/stat", pid);
@@ -57,21 +57,20 @@ _get_process_time(unsigned long* total_time, int pid)
            "%c " /* state */
            "%d %d %d %d %d " /* ppid pgrp session tty_nr tpgid */
            "%u " /* flags */
-           "%lu %lu %lu %lu " /* minflt cminflt cmajflt utime */
-           "%lu " /* stime */
-           "%ld", /* cutime */
+           "%lu %lu %lu %lu " /* minflt cminflt majflt cmajflt  */
+           "%lu " /* utime */
+           "%lu", /* stime */
            &state,
            &int_data[0], &int_data[1], &int_data[2], &int_data[3], &int_data[4],
-            &flags,
-            &long_data[0], &long_data[1], &long_data[2], &long_data[3],
-            &stime,
-            &cutime);
+           &flags,
+           &long_data[0], &long_data[1], &long_data[2], &long_data[3],
+           &utime,
+           &stime);
 
-    *total_time = stime + cutime;
+    *total_time = utime + stime;
 
     return HT_TRUE;
 }
-
 
 HT_CPUUsageContext*
 ht_cpu_usage_context_create(void* process_id)
