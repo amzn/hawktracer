@@ -30,4 +30,8 @@
 #include <hawktracer/cpu_usage.h>
 #endif /* HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED */
 
+#ifdef HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED
+#include <hawktracer/memory_usage.h>
+#endif /* HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED */
+
 #endif /* HAWKTRACER_HAWKTRACER_H */

@@ -55,7 +55,9 @@ typedef enum
     HT_ERR_CANT_START_TCP_SERVER,
     /** Unable to create listener container. This is most likely caused by
      * #HT_ERR_OUT_OF_MEMORY occured internally in the library. */
-    HT_ERR_CANT_CREATE_LISTENER_CONTAINER
+    HT_ERR_CANT_CREATE_LISTENER_CONTAINER,
+    /** Format of an input data is invalid. */
+    HT_ERR_INVALID_FORMAT
 } HT_ErrorCode;
 
 /** Defines supported byte ordering */
