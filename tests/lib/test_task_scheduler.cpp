@@ -206,8 +206,8 @@ TEST_F(TestTaskScheduler, SchedulerShouldExecuteAllTasks)
     {
         std::this_thread::sleep_for(std::chrono::microseconds(200));
 
-        ht_task_scheduler_tick(_scheduler);
         timestamp_now = ht_monotonic_clock_get_timestamp();
+        ht_task_scheduler_tick(_scheduler);
     }
 
     // Assert
