@@ -1,4 +1,4 @@
-#include "tcp_client_stream.hpp"
+#include "hawktracer/client_utils/tcp_client_stream.hpp"
 
 #ifdef _WIN32
 #define NOMINMAX

@@ -6,6 +6,6 @@ set(HAWKTRACER_GTEST_TEST_SOURCES
     PARENT_SCOPE)
 
 set(HAWKTRACER_GTEST_TEST_LIBS
-    client_utils
+    hawktracer_client_utils
     ${HAWKTRACER_GTEST_TEST_LIBS}
     PARENT_SCOPE)
