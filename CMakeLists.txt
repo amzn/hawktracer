@@ -10,6 +10,7 @@ option(ENABLE_BENCHMARKS "Enable benchmarks" OFF)
 option(ENABLE_EXAMPLES "Enable examples" OFF)
 option(ENABLE_DOC "Build documentation" ON)
 option(ENABLE_CLIENT "Enable client application for parsing HawkTracer stream" ON)
+option(ENABLE_PYTHON_BINDINGS "Enable Python bindings (requires ENABLE_CLIENT=ON)" OFF)
 
 option(BUILD_STATIC_LIB "Build static hawktracer library" OFF)
 
@@ -34,6 +35,7 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 if(ENABLE_MAINTAINER_MODE)
+    set(ENABLE_PYTHON_BINDINGS ON)
     set(ENABLE_TESTS ON)
     set(ENABLE_CODE_COVERAGE ON)
     set(ENABLE_BENCHMARKS ON)
@@ -44,6 +46,7 @@ if(ENABLE_RELEASE_MODE)
     set(ENABLE_TESTS ON)
     set(ENABLE_BENCHMARKS ON)
     set(ENABLE_EXAMPLES ON)
+    set(ENABLE_PYTHON_BINDINGS ON)
 endif(ENABLE_RELEASE_MODE)
 
 include(warnings)
@@ -68,6 +71,7 @@ if(ENABLE_CLIENT)
     add_subdirectory(client)
 endif(ENABLE_CLIENT)
 
+add_subdirectory(bindings)
 add_subdirectory(tools_integration)
 
 if(ENABLE_TESTS)
@@ -85,4 +89,3 @@ if(ENABLE_BENCHMARKS)
 endif(ENABLE_BENCHMARKS)
 
 include(packager)
-
