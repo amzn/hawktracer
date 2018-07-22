@@ -1,0 +1,51 @@
+import sys
+from distutils.core import setup, Extension
+from distutils.command.build_ext import build_ext
+
+def read_parameters(argument_name):
+    out_list = []
+    try:
+        while True:
+            argument_idx = sys.argv.index(argument_name)
+            out_list.extend(sys.argv.pop(argument_idx + 1).split(";"))
+            sys.argv.pop(argument_idx)
+    except ValueError:
+        pass
+    finally:
+        return out_list
+
+def compiler_has_flag(compiler, flag):
+    import tempfile
+    with tempfile.NamedTemporaryFile('w', suffix='.cpp') as f:
+        f.write('int main (int argc, char **argv) { return 0; }')
+        try:
+            compiler.compile([f.name], extra_postargs=[flag])
+        except setuptools.distutils.errors.CompileError:
+            return False
+    return True
+
+class HTBuildExt(build_ext):
+    def build_extensions(self):
+        compiler_type = self.compiler.compiler_type
+        opts = []
+        if compiler_type == 'unix' and compiler_has_flag(self.compiler, '--std=c++11'):
+            opts.append('--std=c++11')
+        for ext in self.extensions:
+            ext.extra_compile_args = opts
+        build_ext.build_extensions(self)
+
+module = Extension('HawkTracer',
+                    sources = read_parameters("--sources"),
+                    libraries = read_parameters("--libraries"),
+                    library_dirs = read_parameters("--lib-dirs"),
+                    include_dirs = read_parameters("--include-dirs"),
+                    runtime_library_dirs = ['@CMAKE_INSTALL_PREFIX@/lib'])
+
+setup(name = 'HawkTracer',
+      version = '@PROJECT_VERSION@',
+      description = 'HawkTracer',
+      ext_modules = [module],
+      cmdclass = {'build_ext': HTBuildExt},
+      author = 'Marcin Kolny',
+      author_email='marcin.kolny@gmail.com',
+      url = 'https://github.com/amzn/hawktracer')
