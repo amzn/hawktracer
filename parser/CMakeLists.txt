@@ -1,5 +1,5 @@
 add_library(hawktracer_parser
-    STATIC
+    SHARED
     debug_event_listener.cpp
     event.cpp
     event_klass.cpp
