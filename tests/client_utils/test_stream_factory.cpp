@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "client_utils/stream_factory.hpp"
+#include "hawktracer/client_utils/stream_factory.hpp"
 
 #include <fstream>
 

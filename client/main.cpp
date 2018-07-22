@@ -4,9 +4,8 @@
 #include <hawktracer/parser/protocol_reader.hpp>
 #include <hawktracer/parser/make_unique.hpp>
 
-#include "client_utils/command_line_parser.hpp"
-#include "client_utils/stream_factory.hpp"
-
+#include <hawktracer/client_utils/command_line_parser.hpp>
+#include <hawktracer/client_utils/stream_factory.hpp>
 #include <iostream>
 #include <map>
 

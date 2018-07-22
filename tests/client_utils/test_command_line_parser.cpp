@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "client_utils/command_line_parser.hpp"
+#include "hawktracer/client_utils/command_line_parser.hpp"
 
 #include <vector>
 

@@ -1,5 +1,5 @@
-#include "stream_factory.hpp"
-#include "tcp_client_stream.hpp"
+#include "hawktracer/client_utils/stream_factory.hpp"
+#include "hawktracer/client_utils/tcp_client_stream.hpp"
 
 #include "hawktracer/parser/file_stream.hpp"
 #include "hawktracer/parser/make_unique.hpp"
