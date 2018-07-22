@@ -19,39 +19,49 @@ struct HT_Python_Client
 static PyObject *
 client_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
+    if (!PyArg_ParseTuple(args, ""))
+    {
+        return nullptr;
+    }
+
     auto self = reinterpret_cast<HT_Python_Client*>(type->tp_alloc(type, 0));
     if (self)
     {
-        const char* source_description;
-        PyObject *callback_obj = nullptr;
-
-        if (!PyArg_ParseTuple(args, "s|O", &source_description, &callback_obj))
-        {
-            Py_DECREF(self);
-            return nullptr;
-        }
-
-        if (callback_obj && !PyCallable_Check(callback_obj))
-        {
-            Py_DECREF(self);
-            PyErr_SetString(PyExc_TypeError, "parameter must be callable");
-            return nullptr;
-        }
-        auto stream = ClientUtils::make_stream_from_string(source_description);
-        if (!stream)
-        {
-            PyErr_SetString(PyExc_TypeError, "unable to parse source description");
-            return nullptr;
-        }
-        self->context = new Context(std::move(stream), callback_obj);
+        self->context = nullptr;
     }
 
     return reinterpret_cast<PyObject*>(self);
 }
 
 static PyObject *
-client_start(HT_Python_Client* self, PyObject *Py_UNUSED(ignored))
+client_start(HT_Python_Client* self, PyObject* args)
 {
+    const char* source_description;
+    PyObject *callback_obj = nullptr;
+
+    if (!PyArg_ParseTuple(args, "s|O", &source_description, &callback_obj))
+    {
+        return nullptr;
+    }
+
+    if (callback_obj && !PyCallable_Check(callback_obj))
+    {
+        PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+        return nullptr;
+    }
+    auto stream = ClientUtils::make_stream_from_string(source_description);
+    if (!stream)
+    {
+        PyErr_SetString(PyExc_TypeError, "unable to parse source description");
+        return nullptr;
+    }
+
+    if (self->context)
+    {
+        delete self->context;
+    }
+
+    self->context = new Context(std::move(stream), callback_obj);
     self->context->start();
     Py_RETURN_NONE;
 }
@@ -79,8 +89,13 @@ client_dealloc(PyObject* self)
 
 static PyMethodDef client_methods[] = {
     {
-        "start",  (PyCFunction) client_start, METH_NOARGS,
-        "Start listening to new HawkTracer events."
+        "start",  (PyCFunction) client_start, METH_VARARGS,
+        "Start listening to new HawkTracer events.\n"
+        ":param source: a description of a event source(either filename, or server address).\n"
+        ":param callback: [optional] a callback that takes 2 arguments (event_klass_name, event_data) "
+        "which is called every time new event occurs in the source. The callback won't be called "
+        "from the same thread as the function start() is called. If callback is NOT None, "
+        "the poll_event() function should not be used (it will always return None)."
     },
     {
         "stop", (PyCFunction) client_stop, METH_NOARGS,
