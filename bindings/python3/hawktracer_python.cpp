@@ -78,9 +78,20 @@ client_dealloc(PyObject* self)
 }
 
 static PyMethodDef client_methods[] = {
-    {"start", (PyCFunction) client_start, METH_NOARGS, "Start the client"},
-    {"stop", (PyCFunction) client_stop, METH_NOARGS, "Stop the client"},
-    {"poll_event", (PyCFunction) client_poll_event, METH_NOARGS, "Poll events"},
+    {
+        "start",  (PyCFunction) client_start, METH_NOARGS,
+        "Start listening to new HawkTracer events."
+    },
+    {
+        "stop", (PyCFunction) client_stop, METH_NOARGS,
+        "Stop listening to HawkTracer events."
+    },
+    {
+        "poll_event", (PyCFunction) client_poll_event, METH_NOARGS,
+        "Check if there's a new event in a queue. If event occured, function "
+        "return a tuple where first element is a class name, and second element "
+        "is a dictionary: key: event field name; value: field value."
+    },
     {nullptr}
 };
 
@@ -105,7 +116,8 @@ static PyTypeObject HT_Python_Client_type_object = {
     0,                                      /* tp_setattro */
     0,                                      /* tp_as_buffer */
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /* tp_flags */
-    0,                                      /* tp_doc */
+    "Class responsible for receiving HawkTracer "
+    "events from a specific data source.",  /* tp_doc */
     0,                                      /* tp_traverse */
     0,                                      /* tp_clear */
     0,                                      /* tp_richcompare */
@@ -143,7 +155,7 @@ static PyMethodDef HawkTracer_methods[] =
 static struct PyModuleDef HawkTracer_module = {
     PyModuleDef_HEAD_INIT,
     "HawkTracer",
-    nullptr,
+    "Utils for writing custom HawkTracer clients.",
     -1,
     HawkTracer_methods
 };
