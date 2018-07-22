@@ -20,9 +20,13 @@ matrix:
             - lcov
             - python
             - doxygen
+            - python3-dev
 
       before_install:
         # - pip install --user codecov
+
+      before_script:
+        - cmake -DENABLE_PYTHON_BINDINGS=ON .
 
       after_script:
         - make coverage_base
