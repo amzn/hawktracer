@@ -79,6 +79,23 @@ client_poll_event(HT_Python_Client* self, PyObject *Py_UNUSED(ignored))
     return self->context->poll_event();
 }
 
+static PyObject *
+client_wait_for_eos(HT_Python_Client* self, PyObject *Py_UNUSED(ignored))
+{
+    Py_BEGIN_ALLOW_THREADS
+
+    self->context->wait_for_complete();
+
+    Py_END_ALLOW_THREADS
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+client_eos(HT_Python_Client* self, PyObject *Py_UNUSED(ignored))
+{
+    return PyBool_FromLong(self->context->eos());
+}
+
 static void
 client_dealloc(PyObject* self)
 {
@@ -106,6 +123,15 @@ static PyMethodDef client_methods[] = {
         "Check if there's a new event in a queue. If event occured, function "
         "return a tuple where first element is a class name, and second element "
         "is a dictionary: key: event field name; value: field value."
+    },
+    {
+        "wait_for_eos", (PyCFunction) client_wait_for_eos, METH_NOARGS,
+        "Block current thread and waits for a HawkTracer stream to finish. "
+        "This method is usually used with callback in a start() method."
+    },
+    {
+        "eos", (PyCFunction) client_eos, METH_NOARGS,
+        "Check if client reached end of the stream."
     },
     {nullptr}
 };
