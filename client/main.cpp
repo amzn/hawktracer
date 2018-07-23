@@ -70,6 +70,8 @@ int main(int argc, char** argv)
         return 1;
     }
 
+    bool is_stream_continuous = stream->is_continuous();
+
     parser::KlassRegister klass_register;
     parser::ProtocolReader reader(&klass_register, std::move(stream), true);
     std::string out_file = create_output_path(output_path.c_str());
@@ -111,7 +113,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (stream->is_continuous())
+    if (is_stream_continuous)
     {
         std::cout << "Hit [Enter] to finish the trace..." << std::endl;
         getchar();
