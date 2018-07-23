@@ -23,6 +23,8 @@ public:
     void start() { _reader.start(); }
     void stop() { _reader.stop(); }
     PyObject* poll_event();
+    bool eos() { return _reader.eos(); }
+    void wait_for_complete() { _reader.wait_for_complete(); }
 
 private:
     void _trigger_callback(const parser::Event& event);
