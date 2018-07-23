@@ -20,4 +20,4 @@ add_custom_target(python_bindings ALL
 add_dependencies(python_bindings hawktracer hawktracer_parser hawktracer_client_utils)
 
 install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py install --prefix=${CMAKE_INSTALL_PREFIX})")
-install(FILES example-client.py DESTINATION examples/python3)
+install(FILES plot-events.py DESTINATION examples/python3)
