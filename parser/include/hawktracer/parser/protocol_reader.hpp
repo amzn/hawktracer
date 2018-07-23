@@ -29,6 +29,7 @@ public:
     bool start();
     void stop();
 
+    bool eos() const { return !_is_running; }
     void wait_for_complete();
 
 private:
