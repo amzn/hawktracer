@@ -1,4 +1,3 @@
-prefix=@INSTALL_PREFIX@
 libdir=@INSTALL_LIB_DIR@
 includedir=@INSTALL_INCLUDE_DIR@
 
