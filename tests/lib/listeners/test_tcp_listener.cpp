@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 
-TEST(TestTcpListener, ApplicationShouldNotCrashWhenCreatingListenerFails)
+TEST(TestTcpListener, DISABLED_ApplicationShouldNotCrashWhenCreatingListenerFails)
 {
     // Arrange
     const int port = 8787;
