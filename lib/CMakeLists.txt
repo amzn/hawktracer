@@ -83,11 +83,7 @@ configure_file(include/hawktracer/config.h.in include/hawktracer/config.h)
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})
 set(HAWKTRACER_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include")
 
-if(BUILD_STATIC_LIB)
-    add_library(hawktracer STATIC ${HAWKTRACER_LIB_SOURCES})
-else ()
-    add_library(hawktracer SHARED ${HAWKTRACER_LIB_SOURCES})
-endif(BUILD_STATIC_LIB)
+add_library(hawktracer ${HAWKTRACER_LIB_TYPE} ${HAWKTRACER_LIB_SOURCES})
 
 target_include_directories(hawktracer PUBLIC
     "$<BUILD_INTERFACE:${HAWKTRACER_INCLUDE_DIRS}>"

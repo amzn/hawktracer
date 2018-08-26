@@ -102,13 +102,18 @@ TEST(TestCallGraph, EmptyVectorOfEventShouldReturnEmptyGraph)
     ASSERT_TRUE(response.empty());
 }
 
+#ifdef _MSC_VER
+#  define HT_TEST_FILE_PREFIX "../"
+#else
+#  define HT_TEST_FILE_PREFIX "./"
+#endif
 
 TEST(TestCallGraph, Test3LevelsCallStackWithSimpleCalls)
 {
     // Arrange
     std::vector<CallGraph::NodeData> events;
     std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> correct_response;
-    init(events, correct_response, TestPath::get().get_input_file_path("test_3_lvls_stack_simple_calls.txt"));
+    init(events, correct_response, TestPath::get().get_input_file_path(HT_TEST_FILE_PREFIX "test_3_lvls_stack_simple_calls.txt"));
 
     CallGraph call_graph;
 
@@ -128,7 +133,7 @@ TEST(TestCallGraph, TestMultpleCalls)
     // Arrange
     std::vector<CallGraph::NodeData> events;
     std::vector<std::pair<std::shared_ptr<CallGraph::TreeNode>, int>> correct_response;
-    init(events, correct_response, TestPath::get().get_input_file_path("test_multiple_calls.txt"));
+    init(events, correct_response, TestPath::get().get_input_file_path(HT_TEST_FILE_PREFIX "test_multiple_calls.txt"));
 
     CallGraph call_graph;
 

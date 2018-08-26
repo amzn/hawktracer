@@ -63,6 +63,12 @@ if(ENABLE_DOC)
     include(documentation)
 endif(ENABLE_DOC)
 
+if(BUILD_STATIC_LIB)
+    set(HAWKTRACER_LIB_TYPE STATIC)
+else ()
+    set(HAWKTRACER_LIB_TYPE SHARED)
+endif(BUILD_STATIC_LIB)
+
 add_subdirectory(lib)
 
 if(ENABLE_CLIENT)

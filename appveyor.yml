@@ -6,18 +6,18 @@ platform:
   - x64
  
 configuration:
-  - RelWithDebInfo
+  - Release
 
 before_build:
-  - cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_BENCHMARKS=ON -DENABLE_EXAMPLES=ON -DBUILD_STATIC_LIB=ON -DENABLE_TESTS=ON .
+  - cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DENABLE_BENCHMARKS=ON -DENABLE_EXAMPLES=ON -DBUILD_STATIC_LIB=ON -DENABLE_TESTS=ON .
 
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln 
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%\tests
-  - ctest -C RelWithDebInfo -VV
-  - cd %APPVEYOR_BUILD_FOLDER%\benchmarks\RelWithDebInfo
+  - ctest -C Release -VV
+  - cd %APPVEYOR_BUILD_FOLDER%\benchmarks\Release
   - hawktracer_benchmarks
 
 notifications:
