@@ -40,8 +40,14 @@ class GitInfo:
             'git log {}..{} --numstat --pretty="" --author="{} <{}>"'.format(
                 self._from_version, self._to_version, author_name, author_email)).splitlines()
 
-        added_lines = sum(int(stat_line.split()[0]) for stat_line in stats)
-        removed_lines = sum(int(stat_line.split()[1]) for stat_line in stats)
+        added_lines = 0
+        removed_lines = 0
+        for stat_line in stats:
+            try:
+                added_lines = added_lines + int(stat_line.split()[0])
+                removed_lines = removed_lines + int(stat_line.split()[1])
+            except ValueError:
+                pass
 
         return AuthorInfo(added_lines, removed_lines, len(stats), author_name, author_email, commit_count)
 
@@ -75,7 +81,7 @@ if not GitInfo.is_master_branch():
 
 tags = GitInfo.get_most_recent_tags()
 
-if len(tags) >= 2:
+if len(tags) < 2:
     print('Expected to find at least 2 git tags, but found {}'.format(len(tags)))
     sys.exit(1)
 
