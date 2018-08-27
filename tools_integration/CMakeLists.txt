@@ -9,7 +9,8 @@ configure_file(hawktracer.pc.in hawktracer.pc @ONLY)
 install(
     FILES
         "${CMAKE_CURRENT_BINARY_DIR}/hawktracer.pc"
-    DESTINATION ${INSTALL_PKGCONFIG_DIR})
+    DESTINATION ${INSTALL_PKGCONFIG_DIR}
+    COMPONENT pkgconfig)
 
 
 ############ cmake ############
@@ -44,10 +45,13 @@ configure_hawktracer_config_file(include HawkTracerConfigToInstall.cmake)
 configure_hawktracer_config_file("${PROJECT_SOURCE_DIR}/lib/include" HawkTracerConfig.cmake)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/HawkTracerConfigVersion.cmake
-    DESTINATION "${INSTALL_CMAKE_DIR}")
+    DESTINATION "${INSTALL_CMAKE_DIR}"
+    COMPONENT cmake)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/HawkTracerConfigToInstall.cmake
     DESTINATION "${INSTALL_CMAKE_DIR}"
-    RENAME HawkTracerConfig.cmake)
+    RENAME HawkTracerConfig.cmake
+    COMPONENT cmake)
 install(EXPORT HawkTracerTargets
     NAMESPACE HawkTracer::
-    DESTINATION "${INSTALL_CMAKE_DIR}")
+    DESTINATION "${INSTALL_CMAKE_DIR}"
+    COMPONENT cmake)

@@ -95,15 +95,19 @@ install(TARGETS hawktracer
     EXPORT HawkTracerTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+    ARCHIVE DESTINATION lib
+    COMPONENT coredevelopment)
 
 install(DIRECTORY include/hawktracer
     DESTINATION include
+    COMPONENT coredevelopment
     PATTERN "config.h.in" EXCLUDE)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/include/hawktracer/config.h
-    DESTINATION include/hawktracer/)
+    DESTINATION include/hawktracer/
+    COMPONENT coredevelopment)
 install(FILES
     include/hawktracer.h
-    DESTINATION include/)
+    DESTINATION include/
+    COMPONENT coredevelopment)

@@ -11,6 +11,7 @@ target_include_directories(hawktracer_client_utils PUBLIC ${CMAKE_CURRENT_SOURCE
 
 install(TARGETS hawktracer_client_utils
     LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+    ARCHIVE DESTINATION lib
+    COMPONENT clientdevelopment)
 
-install(DIRECTORY include/hawktracer DESTINATION include)
+install(DIRECTORY include/hawktracer DESTINATION include COMPONENT clientdevelopment)
