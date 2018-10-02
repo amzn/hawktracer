@@ -192,7 +192,7 @@ TEST_F(TestTaskScheduler, SchedulerShouldExecuteAllTasks)
     // Arrange
     int value1 = 0;
     int value2 = 0;
-    const HT_DurationNs timeout = 10 * 1000 * 1000; // 10ms
+    const HT_DurationNs timeout = 20 * 1000 * 1000; // 20ms
     const HT_DurationNs period1 = 1 * 1000 * 1000; // 1ms
     const HT_DurationNs period2 = 2 * 1000 * 1000; // 2ms
     auto timestamp_start = ht_monotonic_clock_get_timestamp();
