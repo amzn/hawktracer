@@ -25,6 +25,7 @@ after_build:
 
 artifacts:
   - path: '*.exe'
+  - path: '%APPVEYOR_BUILD_FOLDER%/client/Release/hawktracer-converter.exe'
 
 notifications:
   - provider: Webhook
