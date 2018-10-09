@@ -62,7 +62,19 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 
         if (timeline->buffer_capacity < size)
         {
-            _ht_timeline_notify_listeners(timeline, (TEventPtr)event, size);
+            HT_Byte local_buffer[128];
+            if (size > sizeof(local_buffer)/sizeof(local_buffer[0]))
+            {
+                HT_Byte* buff = ht_alloc(size);
+                event->klass->serialize(event, buff);
+                _ht_timeline_notify_listeners(timeline, buff, size);
+                ht_free(buff);
+            }
+            else
+            {
+                event->klass->serialize(event, local_buffer);
+                _ht_timeline_notify_listeners(timeline, local_buffer, size);
+            }
         }
         else
         {

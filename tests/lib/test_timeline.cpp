@@ -182,34 +182,49 @@ TEST_F(TestTimeline, SharedListener)
     ht_timeline_destroy(timeline2);
 }
 
-TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners)
+TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners_DisableSerialization)
 {
     // Arrange
-    HT_Timeline* timeline_serialize_false = ht_timeline_create(sizeof(HT_Event), HT_TRUE, HT_FALSE, nullptr, nullptr);
-    NotifyInfo<HT_EventKlass> info_serialize_false;
-    ht_timeline_register_listener(timeline_serialize_false, test_listener<HT_EventKlass>, &info_serialize_false);
-
-
-    HT_Timeline* timeline_serialize_true = ht_timeline_create(sizeof(HT_Event), HT_TRUE, HT_TRUE, nullptr, nullptr);
-    NotifyInfo<HT_EventKlass> info_serialize_true;
-    ht_timeline_register_listener(timeline_serialize_true, test_listener<HT_EventKlass>, &info_serialize_true);
+    HT_Timeline* timeline = ht_timeline_create(1, HT_TRUE, HT_FALSE, nullptr, nullptr);
+    NotifyInfo<DoubleTestEvent> info;
+    ht_timeline_register_listener(timeline, test_listener<DoubleTestEvent>, &info);
 
     // Act
     ht_DoubleTestEvent_register_event_klass();
     HT_DECL_EVENT(DoubleTestEvent, event);
-    ht_timeline_push_event(timeline_serialize_false, ((HT_Event*)(&event)));
-    ht_timeline_push_event(timeline_serialize_true, ((HT_Event*)(&event)));
+    event.field = 31337;
+    ht_timeline_push_event(timeline, ((HT_Event*)(&event)));
 
     // Assert
-    ASSERT_EQ(1, info_serialize_false.notify_count);
-    ASSERT_EQ(sizeof(DoubleTestEvent), info_serialize_false.notified_events);
+    ASSERT_EQ(1, info.notify_count);
+    ASSERT_EQ(sizeof(DoubleTestEvent), info.notified_events);
+    ASSERT_EQ(event.field, info.values.front().field);
 
-    ASSERT_EQ(1, info_serialize_true.notify_count);
-    ASSERT_EQ(HT_EVENT_GET_CLASS((HT_Event*)(&event))->get_size((HT_Event*)(&event)), info_serialize_true.notified_events);
+    ht_timeline_unregister_all_listeners(timeline);
+    ht_timeline_destroy(timeline);
+}
 
+TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners_EnableSerialization)
+{
+    // Arrange
+    HT_Timeline* timeline = ht_timeline_create(1, HT_TRUE, HT_TRUE, nullptr, nullptr);
+    HT_Byte buffer[64];
+    ht_timeline_register_listener(timeline, [] (TEventPtr events, size_t event_count, HT_Boolean /* is_serialized */, void* user_data) {
+        HT_Byte* data = (HT_Byte*)user_data;
+        memcpy(data, events, event_count);
+    }, buffer);
 
-    ht_timeline_unregister_all_listeners(timeline_serialize_false);
-    ht_timeline_unregister_all_listeners(timeline_serialize_true);
-    ht_timeline_destroy(timeline_serialize_false);
-    ht_timeline_destroy(timeline_serialize_true);
+    // Act
+    ht_RegistryTestEvent_register_event_klass();
+    HT_DECL_EVENT(RegistryTestEvent, event);
+    event.field = 30;
+    ht_timeline_push_event(timeline, ((HT_Event*)(&event)));
+
+    // Assert
+    HT_Event tmp_event;
+    int read_value = *(int*)(buffer + ht_HT_Event_get_size(&tmp_event));
+    ASSERT_EQ(event.field, read_value);
+
+    ht_timeline_unregister_all_listeners(timeline);
+    ht_timeline_destroy(timeline);
 }
