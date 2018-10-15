@@ -5,7 +5,7 @@
 size_t
 ht_event_utils_serialize_event_to_buffer(HT_Event* event, HT_Byte* buffer, HT_Boolean serialize)
 {
-    HT_EventKlass* klass = HT_EVENT_GET_CLASS(event);
+    HT_EventKlass* klass = HT_EVENT_GET_KLASS(event);
 
     if (serialize)
     {

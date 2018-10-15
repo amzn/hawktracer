@@ -19,7 +19,7 @@ TEST(TestGlobalTimeline, SimpleTest)
 
     // Assert
     HT_DECL_EVENT(HT_CallstackIntEvent, int_ev);
-    ASSERT_EQ(2 * HT_EVENT_GET_CLASS(&int_ev)->get_size(HT_EVENT(&int_ev)), info.notified_events);
+    ASSERT_EQ(2 * HT_EVENT_GET_KLASS(&int_ev)->get_size(HT_EVENT(&int_ev)), info.notified_events);
     ASSERT_EQ(1, info.notify_count);
 
     ht_timeline_unregister_all_listeners(timeline);
@@ -47,7 +47,7 @@ TEST(TestGlobalTimeline, ScopedTracepoint)
 
     // Assert
     HT_DECL_EVENT(HT_CallstackBaseEvent, base_ev);
-    size_t expected_size = 2 * HT_EVENT_GET_CLASS(&base_ev)->get_size(HT_EVENT(&base_ev)) +
+    size_t expected_size = 2 * HT_EVENT_GET_KLASS(&base_ev)->get_size(HT_EVENT(&base_ev)) +
             sizeof(HT_CallstackIntEvent::label) + strlen(string_label) + 1;
 
     ASSERT_EQ(expected_size, info.notified_events);

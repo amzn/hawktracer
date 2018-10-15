@@ -30,11 +30,13 @@ struct _HT_EventKlass
     HT_EventKlassId klass_id;
 };
 
-#define HT_EVENT_GET_CLASS(event) (((HT_Event*)event)->klass)
-#define HT_EVENT_GET_KLASS_INSTANCE_FUNCTION(C_TYPE) ht_##C_TYPE##_get_event_klass_instance
+#define HT_REGISTER_EVENT_KLASS(EVENT_TYPE) ht_##EVENT_TYPE##_register_event_klass()
+
+#define HT_EVENT_GET_KLASS(event) (((HT_Event*)event)->klass)
+#define HT_EVENT_KLASS_GET(EVENT_TYPE) ht_##EVENT_TYPE##_get_event_klass_instance()
 
 #define HT_DECL_EVENT(TYPE_NAME, event) \
-    TYPE_NAME event; HT_EVENT(&event)->klass = HT_EVENT_GET_KLASS_INSTANCE_FUNCTION(TYPE_NAME)();
+    TYPE_NAME event; HT_EVENT(&event)->klass = HT_EVENT_KLASS_GET(TYPE_NAME);
 
 HT_DECLS_END
 

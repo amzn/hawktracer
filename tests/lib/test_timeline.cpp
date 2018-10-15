@@ -190,7 +190,7 @@ TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners_DisableSerializati
     ht_timeline_register_listener(timeline, test_listener<DoubleTestEvent>, &info);
 
     // Act
-    ht_DoubleTestEvent_register_event_klass();
+    HT_REGISTER_EVENT_KLASS(DoubleTestEvent);
     HT_DECL_EVENT(DoubleTestEvent, event);
     event.field = 31337;
     ht_timeline_push_event(timeline, ((HT_Event*)(&event)));
@@ -215,7 +215,7 @@ TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners_EnableSerializatio
     }, buffer);
 
     // Act
-    ht_RegistryTestEvent_register_event_klass();
+    HT_REGISTER_EVENT_KLASS(RegistryTestEvent);
     HT_DECL_EVENT(RegistryTestEvent, event);
     event.field = 30;
     ht_timeline_push_event(timeline, ((HT_Event*)(&event)));

@@ -17,15 +17,15 @@ ht_init(int argc, char** argv)
 
     ht_registry_init();
 
-    ht_HT_Event_register_event_klass();
-    ht_HT_EndiannessInfoEvent_register_event_klass();
-    ht_HT_EventKlassInfoEvent_register_event_klass();
-    ht_HT_EventKlassFieldInfoEvent_register_event_klass();
-    ht_HT_CallstackBaseEvent_register_event_klass();
-    ht_HT_CallstackIntEvent_register_event_klass();
-    ht_HT_CallstackStringEvent_register_event_klass();
-    ht_HT_StringMappingEvent_register_event_klass();
-    ht_HT_SystemInfoEvent_register_event_klass();
+    HT_REGISTER_EVENT_KLASS(HT_Event);
+    HT_REGISTER_EVENT_KLASS(HT_EndiannessInfoEvent);
+    HT_REGISTER_EVENT_KLASS(HT_EventKlassInfoEvent);
+    HT_REGISTER_EVENT_KLASS(HT_EventKlassFieldInfoEvent);
+    HT_REGISTER_EVENT_KLASS(HT_CallstackBaseEvent);
+    HT_REGISTER_EVENT_KLASS(HT_CallstackIntEvent);
+    HT_REGISTER_EVENT_KLASS(HT_CallstackStringEvent);
+    HT_REGISTER_EVENT_KLASS(HT_StringMappingEvent);
+    HT_REGISTER_EVENT_KLASS(HT_SystemInfoEvent);
 
     ht_feature_register_core_features();
 

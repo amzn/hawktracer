@@ -40,7 +40,7 @@ void test_listener(TEventPtr events, size_t event_count, HT_Boolean is_serialize
     while (events < end)
     {
         i->values.push_back(*((T*)events));
-        events += HT_EVENT_GET_CLASS(events)->type_info->size;
+        events += HT_EVENT_GET_KLASS(events)->type_info->size;
     }
 }
 

@@ -13,7 +13,7 @@ class TestFeatureCallstack : public ::testing::Test
 protected:
     static void SetUpTestCase()
     {
-        ht_TestCallstackEvent_register_event_klass();
+        HT_REGISTER_EVENT_KLASS(TestCallstackEvent);
     }
 
     void init_timeline(size_t buff_capacity)

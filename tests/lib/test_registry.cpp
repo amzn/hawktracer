@@ -9,7 +9,7 @@
 TEST(TestRegistry, RegisterTheSameEventSecondTimeShouldReturnTheSameType)
 {
     // Arrange
-    uint32_t type = ht_RegistryTestEvent_register_event_klass();
+    uint32_t type = HT_REGISTER_EVENT_KLASS(RegistryTestEvent);
 
     // Act & Assert
     ASSERT_EQ(type, ht_registry_register_event_klass(ht_RegistryTestEvent_get_event_klass_instance()));
@@ -20,8 +20,8 @@ TEST(TestRegistry, RegisterEventTwiceShouldAssignDifferentIdentifiersToTheClass)
     // Arrange
 
     // Act
-    ht_RegistryTestEvent_ID_ONE_register_event_klass();
-    ht_RegistryTestEvent_ID_TWO_register_event_klass();
+    HT_REGISTER_EVENT_KLASS(RegistryTestEvent_ID_ONE);
+    HT_REGISTER_EVENT_KLASS(RegistryTestEvent_ID_TWO);
 
     // Act & Assert
     HT_EventId id_one = ht_RegistryTestEvent_ID_ONE_get_event_klass_instance()->klass_id;

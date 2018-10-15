@@ -63,13 +63,13 @@ ht_listener_buffer_process_unserialized_events(HT_ListenerBuffer* buffer,
     {
         HT_Event* event = HT_EVENT(events + i);
 
-        if (HT_EVENT_GET_CLASS(event)->get_size(event) + buffer->usage > buffer->max_size)
+        if (HT_EVENT_GET_KLASS(event)->get_size(event) + buffer->usage > buffer->max_size)
         {
             flush_callback(listener);
             buffer->usage = 0;
         }
 
-        buffer->usage += HT_EVENT_GET_CLASS(event)->serialize(event, buffer->data + buffer->usage);
-        i += HT_EVENT_GET_CLASS(event)->type_info->size;
+        buffer->usage += HT_EVENT_GET_KLASS(event)->serialize(event, buffer->data + buffer->usage);
+        i += HT_EVENT_GET_KLASS(event)->type_info->size;
     }
 }

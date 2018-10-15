@@ -42,7 +42,7 @@ ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event)
 void
 ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 {
-    HT_EventKlass* klass = HT_EVENT_GET_CLASS(event);
+    HT_EventKlass* klass = HT_EVENT_GET_KLASS(event);
 
     assert(timeline);
     assert(event);
