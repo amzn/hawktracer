@@ -34,6 +34,8 @@ struct _HT_EventKlass
 
 #define HT_EVENT_GET_KLASS(event) (((HT_Event*)event)->klass)
 #define HT_EVENT_KLASS_GET(EVENT_TYPE) ht_##EVENT_TYPE##_get_event_klass_instance()
+#define HT_EVENT_IS_INSTANCE_OF(event, EVENT_TYPE) \
+  (HT_EVENT_GET_KLASS(event) == HT_EVENT_KLASS_GET(EVENT_TYPE))
 
 #define HT_DECL_EVENT(TYPE_NAME, event) \
     TYPE_NAME event; HT_EVENT(&event)->klass = HT_EVENT_KLASS_GET(TYPE_NAME);

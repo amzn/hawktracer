@@ -61,3 +61,21 @@ TEST(TestParserEvent, CallstackStringEventSerialize)
     offset += sizeof(HT_ThreadId);
     ASSERT_STREQ((char*)buffer + offset, event.label);
 }
+
+TEST(TestEvent, IsInstanceOfShouldReturnTrueIfEventIsInstanceOfKlass)
+{
+    // Arrange
+    HT_DECL_EVENT(HT_CallstackIntEvent, event);
+
+    // Act & Assert
+    ASSERT_TRUE(HT_EVENT_IS_INSTANCE_OF(&event, HT_CallstackIntEvent));
+}
+
+TEST(TestEvent, IsInstanceOfShouldReturnFalseIfEventIsNotInstanceOfKlass)
+{
+    // Arrange
+    HT_DECL_EVENT(HT_CallstackIntEvent, event);
+
+    // Act & Assert
+    ASSERT_FALSE(HT_EVENT_IS_INSTANCE_OF(&event, HT_CallstackStringEvent));
+}
