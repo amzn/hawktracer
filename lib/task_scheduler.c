@@ -23,7 +23,7 @@ struct _HT_Task
     HT_TaskSchedulingMode mode;
 };
 
-#define HT_TASK(task) ((HT_Task*)task)
+#define HT_TASK(task) (*(HT_Task**)task)
 
 static HT_DurationNs
 _greatest_common_divisor(HT_DurationNs a, HT_DurationNs b)
@@ -50,7 +50,7 @@ ht_task_scheduler_create(HT_ErrorCode* out_err)
         goto done;
     }
 
-    error_code = ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT);
+    error_code = ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT, sizeof(HT_Task*));
     if (error_code != HT_ERR_OK)
     {
         ht_free(task_scheduler);
@@ -75,7 +75,7 @@ ht_task_scheduler_destroy(HT_TaskScheduler* task_scheduler)
     size_t i = 0;
     for (i = 0; i < task_scheduler->tasks.size; i++)
     {
-        ht_free(task_scheduler->tasks.data[i]);
+        ht_free(*(HT_Task**)ht_bag_get_n(&task_scheduler->tasks, i));
     }
 
     ht_bag_deinit(&task_scheduler->tasks);
@@ -109,7 +109,7 @@ ht_task_scheduler_schedule_task(HT_TaskScheduler* task_scheduler,
     task->id = task_scheduler->next_task_id++;
     task->mode = mode;
 
-    if (ht_bag_add(&task_scheduler->tasks, task) != HT_ERR_OK)
+    if (ht_bag_add(&task_scheduler->tasks, &task) != HT_ERR_OK)
     {
         return HT_TASK_SCHEDULER_INVALID_TASK_ID;
     }
@@ -124,7 +124,7 @@ ht_task_scheduler_tick(HT_TaskScheduler* task_scheduler)
 
     for (i = 0; i < task_scheduler->tasks.size; i++)
     {
-        HT_Task* task = HT_TASK(task_scheduler->tasks.data[i]);
+        HT_Task* task = HT_TASK(ht_bag_get_n(&task_scheduler->tasks, i));
         HT_TimestampNs now_ts = ht_monotonic_clock_get_timestamp();
         if (task->next_action_ts > now_ts)
         {
@@ -150,10 +150,10 @@ ht_task_scheduler_remove_task(HT_TaskScheduler* task_scheduler, HT_TaskId task_i
 
     for (i = 0; i < task_scheduler->tasks.size; i++)
     {
-        HT_Task* task = HT_TASK(task_scheduler->tasks.data[i]);
+        HT_Task* task = HT_TASK(ht_bag_get_n(&task_scheduler->tasks, i));
         if (task->id == task_id)
         {
-            ht_bag_remove(&task_scheduler->tasks, task);
+            ht_bag_remove(&task_scheduler->tasks, &task);
             ht_free(task);
             return HT_TRUE;
         }
@@ -170,7 +170,7 @@ ht_task_scheduler_get_optimal_tick_period(HT_TaskScheduler* task_scheduler)
 
     for (task_pos = 0; task_pos < task_scheduler->tasks.size; task_pos++)
     {
-        HT_DurationNs task_period = HT_TASK(task_scheduler->tasks.data[task_pos])->period;
+        HT_DurationNs task_period = HT_TASK(ht_bag_get_n(&task_scheduler->tasks, task_pos))->period;
 
         if (task_period == 0)
         {

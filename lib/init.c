@@ -24,6 +24,9 @@ ht_init(int argc, char** argv)
     ht_HT_CallstackBaseEvent_register_event_klass();
     ht_HT_CallstackIntEvent_register_event_klass();
     ht_HT_CallstackStringEvent_register_event_klass();
+    ht_HT_DurationBaseEvent_register_event_klass();
+    ht_HT_DurationIntEvent_register_event_klass();
+    ht_HT_DurationStringEvent_register_event_klass();
     ht_HT_StringMappingEvent_register_event_klass();
     ht_HT_SystemInfoEvent_register_event_klass();
 

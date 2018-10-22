@@ -31,7 +31,7 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
         return HT_ERR_OK;
     }
 
-    error_code = ht_bag_init(&feature->cached_data, 1024);
+    error_code = ht_bag_init(&feature->cached_data, 1024, sizeof(void*));
 
     if (error_code != HT_ERR_OK)
     {
@@ -65,7 +65,7 @@ ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
     assert(f);
 
     ht_mutex_lock(f->lock);
-    error_code = ht_bag_add(&f->cached_data, (void*)label);
+    error_code = ht_bag_add(&f->cached_data, (void*)&label);
     ht_mutex_unlock(f->lock);
     if (error_code != HT_ERR_OK)
     {
@@ -89,7 +89,7 @@ ht_feature_cached_string_push_map(HT_Timeline* timeline)
 
     for (i = 0; i < f->cached_data.size; i++)
     {
-        HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, (uintptr_t)f->cached_data.data[i], f->cached_data.data[i]);
+        HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, *(uintptr_t*)ht_bag_get_n(&f->cached_data, i), *(void**)ht_bag_get_n(&f->cached_data, i));
     }
 
     ht_mutex_unlock(f->lock);

@@ -11,6 +11,7 @@
 #include <hawktracer/events.h>
 #include <hawktracer/feature_cached_string.h>
 #include <hawktracer/feature_callstack.h>
+#include <hawktracer/feature_duration.h>
 #include <hawktracer/global_timeline.h>
 #include <hawktracer/init.h>
 #include <hawktracer/listeners.h>

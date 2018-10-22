@@ -31,6 +31,17 @@ HT_DECLARE_EVENT_KLASS(HT_CallstackIntEvent, HT_CallstackBaseEvent,
 HT_DECLARE_EVENT_KLASS(HT_CallstackStringEvent, HT_CallstackBaseEvent,
                        (STRING, const char*, label))
 
+HT_DECLARE_EVENT_KLASS(HT_DurationBaseEvent, HT_Event,
+                       (INTEGER, HT_DurationNs, duration))
+#define HT_DURATION_BASE_EVENT(event) ((HT_DurationBaseEvent*)event)
+
+typedef uint64_t HT_DurationEventLabel;
+HT_DECLARE_EVENT_KLASS(HT_DurationIntEvent, HT_DurationBaseEvent,
+                       (INTEGER, HT_DurationEventLabel, label))
+
+HT_DECLARE_EVENT_KLASS(HT_DurationStringEvent, HT_DurationBaseEvent,
+                       (STRING, const char*, label))
+
 HT_DECLARE_EVENT_KLASS(HT_StringMappingEvent, HT_Event,
                        (INTEGER, uint64_t, identifier),
                        (STRING, const char*, label))
