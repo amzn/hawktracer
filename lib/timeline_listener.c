@@ -17,7 +17,7 @@ struct _HT_TimelineListenerContainer
     HT_Bag user_datas;
     HT_Mutex* mutex;
     uint32_t id;
-    int refcount; /* TODO atomic */
+    uint32_t refcount;
 };
 
 uint32_t
@@ -88,7 +88,9 @@ ht_timeline_listener_container_ref(HT_TimelineListenerContainer* container)
 {
     assert(container);
 
+    ht_mutex_lock(container->mutex);
     container->refcount++;
+    ht_mutex_unlock(container->mutex);
 }
 
 void
@@ -96,13 +98,20 @@ ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container)
 {
     assert(container);
 
+    ht_mutex_lock(container->mutex);
+
     if (--container->refcount == 0)
     {
         ht_bag_deinit(&container->callbacks);
         ht_bag_deinit(&container->user_datas);
+        ht_mutex_unlock(container->mutex);
         ht_mutex_destroy(container->mutex);
 
         ht_free(container);
+    }
+    else
+    {
+        ht_mutex_unlock(container->mutex);
     }
 }
 
