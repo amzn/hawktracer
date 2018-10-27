@@ -23,7 +23,7 @@ matrix:
             - python3-dev
 
       before_install:
-        # - pip install --user codecov
+        - pip install --user codecov
 
       before_script:
         - cmake -DENABLE_PYTHON_BINDINGS=ON .
@@ -31,7 +31,7 @@ matrix:
       after_script:
         - make coverage_base
         - make doc_doxygen_coverage
-        # - codecov --file coverage.info -F unittests
+        - codecov --file coverage.info -F unittests
         # - codecov --file doc-coverage.info -F documentation
 
     - os: linux
