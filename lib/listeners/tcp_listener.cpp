@@ -38,6 +38,7 @@ private:
         ht_timeline_listener_push_metadata(
                     [](TEventPtr e, size_t c, HT_Boolean serialized, void* user_data) {
             assert(serialized);
+            (void) serialized;
             HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
             std::lock_guard<std::mutex> l(listener->_push_action_mutex);
             listener->_tcp_server.write_to_socket(listener->_last_client_sock_fd, (char*)e, c);

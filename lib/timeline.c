@@ -21,17 +21,6 @@ struct _HT_Timeline
     HT_Boolean serialize_events;
 };
 
-static inline void
-_ht_timeline_notify_listeners(HT_Timeline* timeline, TEventPtr events, size_t size)
-{
-    size_t i;
-    for (i = 0; i < timeline->listeners->user_datas.size; i++)
-    {
-        (*(HT_TimelineListenerCallback*)&timeline->listeners->callbacks.data[i])
-                (events, size, timeline->serialize_events, timeline->listeners->user_datas.data[i]);
-    }
-}
-
 void
 ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event)
 {
@@ -67,13 +56,13 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
             {
                 HT_Byte* buff = ht_alloc(size);
                 event->klass->serialize(event, buff);
-                _ht_timeline_notify_listeners(timeline, buff, size);
+                ht_timeline_listener_container_notify_listeners(timeline->listeners, buff, size, timeline->serialize_events);
                 ht_free(buff);
             }
             else
             {
                 event->klass->serialize(event, local_buffer);
-                _ht_timeline_notify_listeners(timeline, local_buffer, size);
+                ht_timeline_listener_container_notify_listeners(timeline->listeners, local_buffer, size, timeline->serialize_events);
             }
         }
         else
@@ -91,7 +80,7 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
 
         if (timeline->buffer_capacity < klass->type_info->size) 
         {
-            _ht_timeline_notify_listeners(timeline, (TEventPtr)event, klass->type_info->size);
+            ht_timeline_listener_container_notify_listeners(timeline->listeners, (TEventPtr)event, klass->type_info->size, timeline->serialize_events);
         }
         else
         {
@@ -111,7 +100,7 @@ ht_timeline_flush(HT_Timeline* timeline)
 {
     if (timeline->buffer_usage)
     {
-        _ht_timeline_notify_listeners(timeline, timeline->buffer, timeline->buffer_usage);
+        ht_timeline_listener_container_notify_listeners(timeline->listeners, timeline->buffer, timeline->buffer_usage, timeline->serialize_events);
         timeline->buffer_usage = 0;
     }
 }

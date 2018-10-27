@@ -24,8 +24,6 @@ HT_API size_t ht_timeline_listener_push_metadata(HT_TimelineListenerCallback cal
 
 HT_API HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
 
-HT_API void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);
-
 /**
  * Registers new listener to a container.
  *

@@ -1,19 +1,19 @@
 #ifndef HAWKTRACER_INTERNAL_TIMELINE_LISTENER_CONTAINER_H
 #define HAWKTRACER_INTERNAL_TIMELINE_LISTENER_CONTAINER_H
 
-#include <internal/bag.h>
+#include <hawktracer/timeline_listener.h>
 
 HT_DECLS_BEGIN
 
-struct _HT_TimelineListenerContainer
-{
-    /* TODO single struct with pair? */
-    HT_Bag callbacks;
-    HT_Bag user_datas;
-    struct _HT_Mutex* mutex;
-    uint32_t id;
-    int refcount; /* TODO atomic */
-};
+void ht_timeline_listener_container_notify_listeners(HT_TimelineListenerContainer* listeners, TEventPtr events, size_t size, HT_Boolean serialize_events);
+
+uint32_t ht_timeline_listener_container_get_id(HT_TimelineListenerContainer* listeners);
+
+void ht_timeline_listener_container_set_id(HT_TimelineListenerContainer* container, uint32_t id);
+
+void ht_timeline_listener_container_ref(HT_TimelineListenerContainer* container);
+
+void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container);
 
 HT_DECLS_END
 

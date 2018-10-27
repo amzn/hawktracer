@@ -1,5 +1,6 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/core_events.h"
+#include "internal/bag.h"
 #include "internal/hash.h"
 #include "internal/feature.h"
 #include "internal/registry.h"
@@ -139,7 +140,7 @@ ht_registry_find_listener_container(const char* name)
     ht_mutex_lock(listeners_register_mutex);
     for (i = 0; i < listeners_register.size; i++)
     {
-        if (((HT_TimelineListenerContainer*)listeners_register.data[i])->id == id)
+        if (ht_timeline_listener_container_get_id(listeners_register.data[i]) == id)
         {
             void* container = listeners_register.data[i];
             ht_mutex_unlock(listeners_register_mutex);
@@ -162,8 +163,8 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
     }
 
     ht_mutex_lock(listeners_register_mutex);
-    container->id = djb2_hash(name);
-    container->refcount++;
+    ht_timeline_listener_container_set_id(container, djb2_hash(name));
+    ht_timeline_listener_container_ref(container);
 
     error_code = ht_bag_add(&listeners_register, container);
     if (error_code != HT_ERR_OK)

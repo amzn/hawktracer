@@ -2,11 +2,45 @@
 
 #include "hawktracer/alloc.h"
 #include "hawktracer/system_info.h"
+#include "hawktracer/timeline.h"
+#include "internal/bag.h"
 #include "internal/registry.h"
 #include "internal/mutex.h"
 #include "internal/timeline_listener_container.h"
 
 #include <assert.h>
+
+struct _HT_TimelineListenerContainer
+{
+    /* TODO single struct with pair? */
+    HT_Bag callbacks;
+    HT_Bag user_datas;
+    HT_Mutex* mutex;
+    uint32_t id;
+    int refcount; /* TODO atomic */
+};
+
+uint32_t
+ht_timeline_listener_container_get_id(HT_TimelineListenerContainer* container)
+{
+    return container->id;
+}
+
+void ht_timeline_listener_container_set_id(HT_TimelineListenerContainer* container, uint32_t id)
+{
+    container->id = id;
+}
+
+void
+ht_timeline_listener_container_notify_listeners(HT_TimelineListenerContainer* container, TEventPtr events, size_t size, HT_Boolean serialize_events)
+{
+    size_t i;
+    for (i = 0; i < container->user_datas.size; i++)
+    {
+        (*(HT_TimelineListenerCallback*)&container->callbacks.data[i])
+                (events, size, serialize_events, container->user_datas.data[i]);
+    }
+}
 
 HT_TimelineListenerContainer*
 ht_timeline_listener_container_create(void)
@@ -47,6 +81,14 @@ error_init_callbacks:
     container = NULL;
 done:
     return container;
+}
+
+void
+ht_timeline_listener_container_ref(HT_TimelineListenerContainer* container)
+{
+    assert(container);
+
+    container->refcount++;
 }
 
 void
