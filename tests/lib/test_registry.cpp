@@ -3,6 +3,7 @@
 
 #include <hawktracer/registry.h>
 #include <internal/registry.h>
+#include <internal/timeline_listener_container.h>
 
 #include <gtest/gtest.h>
 

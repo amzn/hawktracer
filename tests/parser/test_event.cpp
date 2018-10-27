@@ -4,7 +4,7 @@
 
 using namespace HawkTracer::parser;
 
-class TestEvent : public ::testing::Test
+class TestParserEvent : public ::testing::Test
 {
 protected:
     void SetUp() override
@@ -21,7 +21,7 @@ protected:
     std::shared_ptr<EventKlassField> _klass_field3;
 };
 
-TEST_F(TestEvent, ValidateSetValueMethod)
+TEST_F(TestParserEvent, ValidateSetValueMethod)
 {
    // Arrange
     Event event(_klass);
@@ -35,7 +35,7 @@ TEST_F(TestEvent, ValidateSetValueMethod)
     ASSERT_EQ(value.f_INT8, event.get_value<int8_t>(_klass_field1->get_name()));
 }
 
-TEST_F(TestEvent, SetTimestampValueShouldUpdateTimestampField)
+TEST_F(TestParserEvent, SetTimestampValueShouldUpdateTimestampField)
 {
    // Arrange
     auto timestamp_field = std::make_shared<EventKlassField>("timestamp", "field_type", FieldTypeId::UINT64);
@@ -50,7 +50,7 @@ TEST_F(TestEvent, SetTimestampValueShouldUpdateTimestampField)
     ASSERT_EQ(value.f_UINT64, event.get_timestamp());
 }
 
-TEST_F(TestEvent, MergeEventsShouldCopyAllValues)
+TEST_F(TestParserEvent, MergeEventsShouldCopyAllValues)
 {
     // Arrange
     Event event1(_klass);
@@ -74,7 +74,7 @@ TEST_F(TestEvent, MergeEventsShouldCopyAllValues)
     ASSERT_EQ(value3, event1.get_value<uint64_t>(_klass_field3->get_name()));
 }
 
-TEST_F(TestEvent, CopyEventShouldCopyAllValues)
+TEST_F(TestParserEvent, CopyEventShouldCopyAllValues)
 {
     // Arrange
     auto base_klass = std::make_shared<EventKlass>("base_klass", 1);
@@ -112,7 +112,7 @@ TEST_F(TestEvent, CopyEventShouldCopyAllValues)
     ASSERT_EQ(value3, parent->get_value<uint64_t>(_klass_field3->get_name()));
 }
 
-TEST_F(TestEvent, CopyEventWithNullStringShouldSetFieldValueToNull)
+TEST_F(TestParserEvent, CopyEventWithNullStringShouldSetFieldValueToNull)
 {
     // Arrange
     Event event(_klass);
@@ -125,7 +125,7 @@ TEST_F(TestEvent, CopyEventWithNullStringShouldSetFieldValueToNull)
     ASSERT_EQ(nullptr, event_copy.get_value<char*>(_klass_field2->get_name()));
 }
 
-TEST_F(TestEvent, CopyEventWithNullEventShouldSetFieldValueToNull)
+TEST_F(TestParserEvent, CopyEventWithNullEventShouldSetFieldValueToNull)
 {
     // Arrange
     auto field = std::make_shared<EventKlassField>("base_field3", "klass_name", FieldTypeId::STRUCT);
