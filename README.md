@@ -1,7 +1,8 @@
-[![Build Status](https://travis-ci.org/amzn/hawktracer.svg?branch=master)](https://travis-ci.org/amzn/hawktracer)
+[![Build Status](https://travis-ci.org/loganek/hawktracer.svg?branch=master)](https://travis-ci.org/loganek/hawktracer)
 [![Gitter chat](https://img.shields.io/gitter/room/amzn/hawktracer.svg)](https://gitter.im/amzn/hawktracer)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/120cd4862ef1480cb4149b1c667c8c80)](https://www.codacy.com/app/loganek/hawktracer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amzn/hawktracer&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8d0f18c7a6b14f15bb747b0a4cd336bb)](https://www.codacy.com/app/loganek/hawktracer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=loganek/hawktracer&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/loganek/hawktracer/branch/master/graph/badge.svg)](https://codecov.io/gh/loganek/hawktracer)
+[![Build status](https://ci.appveyor.com/api/projects/status/3yh0rvyxs0x38802?svg=true)](https://ci.appveyor.com/project/loganek/hawktracer)
 
 # HawkTracer
 
