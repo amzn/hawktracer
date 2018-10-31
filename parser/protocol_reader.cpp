@@ -184,7 +184,7 @@ bool ProtocolReader::_read_numeric(FieldType& value, const EventKlassField& fiel
     SET_VALUE(INT64, int64_t);
 #undef SET_VALUE
     case FieldTypeId::POINTER:
-        throw std::runtime_error("Pointers are not supported yet");
+        return false;
         break;
     default: assert(0); return false;
     }

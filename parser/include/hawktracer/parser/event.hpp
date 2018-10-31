@@ -16,15 +16,20 @@ class Event
 public:
     struct Value
     {
+        Value() {}
         Value(FieldType value, const EventKlassField* field) :
             value(std::move(value)), field(field)
         {
         }
-        Value(Value&&) = default;
+        Value(Value&&);
+        Value& operator=(Value&&);
         Value(const Value& other);
+        Value& operator=(Value other);
 
         FieldType value;
-        const EventKlassField* field;
+        const EventKlassField* field = nullptr;
+    private:
+        void _swap(Value& other);
     };
 
     explicit Event(std::shared_ptr<const EventKlass> klass) :
@@ -32,6 +37,7 @@ public:
     {
     }
     Event(const Event& other) = default;
+    Event& operator=(const Event& other) = default;
     Event(Event&&) = default;
 
     ~Event();

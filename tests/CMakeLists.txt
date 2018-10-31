@@ -46,6 +46,7 @@ if(ENABLE_CLIENT)
     add_subdirectory(parser)
     add_subdirectory(client_utils)
     add_subdirectory(client)
+    add_subdirectory(integration)
 endif(ENABLE_CLIENT)
 
 add_executable(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_SOURCES})

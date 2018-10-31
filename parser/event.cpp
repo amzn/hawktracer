@@ -8,9 +8,28 @@ namespace HawkTracer
 namespace parser
 {
 
-Event::Value::Value(const Value& other) :
-    field(other.field)
+Event::Value::Value(Value&& other) :
+    Value()
 {
+    _swap(other);
+}
+
+Event::Value& Event::Value::operator=(Value&& other)
+{
+    _swap(other);
+    other.field = nullptr;
+    return *this;
+}
+
+Event::Value::Value(const Value& other)
+{
+    field = other.field;
+
+    if (!field)
+    {
+        return;
+    }
+
     switch (field->get_type_id())
     {
     case FieldTypeId::STRING:
@@ -39,10 +58,27 @@ Event::Value::Value(const Value& other) :
     }
 }
 
+Event::Value& Event::Value::operator=(Value other)
+{
+    _swap(other);
+    return *this;
+}
+
+void Event::Value::_swap(Value& other)
+{
+    std::swap(field, other.field);
+    std::swap(value, other.value);
+}
+
 Event::~Event()
 {
     for (const auto& value : _values)
     {
+        if (value.second.field == nullptr)
+        {
+            continue;
+        }
+
         switch (value.second.field->get_type_id())
         {
         case FieldTypeId::STRING:

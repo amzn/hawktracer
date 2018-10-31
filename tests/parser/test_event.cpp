@@ -138,3 +138,48 @@ TEST_F(TestParserEvent, CopyEventWithNullEventShouldSetFieldValueToNull)
     // Assert
     ASSERT_EQ(nullptr, event_copy.get_value<Event*>(field->get_name()));
 }
+
+TEST_F(TestParserEvent, ValidateGetValueOrDefault)
+{
+    // Arrange
+    const int32_t expected_value1 = 82381;
+    const int8_t expected_value2 = 123;
+    Event event(_klass);
+    event.set_value(_klass_field1.get(), expected_value2);
+
+    // Act & Assert
+   ASSERT_EQ(expected_value1, event.get_value_or_default<int32_t>("non-existing-field", expected_value1));
+   ASSERT_EQ(expected_value2, event.get_value_or_default<int8_t>(_klass_field1->get_name(), 33));
+}
+
+TEST_F(TestParserEvent, ValidateHasValue)
+{
+    // Arrange
+    Event event(_klass);
+    event.set_value(_klass_field1.get(), 32);
+
+    // Act & Assert
+   ASSERT_FALSE(event.has_value("Non-existing-key"));
+   ASSERT_TRUE(event.has_value(_klass_field1->get_name()));
+   ASSERT_FALSE(event.has_value(_klass_field2->get_name()));
+}
+
+TEST_F(TestParserEvent, GetRawValueShouldNotFailIfValueExist)
+{
+    // Arrange
+    Event event(_klass);
+    const int8_t expected_value = 58;
+    event.set_value(_klass_field1.get(), expected_value);
+
+    // Act & Assert
+   ASSERT_EQ(expected_value, event.get_raw_value(_klass_field1->get_name()).value.f_INT8);
+}
+
+TEST_F(TestParserEvent, GetRawValueShouldThrowExceptionIfValueDoesNotExist)
+{
+    // Arrange
+    Event event(_klass);
+
+    // Act & Assert
+   ASSERT_THROW(event.get_raw_value(_klass_field1->get_name()), std::out_of_range);
+}

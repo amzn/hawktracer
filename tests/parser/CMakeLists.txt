@@ -4,6 +4,7 @@ set(HAWKTRACER_GTEST_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_event.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_file_stream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_klass_register.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_protocol_reader.cpp
 
     ${HAWKTRACER_GTEST_TEST_SOURCES}
     PARENT_SCOPE)
