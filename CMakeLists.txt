@@ -26,8 +26,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # PLATFORM FEATURES
 include(platform_features)
-define_platform_feature(CPU_USAGE "cpu_usage.c")
-define_platform_feature(MEMORY_USAGE "memory_usage.c")
+define_platform_feature(CPU_USAGE "cpu_usage.c" DEFAULT)
+define_platform_feature(MEMORY_USAGE "memory_usage.c" DEFAULT)
 
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_C_STANDARD 99)
