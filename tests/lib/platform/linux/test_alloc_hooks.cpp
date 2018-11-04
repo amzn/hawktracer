@@ -218,3 +218,27 @@ TEST_F(TestAllocHooks, TestFreePostHook)
     VALGRIND_CHECK_ASSERT_EQ(malloc_ptr, _user_data.ptr);
     VALGRIND_CHECK_ASSERT_EQ(2u, _user_data.count);
 }
+
+TEST_F(TestAllocHooks, SkipHookFunctionsShouldAllocateMemoryButNotCallCallback)
+{
+    // Arrange
+    CHECK_VALGRIND();
+    ht_alloc_hooks_register_hooks(test_malloc_hook, test_malloc_hook,
+                                  test_calloc_hook, test_calloc_hook,
+                                  test_realloc_hook, test_realloc_hook,
+                                  test_free_hook, test_free_hook, &_user_data);
+
+    // Act
+    void* volatile malloc_ptr = ht_alloc_hooks_malloc_skip_hook(10);
+    void* volatile realloc_ptr = ht_alloc_hooks_realloc_skip_hook(malloc_ptr, 32);
+    void* volatile calloc_ptr = ht_alloc_hooks_calloc_skip_hook(2, 4);
+
+    ht_alloc_hooks_free_skip_hook(realloc_ptr);
+    ht_alloc_hooks_free_skip_hook(calloc_ptr);
+
+    // Assert
+    ASSERT_EQ(0u, _user_data.count);
+    ASSERT_NE(nullptr, (void*)malloc_ptr);
+    ASSERT_NE(nullptr, (void*)calloc_ptr);
+    ASSERT_NE(nullptr, (void*)realloc_ptr);
+}
