@@ -52,4 +52,10 @@ endif(ENABLE_CLIENT)
 add_executable(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_SOURCES})
 target_link_libraries(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_LIBS})
 target_include_directories(hawktracer_gtest_tests PRIVATE ${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
+
+CHECK_INCLUDE_FILE("valgrind/valgrind.h" VALGRIND_CHECK_ENABLED)
+if (VALGRIND_CHECK_ENABLED)
+    target_compile_definitions(hawktracer_gtest_tests PRIVATE VALGRIND_CHECK_ENABLED)
+endif()
+
 add_test(gtest_tests hawktracer_gtest_tests --gtest_output=xml:hawktracer_gtest_tests.xml)

@@ -34,4 +34,8 @@
 #include <hawktracer/memory_usage.h>
 #endif /* HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED */
 
+#ifdef HT_PLATFORM_FEATURE_ALLOC_HOOKS_ENABLED
+#include <hawktracer/alloc_hooks.h>
+#endif /* HT_PLATFORM_FEATURE_ALLOC_HOOKS_ENABLED */
+
 #endif /* HAWKTRACER_HAWKTRACER_H */

@@ -29,9 +29,11 @@ endmacro(SETUP_FEATURE_TEST)
 
 SETUP_FEATURE_TEST(CPU_USAGE "cpu_usage.c" "test_cpu_usage.cpp")
 SETUP_FEATURE_TEST(MEMORY_USAGE "memory_usage.c" "test_memory_usage.cpp")
+SETUP_FEATURE_TEST(ALLOC_HOOKS "alloc_hooks.c" "test_alloc_hooks.cpp")
 
 set(HAWKTRACER_GTEST_TEST_SOURCES ${HAWKTRACER_GTEST_TEST_SOURCES} ${LIB_TEST_SOURCES} PARENT_SCOPE)
 
 add_executable(hawktracer_destroy_timeline_after_uninit_tests main_destroy_timeline_after_uninit.c)
 target_link_libraries(hawktracer_destroy_timeline_after_uninit_tests hawktracer)
+
 add_test(destroy_timeline_after_uninit_tests hawktracer_destroy_timeline_after_uninit_tests)
