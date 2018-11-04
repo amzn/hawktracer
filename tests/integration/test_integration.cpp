@@ -114,7 +114,7 @@ TEST_F(TestIntegration, HandlingExtendedEventShouldNotFail)
                                    );
     });
 
-    ProtocolReader reader(&registry, make_unique<MemoryStream>(std::move(data)), true);
+    ProtocolReader reader(&registry, HawkTracer::parser::make_unique<MemoryStream>(std::move(data)), true);
     Event expected_event(nullptr);
 
     reader.register_events_listener([&expected_event] (const Event& event) {
@@ -154,7 +154,7 @@ TEST_F(TestIntegration, HandlePointerEventShouldFailAsItIsNotSupportedYet)
     });
     bool was_event = false;
 
-    ProtocolReader reader(&registry, make_unique<MemoryStream>(std::move(data)), true);
+    ProtocolReader reader(&registry, HawkTracer::parser::make_unique<MemoryStream>(std::move(data)), true);
     reader.register_events_listener([&was_event] (const Event& event) {
         if (event.get_klass()->get_id() == HT_EVENT_KLASS_GET(PointerTestEvent)->klass_id)
         {
@@ -185,7 +185,7 @@ TEST_F(TestIntegration, HandleBaseEventShouldNotFail)
     });
     bool was_event = false;
 
-    ProtocolReader reader(&registry, make_unique<MemoryStream>(std::move(data)), true);
+    ProtocolReader reader(&registry, HawkTracer::parser::make_unique<MemoryStream>(std::move(data)), true);
     reader.register_events_listener([&was_event] (const Event& event) {
         if (event.get_klass()->get_id() == HT_EVENT_KLASS_GET(HT_Event)->klass_id)
         {
