@@ -20,7 +20,7 @@ if (DOXYGEN_FOUND)
     file(COPY "${CMAKE_SOURCE_DIR}/CONTRIBUTING.md"
         DESTINATION "${CMAKE_BINARY_DIR}/docs")
     
-    add_custom_target(doc_doxygen ALL
+    add_custom_target(doc_doxygen
         COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         COMMENT "Generating API documentation with Doxygen"
@@ -32,6 +32,7 @@ if (DOXYGEN_FOUND)
         set(INSTALL_DOC_DIR share/doc/hawktracer)
     endif()
 
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR} --target doc_doxygen)")
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen_doc/html/ DESTINATION ${INSTALL_DOC_DIR})
       
     find_package(PythonInterp 3)
