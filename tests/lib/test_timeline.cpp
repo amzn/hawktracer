@@ -228,3 +228,25 @@ TEST_F(TestTimeline, TooLargeEventShouldGoStraightToListeners_EnableSerializatio
     ht_timeline_unregister_all_listeners(timeline);
     ht_timeline_destroy(timeline);
 }
+
+TEST_F(TestTimeline, PushingLargeEventShouldNotCrashApplication)
+{
+    // Arrange
+    HT_REGISTER_EVENT_KLASS(LargeTestEvent);
+    HT_REGISTER_EVENT_KLASS(SuperLargeTestEvent);
+    HT_Timeline* timeline = ht_timeline_create(1, HT_TRUE, HT_TRUE, nullptr, nullptr);
+    bool called = false;
+    ht_timeline_register_listener(timeline, [] (TEventPtr /* events */, size_t /* event_count */, HT_Boolean /* is_serialized */, void* user_data) {
+        *static_cast<bool*>(user_data) = true;
+    }, &called);
+
+    // Act
+    HT_DECL_EVENT(SuperLargeTestEvent, event);
+    ht_timeline_push_event(timeline, HT_EVENT(&event));
+
+    // Assert
+    ASSERT_TRUE(called);
+
+    ht_timeline_unregister_all_listeners(timeline);
+    ht_timeline_destroy(timeline);
+}
