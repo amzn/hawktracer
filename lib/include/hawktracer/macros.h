@@ -44,17 +44,19 @@
 #  define HT_UNLIKELY(expr) (expr)
 #endif
 
-/** @def inline
+/** @def HT_INLINE
  * Defines an inline directive for inlining functions.
  */
 #ifndef __cplusplus
-#  ifdef _MSC_VER
-#    if (_MSC_VER < 1900)
-#      define inline __inline
-#    endif
-#    elif !defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199900)
-#      define inline __inline
-#    endif
+#  if defined (_MSC_VER) && (_MSC_VER < 1900)
+#    define HT_INLINE __inline
+#  elif !defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199900)
+#    define HT_INLINE __inline
+#  else
+#    define HT_INLINE inline
+#  endif
+#else
+#  define HT_INLINE inline
 #endif
 
 #ifdef _WIN32

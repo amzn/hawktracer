@@ -1,7 +1,7 @@
 #include "internal/bag.h"
 #include "hawktracer/alloc.h"
 
-static inline HT_Boolean
+static HT_INLINE HT_Boolean
 _ht_bag_resize(HT_Bag* bag, size_t new_capacity)
 {
     void** ptr = (void**)ht_realloc(bag->data, new_capacity * sizeof(void*));
