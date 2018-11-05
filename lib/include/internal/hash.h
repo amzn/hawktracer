@@ -10,11 +10,11 @@ HT_DECLS_BEGIN
 static uint32_t djb2_hash(const char *str)
 {
     uint32_t hash = 5381;
-    int c;
+    char c;
 
     while ((c = *str++))
     {
-        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        hash = ((hash << 5) + hash) + (unsigned int)c; /* hash * 33 + c */
     }
 
     return hash;

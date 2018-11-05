@@ -19,7 +19,7 @@ static HT_Mutex* listeners_register_mutex;
 static HT_Mutex* features_register_mutex;
 static HT_Mutex* event_klass_registry_register_mutex;
 
-#define _HT_CREATE_MUTEX(mutex_var, error_code_var, label_if_fails) \
+#define HT_CREATE_MUTEX_(mutex_var, error_code_var, label_if_fails) \
     do { \
         mutex_var = ht_mutex_create(); \
         if (!mutex_var) \
@@ -64,9 +64,9 @@ ht_registry_init(void)
         goto error_listeners_register;
     }
 
-    _HT_CREATE_MUTEX(listeners_register_mutex, error_code, error_listeners_mutex);
-    _HT_CREATE_MUTEX(features_register_mutex, error_code, error_features_mutex);
-    _HT_CREATE_MUTEX(event_klass_registry_register_mutex, error_code, error_event_klass_registry_mutex);
+    HT_CREATE_MUTEX_(listeners_register_mutex, error_code, error_listeners_mutex);
+    HT_CREATE_MUTEX_(features_register_mutex, error_code, error_features_mutex);
+    HT_CREATE_MUTEX_(event_klass_registry_register_mutex, error_code, error_event_klass_registry_mutex);
 
     goto done;
 
@@ -93,7 +93,7 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
 
         if (ht_bag_add(&event_klass_register, event_klass) == HT_ERR_OK)
         {
-            klass_id = event_klass->klass_id = event_klass_register.size;
+            klass_id = event_klass->klass_id = (HT_EventKlassId)event_klass_register.size;
         }
 
         ht_mutex_unlock(event_klass_registry_register_mutex);
@@ -179,7 +179,7 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
 }
 
 void
-ht_feature_disable(HT_Timeline *timeline, uint32_t id)
+ht_feature_disable(HT_Timeline *timeline, size_t id)
 {
     assert(timeline);
     assert(feature_disable_callback[id]);
@@ -213,7 +213,7 @@ _ht_registry_init_event_klass_field_info_event(HT_EventKlass* klass, size_t fiel
     }
     else
     {
-        event->data_type = (HT_MKCREFLECT_Types_Ext)info->data_type;
+        event->data_type = (uint8_t)info->data_type;
     }
 
     event->info_klass_id = klass->klass_id;

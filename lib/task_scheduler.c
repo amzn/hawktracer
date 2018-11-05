@@ -5,7 +5,7 @@
 
 #include <string.h>
 
-#define _DEFAULT_INIT_TASK_COUNT 16
+#define DEFAULT_INIT_TASK_COUNT_ 16
 
 struct _HT_TaskScheduler
 {
@@ -50,7 +50,7 @@ ht_task_scheduler_create(HT_ErrorCode* out_err)
         goto done;
     }
 
-    error_code = ht_bag_init(&task_scheduler->tasks, _DEFAULT_INIT_TASK_COUNT);
+    error_code = ht_bag_init(&task_scheduler->tasks, DEFAULT_INIT_TASK_COUNT_);
     if (error_code != HT_ERR_OK)
     {
         ht_free(task_scheduler);

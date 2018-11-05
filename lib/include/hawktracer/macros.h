@@ -20,7 +20,7 @@
 #  define HT_DECLS_END
 #endif
 
-#if __cplusplus >= 201103L || (defined(_MSVC_LANG) && _MSVC_LANG >= 201402L)
+#if (defined(__cplusplus) && __cplusplus >= 201103L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 201402L)
 #  define HT_CPP11
 #endif
 

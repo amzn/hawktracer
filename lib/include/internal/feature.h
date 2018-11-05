@@ -5,7 +5,7 @@
 
 HT_DECLS_BEGIN
 
-void ht_feature_disable(HT_Timeline* timeline, uint32_t id);
+void ht_feature_disable(HT_Timeline* timeline, size_t id);
 
 void ht_feature_register_core_features(void);
 

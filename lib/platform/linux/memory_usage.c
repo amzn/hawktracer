@@ -36,7 +36,7 @@ ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
                           size_t* resident_memory_bytes)
 {
     char buf[64];
-    long page_size;
+    unsigned long page_size;
     unsigned long long virt_mem;
     unsigned long long resident_mem;
     unsigned long long shared_mem;
@@ -54,7 +54,7 @@ ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
         return HT_ERR_CANT_OPEN_FILE;
     }
 
-    int num = fread(buf, 1, sizeof(buf) - 1, fp);
+    size_t num = fread(buf, 1, sizeof(buf) - 1, fp);
     fclose(fp);
 
     if (num < 16)
@@ -69,7 +69,7 @@ ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
         return HT_ERR_INVALID_FORMAT;
     }
 
-    page_size = sysconf(_SC_PAGESIZE);
+    page_size = (unsigned long)sysconf(_SC_PAGESIZE);
 
     if (virtual_memory_bytes)
     {

@@ -4,7 +4,7 @@
 HT_Endianness
 ht_system_info_get_endianness(void)
 {
-    const int i = 1;
+    int i = 1;
     return *(HT_Byte*)&i == 0 ? HT_ENDIANNESS_BIG : HT_ENDIANNESS_LITTLE;
 }
 

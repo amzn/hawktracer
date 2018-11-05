@@ -43,7 +43,7 @@ _get_process_time(unsigned long* total_time, int pid)
         return HT_FALSE;
     }
 
-    int num = fread(buf, 1, sizeof(buf) - 1, fp);
+    size_t num = fread(buf, 1, sizeof(buf) - 1, fp);
     fclose(fp);
 
     if (num < 80)
@@ -112,8 +112,7 @@ ht_cpu_usage_get_percentage(HT_CPUUsageContext* context)
 {
     HT_TimestampNs current_ts = ht_monotonic_clock_get_timestamp();
     unsigned long total_time;
-
-    long tics;
+    unsigned long tics;
     float elapsed;
 
     if (_get_process_time(&total_time, context->pid) == HT_FALSE)
