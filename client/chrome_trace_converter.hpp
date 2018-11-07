@@ -22,6 +22,9 @@ public:
     void stop() override;
 
 private:
+    static std::string _get_args(const parser::Event& event);
+    static std::string _get_json_value(const parser::Event::Value& value);
+
     std::ofstream _file;
 };
 
