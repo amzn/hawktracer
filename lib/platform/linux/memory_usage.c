@@ -42,6 +42,11 @@ ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
     unsigned long long shared_mem;
     FILE* fp;
 
+    if (!context)
+    {
+        return HT_ERR_INVALID_ARGUMENT;
+    }
+
     if (!virtual_memory_bytes && !shared_memory_bytes && !resident_memory_bytes)
     {
         return HT_ERR_OK;

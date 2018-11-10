@@ -38,6 +38,8 @@ typedef enum
 {
     /** No error */
     HT_ERR_OK = 0,
+    /** Unknown error */
+    HF_ERR_UNKNOWN,
     /** Memory allocation failed. This is very serious error, and
      * most likely your entire application is broken at this point of time. */
     HT_ERR_OUT_OF_MEMORY,
@@ -57,7 +59,9 @@ typedef enum
      * #HT_ERR_OUT_OF_MEMORY occured internally in the library. */
     HT_ERR_CANT_CREATE_LISTENER_CONTAINER,
     /** Format of an input data is invalid. */
-    HT_ERR_INVALID_FORMAT
+    HT_ERR_INVALID_FORMAT,
+    /** Invalid argument */
+    HT_ERR_INVALID_ARGUMENT
 } HT_ErrorCode;
 
 /** Defines supported byte ordering */
