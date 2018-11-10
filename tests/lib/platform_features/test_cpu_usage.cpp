@@ -1,4 +1,4 @@
-#include "../../test_allocator.h"
+#include "../test_allocator.h"
 
 #include <hawktracer/cpu_usage.h>
 
