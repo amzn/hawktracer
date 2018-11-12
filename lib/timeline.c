@@ -54,7 +54,7 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
             HT_Byte local_buffer[128];
             if (size > sizeof(local_buffer)/sizeof(local_buffer[0]))
             {
-                HT_Byte* buff = ht_alloc(size);
+                HT_Byte* buff = (HT_Byte*)ht_alloc(size);
                 event->klass->serialize(event, buff);
                 ht_timeline_listener_container_notify_listeners(timeline->listeners, buff, size, timeline->serialize_events);
                 ht_free(buff);

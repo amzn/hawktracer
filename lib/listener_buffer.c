@@ -9,7 +9,7 @@
 HT_ErrorCode
 ht_listener_buffer_init(HT_ListenerBuffer* buffer, size_t max_size)
 {
-    buffer->data = ht_alloc(max_size);
+    buffer->data = (HT_Byte*)ht_alloc(max_size);
 
     if (buffer->data == NULL)
     {

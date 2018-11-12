@@ -121,7 +121,7 @@ ht_registry_deinit(void)
     size_t i;
     for (i = 0; i < listeners_register.size; i++)
     {
-        ht_timeline_listener_container_unref(listeners_register.data[i]);
+        ht_timeline_listener_container_unref((HT_TimelineListenerContainer*)listeners_register.data[i]);
     }
 
     ht_mutex_destroy(features_register_mutex);
@@ -140,9 +140,9 @@ ht_registry_find_listener_container(const char* name)
     ht_mutex_lock(listeners_register_mutex);
     for (i = 0; i < listeners_register.size; i++)
     {
-        if (ht_timeline_listener_container_get_id(listeners_register.data[i]) == id)
+        if (ht_timeline_listener_container_get_id((HT_TimelineListenerContainer*)listeners_register.data[i]) == id)
         {
-            void* container = listeners_register.data[i];
+            HT_TimelineListenerContainer* container = (HT_TimelineListenerContainer*)listeners_register.data[i];
             ht_mutex_unlock(listeners_register_mutex);
             return container;
         }

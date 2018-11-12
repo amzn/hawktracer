@@ -89,7 +89,7 @@ ht_feature_cached_string_push_map(HT_Timeline* timeline)
 
     for (i = 0; i < f->cached_data.size; i++)
     {
-        HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, (uintptr_t)f->cached_data.data[i], f->cached_data.data[i]);
+        HT_TIMELINE_PUSH_EVENT(timeline, HT_StringMappingEvent, (uintptr_t)f->cached_data.data[i], (const char*)f->cached_data.data[i]);
     }
 
     ht_mutex_unlock(f->lock);

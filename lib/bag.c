@@ -20,7 +20,7 @@ _ht_bag_resize(HT_Bag* bag, size_t new_capacity)
 HT_ErrorCode
 ht_bag_init(HT_Bag* bag, size_t min_capacity)
 {
-    bag->data = ht_alloc(min_capacity * sizeof(void*));
+    bag->data = (void**)ht_alloc(min_capacity * sizeof(void*));
 
     if (bag->data == NULL)
     {

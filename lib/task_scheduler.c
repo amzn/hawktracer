@@ -96,7 +96,7 @@ ht_task_scheduler_schedule_task(HT_TaskScheduler* task_scheduler,
         return HT_TASK_SCHEDULER_INVALID_TASK_ID;
     }
 
-    task = ht_alloc(sizeof(HT_Task));
+    task = HT_CREATE_TYPE(HT_Task);
     if (task == NULL)
     {
         return HT_TASK_SCHEDULER_INVALID_TASK_ID;
