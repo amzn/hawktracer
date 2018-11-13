@@ -1,6 +1,8 @@
 #ifndef HAWKTRACER_SCOPED_TRACEPOINT_HPP
 #define HAWKTRACER_SCOPED_TRACEPOINT_HPP
 
+#ifdef __cplusplus
+
 #include <hawktracer/feature_callstack.h>
 
 namespace HawkTracer
@@ -41,5 +43,7 @@ private:
 };
 
 } /* namespace HawkTracer */
+
+#endif /* __cplusplus */
 
 #endif /* HAWKTRACER_SCOPED_TRACEPOINT_HPP */
