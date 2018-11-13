@@ -4,9 +4,7 @@
 #include <hawktracer/base_types.h>
 #include <hawktracer/config.h>
 
-#ifndef HT_PLATFORM_FEATURE_ALLOC_HOOKS_ENABLED
-#  error "This feature is not enabled therefore this file should not be included."
-#endif /* HT_PLATFORM_FEATURE_ALLOC_HOOKS_ENABLED */
+#ifdef HT_PLATFORM_FEATURE_ALLOC_HOOKS_ENABLED
 
 /** @cond skip */
 HT_DECLS_BEGIN
@@ -108,5 +106,7 @@ HT_API void *ht_alloc_hooks_realloc_skip_hook(void* ptr, size_t size);
 HT_API void ht_alloc_hooks_free_skip_hook(void* ptr);
 
 HT_DECLS_END
+
+#endif /* HT_PLATFORM_FEATURE_ALLOC_HOOKS_ENABLED */
 
 #endif /* HAWKTRACER_ALLOC_HOOKS_H */

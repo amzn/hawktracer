@@ -4,9 +4,7 @@
 #include <hawktracer/base_types.h>
 #include <hawktracer/config.h>
 
-#ifndef HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED
-#  error "This feature is not enabled therefore this file should not be included."
-#endif /* HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED */
+#ifdef HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED
 
 HT_DECLS_BEGIN
 
@@ -71,5 +69,7 @@ HT_API HT_ErrorCode ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
                                               size_t* resident_memory_bytes);
 
 HT_DECLS_END
+
+#endif /* HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED */
 
 #endif /* HAWKTRACER_MEMORY_USAGE_H */

@@ -4,9 +4,7 @@
 #include <hawktracer/base_types.h>
 #include <hawktracer/config.h>
 
-#ifndef HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED
-#  error "This feature is not enabled therefore this file should not be included."
-#endif /* HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED */
+#ifdef HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED
 
 HT_DECLS_BEGIN
 
@@ -49,5 +47,7 @@ HT_API void ht_cpu_usage_context_destroy(HT_CPUUsageContext* context);
 HT_API float ht_cpu_usage_get_percentage(HT_CPUUsageContext* context);
 
 HT_DECLS_END
+
+#endif /* HT_PLATFORM_FEATURE_CPU_USAGE_ENABLED */
 
 #endif /* HAWKTRACER_CPU_USAGE_H */
