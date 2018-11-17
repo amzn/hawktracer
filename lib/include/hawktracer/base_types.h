@@ -39,7 +39,7 @@ typedef enum
     /** No error */
     HT_ERR_OK = 0,
     /** Unknown error */
-    HF_ERR_UNKNOWN,
+    HT_ERR_UNKNOWN,
     /** Memory allocation failed. This is very serious error, and
      * most likely your entire application is broken at this point of time. */
     HT_ERR_OUT_OF_MEMORY,

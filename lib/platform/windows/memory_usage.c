@@ -65,6 +65,6 @@ ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
     }
     else
     {
-        return HF_ERR_UNKNOWN;
+        return HT_ERR_UNKNOWN;
     }
 }
