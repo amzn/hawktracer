@@ -55,7 +55,7 @@ set(HAWKTRACER_CORE_SOURCES
     system_info.c
     task_scheduler.c
     tcp_server.cpp
-    thread.cpp
+    thread.c
     timeline.c
     timeline_listener.c)
 
