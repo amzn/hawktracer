@@ -53,7 +53,7 @@ ht_mutex_create(void)
 #ifdef HT_MUTEX_IMPL_CPP11
     new (&mtx->mtx) std::mutex();
 #elif defined(HT_MUTEX_IMPL_POSIX)
-    mtx->mtx = PTHREAD_MUTEX_INITIALIZER;
+    pthread_mutex_init(&mtx->mtx, NULL);
 #elif defined(HT_MUTEX_IMPL_WIN32)
     mtx->mtx = CreateMutex(0, FALSE, 0);
 #endif
