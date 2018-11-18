@@ -1,37 +1,27 @@
 #ifndef HAWKTRACER_INTERNAL_LISTENERS_TCP_SERVER_HPP
 #define HAWKTRACER_INTERNAL_LISTENERS_TCP_SERVER_HPP
 
-#include <mutex>
-#include <thread>
-#include <unordered_set>
+#include "hawktracer/base_types.h"
 
-namespace HawkTracer
-{
+HT_DECLS_BEGIN
 
-class TCPServer
-{
-public:
-    typedef void(*OnClientConnected)(int, void*);
+typedef struct _HT_TCPServer HT_TCPServer;
+typedef void(*OnClientConnected)(int, void*);
 
-    ~TCPServer();
+HT_TCPServer* ht_tcp_server_create(void);
 
-    void write(char* buffer, size_t size);
-    bool start(int port, OnClientConnected client_connected, void* user_data);
-    void stop();
+void ht_tcp_server_destroy(HT_TCPServer* server);
 
-    bool is_running() const { return _sock_fd != -1; }
-    size_t client_count() const { return _client_sock_fd.size(); }
-    bool write_to_socket(int sock_fd, char* buffer, size_t size);
+void ht_tcp_server_write(HT_TCPServer* server, char* buffer, size_t size);
 
-private:
-    void _run(OnClientConnected client_connected, void* user_data);
+HT_Boolean ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_connected_cb, void* user_data);
 
-    std::thread _accept_client_thread;
-    std::unordered_set<int> _client_sock_fd;
-    std::mutex _client_mutex;
-    int _sock_fd = -1;
-};
+void ht_tcp_server_stop(HT_TCPServer* server);
 
-}
+HT_Boolean ht_tcp_server_is_running(const HT_TCPServer* server);
+
+HT_Boolean ht_tcp_server_write_to_socket(HT_TCPServer* server, int sock_fd, char* buffer, size_t size);
+
+HT_DECLS_END
 
 #endif /* HAWKTRACER_INTERNAL_LISTENERS_TCP_SERVER_HPP */

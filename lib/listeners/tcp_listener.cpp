@@ -6,6 +6,7 @@
 
 #include <cassert>
 #include <new>
+#include <mutex>
 
 inline static void
 _set_error(HT_ErrorCode error_code, HT_ErrorCode* out)
@@ -19,6 +20,10 @@ _set_error(HT_ErrorCode error_code, HT_ErrorCode* out)
 struct _HT_TCPListener
 {
 public:
+    _HT_TCPListener()
+    {
+        _tcp_server = ht_tcp_server_create();
+    }
     ~_HT_TCPListener();
     HT_ErrorCode init(int port, size_t buffer_size);
     void push_events(TEventPtr events, size_t size, HT_Boolean serialized);
@@ -26,7 +31,7 @@ public:
 private:
     void _flush()
     {
-        _tcp_server.write((char*)_buffer.data, _buffer.usage);
+        ht_tcp_server_write(_tcp_server, (char*)_buffer.data, _buffer.usage);
         _buffer.usage = 0;
         _was_flushed = true;
     }
@@ -41,7 +46,7 @@ private:
             (void) serialized;
             HT_TCPListener* listener = reinterpret_cast<HT_TCPListener*>(user_data);
             std::lock_guard<std::mutex> l(listener->_push_action_mutex);
-            listener->_tcp_server.write_to_socket(listener->_last_client_sock_fd, (char*)e, c);
+            ht_tcp_server_write_to_socket(listener->_tcp_server, listener->_last_client_sock_fd, (char*)e, c);
         }, user_data, HT_TRUE);
     }
 
@@ -54,7 +59,7 @@ private:
 
     std::mutex _push_action_mutex;
     HT_ListenerBuffer _buffer;
-    HawkTracer::TCPServer _tcp_server;
+    HT_TCPServer* _tcp_server;
     int _last_client_sock_fd = 0;
     /* TODO: This is just a hack to prevent from sending half-events.
      * We should revisit this for next release */
@@ -69,7 +74,7 @@ HT_ErrorCode HT_TCPListener::init(int port, size_t buffer_size)
         return error_code;
     }
 
-    if (_tcp_server.start(port, _client_connected, this))
+    if (ht_tcp_server_start(_tcp_server, port, _client_connected, this))
     {
         return HT_ERR_OK;
     }
@@ -80,13 +85,14 @@ HT_ErrorCode HT_TCPListener::init(int port, size_t buffer_size)
 _HT_TCPListener::~_HT_TCPListener()
 {
     _flush();
-    _tcp_server.stop();
+    ht_tcp_server_stop(_tcp_server);
     ht_listener_buffer_deinit(&_buffer);
+    ht_tcp_server_destroy(_tcp_server);
 }
 
 void _HT_TCPListener::push_events(TEventPtr events, size_t size, HT_Boolean serialized)
 {
-    if (!_tcp_server.is_running())
+    if (!ht_tcp_server_is_running(_tcp_server))
     {
         return;
     }
