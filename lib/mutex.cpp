@@ -8,7 +8,7 @@
 #  define HT_MUTEX_IMPL_WIN32
 #endif /* _WIN32 */
 
-#if !defined(HT_MUTEX_IMPL_POSIX) && (defined(__unix__) || (defined(__APPLE__) && defined(__MACH__)))
+#if !defined(HT_MUTEX_IMPL_POSIX) && defined(HT_HAVE_UNISTD_H)
 #  include <unistd.h>
 #  ifdef _POSIX_VERSION
 #    define HT_MUTEX_IMPL_POSIX

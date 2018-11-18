@@ -98,4 +98,8 @@
 #  define HT_THREAD_LOCAL __thread
 #endif
 
+#if defined(__unix__) || (defined(__APPLE__) && defined(__MACH__))
+#  define HT_HAVE_UNISTD_H
+#endif
+
 #endif /* HAWKTRACER_MACROS_H */
