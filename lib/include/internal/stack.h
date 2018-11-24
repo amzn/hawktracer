@@ -8,7 +8,7 @@ HT_DECLS_BEGIN
 
 typedef struct
 {
-    HT_Bag sizes_stack;
+    HT_BagVoidPtr sizes_stack;
     void* data;
     size_t size;
     size_t min_capacity;

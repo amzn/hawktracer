@@ -9,7 +9,7 @@
 
 struct _HT_TaskScheduler
 {
-    HT_Bag tasks;
+    HT_BagVoidPtr tasks;
     HT_TaskId next_task_id;
 };
 
@@ -50,7 +50,7 @@ ht_task_scheduler_create(HT_ErrorCode* out_err)
         goto done;
     }
 
-    error_code = ht_bag_init(&task_scheduler->tasks, DEFAULT_INIT_TASK_COUNT_);
+    error_code = ht_bag_void_ptr_init(&task_scheduler->tasks, DEFAULT_INIT_TASK_COUNT_);
     if (error_code != HT_ERR_OK)
     {
         ht_free(task_scheduler);
@@ -78,7 +78,7 @@ ht_task_scheduler_destroy(HT_TaskScheduler* task_scheduler)
         ht_free(task_scheduler->tasks.data[i]);
     }
 
-    ht_bag_deinit(&task_scheduler->tasks);
+    ht_bag_void_ptr_deinit(&task_scheduler->tasks);
     ht_free(task_scheduler);
 }
 
@@ -109,7 +109,7 @@ ht_task_scheduler_schedule_task(HT_TaskScheduler* task_scheduler,
     task->id = task_scheduler->next_task_id++;
     task->mode = mode;
 
-    if (ht_bag_add(&task_scheduler->tasks, task) != HT_ERR_OK)
+    if (ht_bag_void_ptr_add(&task_scheduler->tasks, task) != HT_ERR_OK)
     {
         return HT_TASK_SCHEDULER_INVALID_TASK_ID;
     }
@@ -153,7 +153,7 @@ ht_task_scheduler_remove_task(HT_TaskScheduler* task_scheduler, HT_TaskId task_i
         HT_Task* task = HT_TASK(task_scheduler->tasks.data[i]);
         if (task->id == task_id)
         {
-            ht_bag_remove(&task_scheduler->tasks, task);
+            ht_bag_void_ptr_remove(&task_scheduler->tasks, task);
             ht_free(task);
             return HT_TRUE;
         }

@@ -9,7 +9,7 @@
 
 typedef struct
 {
-    HT_Bag cached_data;
+    HT_BagVoidPtr cached_data;
     HT_Mutex* lock;
 } HT_FeatureCachedString;
 
@@ -31,7 +31,7 @@ ht_feature_cached_string_enable(HT_Timeline* timeline)
         return HT_ERR_OK;
     }
 
-    error_code = ht_bag_init(&feature->cached_data, 1024);
+    error_code = ht_bag_void_ptr_init(&feature->cached_data, 1024);
 
     if (error_code != HT_ERR_OK)
     {
@@ -50,7 +50,7 @@ ht_feature_cached_string_disable(HT_Timeline* timeline)
 {
     HT_FeatureCachedString* feature = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
 
-    ht_bag_deinit(&feature->cached_data);
+    ht_bag_void_ptr_deinit(&feature->cached_data);
     ht_mutex_destroy(feature->lock);
     ht_free(feature);
     ht_timeline_set_feature(timeline, HT_FEATURE_CACHED_STRING, NULL);
@@ -65,7 +65,7 @@ ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
     assert(f);
 
     ht_mutex_lock(f->lock);
-    error_code = ht_bag_add(&f->cached_data, (void*)label);
+    error_code = ht_bag_void_ptr_add(&f->cached_data, (void*)label);
     ht_mutex_unlock(f->lock);
     if (error_code != HT_ERR_OK)
     {

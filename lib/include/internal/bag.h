@@ -27,7 +27,7 @@ HT_DECLS_BEGIN
 
 #define ht_bag_last(bag) bag.data[bag.size - 1]
 
-HT_DECLARE_BAG_TYPE(,, void*)
+HT_DECLARE_BAG_TYPE(VoidPtr, _void_ptr, void*)
 
 HT_DECLS_END
 

@@ -11,8 +11,8 @@
 #include <assert.h>
 #include <string.h>
 
-static HT_Bag event_klass_register;
-static HT_Bag listeners_register;
+static HT_BagVoidPtr event_klass_register;
+static HT_BagVoidPtr listeners_register;
 static HT_FeatureDisableCallback feature_disable_callback[HT_TIMELINE_MAX_FEATURES];
 
 static HT_Mutex* listeners_register_mutex;
@@ -52,13 +52,13 @@ ht_registry_init(void)
 {
     HT_ErrorCode error_code;
 
-    error_code = ht_bag_init(&event_klass_register, 8);
+    error_code = ht_bag_void_ptr_init(&event_klass_register, 8);
     if (error_code != HT_ERR_OK)
     {
         goto done;
     }
 
-    error_code = ht_bag_init(&listeners_register, 8);
+    error_code = ht_bag_void_ptr_init(&listeners_register, 8);
     if (error_code != HT_ERR_OK)
     {
         goto error_listeners_register;
@@ -75,9 +75,9 @@ error_event_klass_registry_mutex:
 error_features_mutex:
     ht_mutex_destroy(listeners_register_mutex);
 error_listeners_mutex:
-    ht_bag_deinit(&listeners_register);
+    ht_bag_void_ptr_deinit(&listeners_register);
 error_listeners_register:
-    ht_bag_deinit(&event_klass_register);
+    ht_bag_void_ptr_deinit(&event_klass_register);
 done:
     return error_code;
 }
@@ -91,7 +91,7 @@ ht_registry_register_event_klass(HT_EventKlass* event_klass)
     {
         ht_mutex_lock(event_klass_registry_register_mutex);
 
-        if (ht_bag_add(&event_klass_register, event_klass) == HT_ERR_OK)
+        if (ht_bag_void_ptr_add(&event_klass_register, event_klass) == HT_ERR_OK)
         {
             klass_id = event_klass->klass_id = (HT_EventKlassId)event_klass_register.size;
         }
@@ -127,8 +127,8 @@ ht_registry_deinit(void)
     ht_mutex_destroy(features_register_mutex);
     ht_mutex_destroy(event_klass_registry_register_mutex);
     ht_mutex_destroy(listeners_register_mutex);
-    ht_bag_deinit(&listeners_register);
-    ht_bag_deinit(&event_klass_register);
+    ht_bag_void_ptr_deinit(&listeners_register);
+    ht_bag_void_ptr_deinit(&event_klass_register);
 }
 
 HT_TimelineListenerContainer*
@@ -166,7 +166,7 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
     ht_timeline_listener_container_set_id(container, djb2_hash(name));
     ht_timeline_listener_container_ref(container);
 
-    error_code = ht_bag_add(&listeners_register, container);
+    error_code = ht_bag_void_ptr_add(&listeners_register, container);
     if (error_code != HT_ERR_OK)
     {
         ht_mutex_unlock(listeners_register_mutex);

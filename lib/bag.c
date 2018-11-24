@@ -95,4 +95,4 @@
         bag->size = 0; \
     }
 
-HT_DEFINE_BAG_TYPE(,, void*)
+HT_DEFINE_BAG_TYPE(VoidPtr, _void_ptr, void*)

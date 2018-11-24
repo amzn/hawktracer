@@ -13,8 +13,8 @@
 struct _HT_TimelineListenerContainer
 {
     /* TODO single struct with pair? */
-    HT_Bag callbacks;
-    HT_Bag user_datas;
+    HT_BagVoidPtr callbacks;
+    HT_BagVoidPtr user_datas;
     HT_Mutex* mutex;
     uint32_t id;
     uint32_t refcount;
@@ -52,12 +52,12 @@ ht_timeline_listener_container_create(void)
         goto done;
     }
 
-    if (ht_bag_init(&container->callbacks, 16) != HT_ERR_OK)
+    if (ht_bag_void_ptr_init(&container->callbacks, 16) != HT_ERR_OK)
     {
         goto error_init_callbacks;
     }
 
-    if (ht_bag_init(&container->user_datas, 16) != HT_ERR_OK)
+    if (ht_bag_void_ptr_init(&container->user_datas, 16) != HT_ERR_OK)
     {
         goto error_create_user_datas;
     }
@@ -73,9 +73,9 @@ ht_timeline_listener_container_create(void)
     goto done;
 
 error_create_mutex:
-    ht_bag_deinit(&container->user_datas);
+    ht_bag_void_ptr_deinit(&container->user_datas);
 error_create_user_datas:
-    ht_bag_deinit(&container->callbacks);
+    ht_bag_void_ptr_deinit(&container->callbacks);
 error_init_callbacks:
     ht_free(container);
     container = NULL;
@@ -102,8 +102,8 @@ ht_timeline_listener_container_unref(HT_TimelineListenerContainer* container)
 
     if (--container->refcount == 0)
     {
-        ht_bag_deinit(&container->callbacks);
-        ht_bag_deinit(&container->user_datas);
+        ht_bag_void_ptr_deinit(&container->callbacks);
+        ht_bag_void_ptr_deinit(&container->user_datas);
         ht_mutex_unlock(container->mutex);
         ht_mutex_destroy(container->mutex);
 
@@ -125,16 +125,16 @@ ht_timeline_listener_container_register_listener(
     ht_mutex_lock(container->mutex);
     /* weird cast because of ISO C forbids passing argument 2 of
        ‘ht_bag_add’ between function pointer and ‘void *’ */
-    error_code = ht_bag_add(&container->callbacks, *(void **)&callback);
+    error_code = ht_bag_void_ptr_add(&container->callbacks, *(void **)&callback);
     if (error_code != HT_ERR_OK)
     {
         goto done;
     }
 
-    error_code = ht_bag_add(&container->user_datas, user_data);
+    error_code = ht_bag_void_ptr_add(&container->user_datas, user_data);
     if (error_code != HT_ERR_OK)
     {
-        ht_bag_remove_nth(&container->callbacks, container->callbacks.size - 1);
+        ht_bag_void_ptr_remove_nth(&container->callbacks, container->callbacks.size - 1);
         goto done;
     }
 
@@ -148,8 +148,8 @@ ht_timeline_listener_container_unregister_all_listeners(
         HT_TimelineListenerContainer* container)
 {
     ht_mutex_lock(container->mutex);
-    ht_bag_clear(&container->callbacks);
-    ht_bag_clear(&container->user_datas);
+    ht_bag_void_ptr_clear(&container->callbacks);
+    ht_bag_void_ptr_clear(&container->user_datas);
     ht_mutex_unlock(container->mutex);
 }
 
