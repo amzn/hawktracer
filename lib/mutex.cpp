@@ -1,14 +1,18 @@
 #include <hawktracer/macros.h>
 
-#if !defined(HT_MUTEX_IMPL_CPP11) && defined(HT_CPP11)
+#if defined(HT_MUTEX_IMPL_CUSTOM) || defined(HT_MUTEX_IMPL_CPP11) || defined(HT_MUTEX_IMPL_WIN32) || defined(HT_MUTEX_IMPL_POSIX)
+#  define HT_MUTEX_FORCE_SELECTED
+#endif
+
+#if !defined(HT_MUTEX_FORCE_SELECTED) && defined(HT_CPP11)
 #  define HT_MUTEX_IMPL_CPP11
 #endif /* HT_CPP11 */
 
-#if !defined(HT_MUTEX_IMPL_WIN32) && defined(_WIN32)
+#if !defined(HT_MUTEX_FORCE_SELECTED) && defined(_WIN32)
 #  define HT_MUTEX_IMPL_WIN32
 #endif /* _WIN32 */
 
-#if !defined(HT_MUTEX_IMPL_POSIX) && defined(HT_HAVE_UNISTD_H)
+#if !defined(HT_MUTEX_FORCE_SELECTED) && defined(HT_HAVE_UNISTD_H)
 #  include <unistd.h>
 #  ifdef _POSIX_VERSION
 #    define HT_MUTEX_IMPL_POSIX

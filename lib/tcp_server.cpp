@@ -3,18 +3,30 @@
 #include "internal/mutex.h"
 #include "hawktracer/alloc.h"
 
-#ifdef HT_CPP11
+#if defined(HT_THREAD_IMPL_CPP11) || defined(HT_THREAD_IMPL_WIN32) || defined(HT_THREAD_IMPL_POSIX)
+#  define HT_THREAD_FORCE_SELECTED
+#endif
+
+#if !defined(HT_THREAD_FORCE_SELECTED) && defined(HT_CPP11)
 #  include <thread>
 #  define HT_THREAD_IMPL_CPP11
-#elif defined(_WIN32)
+#elif !defined(HT_THREAD_FORCE_SELECTED) && defined(_WIN32)
 #  include <windows.h>
 #  define HT_THREAD_IMPL_WIN32
-#elif defined(HT_HAVE_UNISTD_H)
+#elif !defined(HT_THREAD_FORCE_SELECTED) && defined(HT_HAVE_UNISTD_H)
 #  include <unistd.h>
 #  ifdef _POSIX_VERSION
 #    include <pthread.h>
 #    define HT_THREAD_IMPL_POSIX
 #  endif
+#endif
+
+#ifdef HT_THREAD_IMPL_CPP11
+#  include <thread>
+#elif defined(HT_THREAD_IMPL_WIN32)
+#  include <windows.h>
+#elif defined(HT_THREAD_IMPL_POSIX)
+#  include <pthread.h>
 #endif
 
 #ifdef HT_THREAD_IMPL_WIN32
