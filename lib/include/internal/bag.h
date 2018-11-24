@@ -26,8 +26,11 @@ HT_DECLS_BEGIN
     HT_API void ht_bag##METHOD_SUFFIX##_clear(HT_Bag##TYPE_SUFFIX* bag);
 
 #define ht_bag_last(bag) bag.data[bag.size - 1]
+#define ht_bag_size(bag) bag.size
+#define ht_bag_nth(bag, nth) bag.data[nth]
 
 HT_DECLARE_BAG_TYPE(VoidPtr, _void_ptr, void*)
+HT_DECLARE_BAG_TYPE(Int, _int, int)
 
 HT_DECLS_END
 

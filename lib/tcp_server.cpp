@@ -1,4 +1,5 @@
-#include "internal/listeners/tcp_server.hpp"
+#include "internal/listeners/tcp_server.h"
+#include "internal/bag.h"
 #include "internal/mutex.h"
 #include "hawktracer/alloc.h"
 
@@ -87,28 +88,31 @@ ht_thread_destroy(HT_Thread* th)
 #endif
 
 #include <string.h>
-#include <set>
 
 static void *_ht_tcp_server_run(void *user_data);
 
 struct _HT_TCPServer
 {
-    HT_Thread* _accept_client_thread = NULL;
-    std::set<int> _client_sock_fd; // TODO replace this with bag so we can compile the code using C compiler
-    HT_Mutex* _client_mutex = NULL;
-    int _sock_fd = -1;
+    HT_Thread* accept_client_thread;
+    HT_BagInt client_sock_fd;
+    HT_Mutex* client_mutex;
+    int server_sock_fd;
 
-     OnClientConnected _client_connected_cb = NULL;
-     void* _client_connected_ud = NULL;
+     OnClientConnected client_connected_cb;
+     void* client_connected_ud;
 };
 
 HT_TCPServer*
 ht_tcp_server_create(void)
 {
     HT_TCPServer* server = HT_CREATE_TYPE(HT_TCPServer);
-    new (server) HT_TCPServer();
 
-    server->_client_mutex = ht_mutex_create();
+    ht_bag_int_init(&server->client_sock_fd, 8);
+    server->accept_client_thread = NULL;
+    server->client_mutex = ht_mutex_create();
+    server->server_sock_fd = -1;
+    server->client_connected_cb = NULL;
+    server->client_connected_ud = NULL;
 
     return server;
 }
@@ -117,7 +121,8 @@ void
 ht_tcp_server_destroy(HT_TCPServer* server)
 {
     ht_tcp_server_stop(server);
-    ht_mutex_destroy(server->_client_mutex);
+    ht_bag_int_deinit(&server->client_sock_fd);
+    ht_mutex_destroy(server->client_mutex);
     server->~_HT_TCPServer();
     ht_free(server);
 }
@@ -136,16 +141,16 @@ ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_con
         return false;
     }
 #endif
-    server->_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    server->server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (server->_sock_fd < 0)
+    if (server->server_sock_fd < 0)
     {
         return false;
     }
 
 #ifndef _WIN32
     int optval = 1;
-    if (setsockopt(server->_sock_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int)) != 0)
+    if (setsockopt(server->server_sock_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int)) != 0)
     {
         ht_tcp_server_stop(server);
         return false;
@@ -158,21 +163,21 @@ ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_con
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
     serveraddr.sin_port = htons((unsigned short)port);
 
-    if (bind(server->_sock_fd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
+    if (bind(server->server_sock_fd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
     {
         ht_tcp_server_stop(server);
         return false;
     }
 
-    if (listen(server->_sock_fd, 5) < 0)
+    if (listen(server->server_sock_fd, 5) < 0)
     {
         ht_tcp_server_stop(server);
         return false;
     }
 
-    server->_client_connected_cb = client_connected_cb;
-    server->_client_connected_ud = user_data;
-    server->_accept_client_thread = ht_thread_create(_ht_tcp_server_run, server);
+    server->client_connected_cb = client_connected_cb;
+    server->client_connected_ud = user_data;
+    server->accept_client_thread = ht_thread_create(_ht_tcp_server_run, server);
 
     return true;
 }
@@ -185,12 +190,12 @@ ht_tcp_server_stop(HT_TCPServer* server)
         return;
     }
 
-    ht_mutex_lock(server->_client_mutex);
-    server->_client_sock_fd.clear();
-    ht_mutex_unlock(server->_client_mutex);
+    ht_mutex_lock(server->client_mutex);
+    ht_bag_int_clear(&server->client_sock_fd);
+    ht_mutex_unlock(server->client_mutex);
 
-    int prev_sock_fd = server->_sock_fd;
-    server->_sock_fd = -1;
+    int prev_sock_fd = server->server_sock_fd;
+    server->server_sock_fd = -1;
 #ifdef _WIN32
     closesocket(prev_sock_fd);
     WSACleanup();
@@ -198,38 +203,36 @@ ht_tcp_server_stop(HT_TCPServer* server)
     shutdown(prev_sock_fd, 2);
 #endif
 
-    if (server->_accept_client_thread)
+    if (server->accept_client_thread)
     {
-        ht_thread_join(server->_accept_client_thread);
-        ht_thread_destroy(server->_accept_client_thread);
-        server->_accept_client_thread = NULL;
+        ht_thread_join(server->accept_client_thread);
+        ht_thread_destroy(server->accept_client_thread);
+        server->accept_client_thread = NULL;
     }
 }
 
 HT_Boolean
 ht_tcp_server_is_running(const HT_TCPServer* server)
 {
-    return server->_sock_fd != -1;
+    return server->server_sock_fd != -1;
 }
 
 void
 ht_tcp_server_write(HT_TCPServer* server, char* buffer, size_t size)
 {
-    ht_mutex_lock(server->_client_mutex);
+    size_t i;
 
-    for (auto it = server->_client_sock_fd.begin(); it != server->_client_sock_fd.end();)
+    ht_mutex_lock(server->client_mutex);
+
+    for (i = 0; i < ht_bag_size(server->client_sock_fd); i++)
     {
-        if (ht_tcp_server_write_to_socket(server, *it, buffer, size))
+        if (!ht_tcp_server_write_to_socket(server, ht_bag_nth(server->client_sock_fd, i), buffer, size))
         {
-            ++it;
-        }
-        else
-        {
-            it = server->_client_sock_fd.erase(it);
+            i--;
         }
     }
 
-    ht_mutex_unlock(server->_client_mutex);
+    ht_mutex_unlock(server->client_mutex);
 }
 
 HT_Boolean
@@ -270,14 +273,14 @@ _ht_tcp_server_run(void* user_data)
         socklen_t client_len;
 #endif
         client_len = sizeof(clientaddr);
-        int client_fd = accept(server->_sock_fd, (struct sockaddr *) &clientaddr, &client_len);
+        int client_fd = accept(server->server_sock_fd, (struct sockaddr *) &clientaddr, &client_len);
 
         if (client_fd >= 0)
         {
-            server->_client_connected_cb(client_fd, server->_client_connected_ud);
-            ht_mutex_lock(server->_client_mutex);
-            server->_client_sock_fd.insert(client_fd);
-            ht_mutex_unlock(server->_client_mutex);
+            server->client_connected_cb(client_fd, server->client_connected_ud);
+            ht_mutex_lock(server->client_mutex);
+            ht_bag_int_add(&server->client_sock_fd, client_fd);
+            ht_mutex_unlock(server->client_mutex);
         }
     }
     return NULL;

@@ -96,3 +96,4 @@
     }
 
 HT_DEFINE_BAG_TYPE(VoidPtr, _void_ptr, void*)
+HT_DEFINE_BAG_TYPE(Int, _int, int)
