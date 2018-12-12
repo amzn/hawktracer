@@ -96,6 +96,8 @@ ht_thread_destroy(HT_Thread* th)
 #pragma comment(lib, "Ws2_32.lib")
 #else
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #endif
 
@@ -169,7 +171,7 @@ ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_con
     }
 #endif
 
-    sockaddr_in serveraddr;
+    struct sockaddr_in serveraddr;
     memset((char *) &serveraddr, 0, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
