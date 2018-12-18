@@ -137,7 +137,6 @@ ht_tcp_server_destroy(HT_TCPServer* server)
     ht_tcp_server_stop(server);
     ht_bag_int_deinit(&server->client_sock_fd);
     ht_mutex_destroy(server->client_mutex);
-    server->~_HT_TCPServer();
     ht_free(server);
 }
 
@@ -152,14 +151,14 @@ ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_con
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
     {
-        return false;
+        return HT_FALSE;
     }
 #endif
     server->server_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (server->server_sock_fd < 0)
     {
-        return false;
+        return HT_FALSE;
     }
 
 #ifndef _WIN32
@@ -167,7 +166,7 @@ ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_con
     if (setsockopt(server->server_sock_fd, SOL_SOCKET, SO_REUSEADDR, (const void *)&optval , sizeof(int)) != 0)
     {
         ht_tcp_server_stop(server);
-        return false;
+        return HT_FALSE;
     }
 #endif
 
@@ -180,20 +179,20 @@ ht_tcp_server_start(HT_TCPServer* server, int port, OnClientConnected client_con
     if (bind(server->server_sock_fd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0)
     {
         ht_tcp_server_stop(server);
-        return false;
+        return HT_FALSE;
     }
 
     if (listen(server->server_sock_fd, 5) < 0)
     {
         ht_tcp_server_stop(server);
-        return false;
+        return HT_FALSE;
     }
 
     server->client_connected_cb = client_connected_cb;
     server->client_connected_ud = user_data;
     server->accept_client_thread = ht_thread_create(_ht_tcp_server_run, server);
 
-    return true;
+    return HT_TRUE;
 }
 
 void
@@ -250,11 +249,12 @@ ht_tcp_server_write(HT_TCPServer* server, char* buffer, size_t size)
 }
 
 HT_Boolean
-ht_tcp_server_write_to_socket(HT_TCPServer* /* server */, int sock_fd, char* buffer, size_t size)
+ht_tcp_server_write_to_socket(HT_TCPServer* server, int sock_fd, char* buffer, size_t size)
 {
+    (void) server;
     if (size == 0)
     {
-        return true;
+        return HT_TRUE;
     }
 
     size_t sent = 0;
@@ -265,13 +265,13 @@ ht_tcp_server_write_to_socket(HT_TCPServer* /* server */, int sock_fd, char* buf
 
         if (n <= 0)
         {
-            return false;
+            return HT_FALSE;
         }
 
         sent += n;
     }
 
-    return true;
+    return HT_TRUE;
 }
 
 static void*

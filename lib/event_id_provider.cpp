@@ -8,8 +8,6 @@ typedef std::atomic<HT_EventId> HT_AtomicEventId;
 typedef volatile HT_EventId HT_AtomicEventId;
 #endif
 
-#include <new>
-
 struct _HT_EventIdProvider
 {
     HT_AtomicEventId current_identifier;
@@ -27,14 +25,13 @@ HT_EventIdProvider*
 ht_event_id_provider_create(void)
 {
     HT_EventIdProvider* provider = HT_CREATE_TYPE(HT_EventIdProvider);
-    new (provider) HT_EventIdProvider();
+    provider->current_identifier = 0;
     return provider;
 }
 
 void
 ht_event_id_provider_destroy(HT_EventIdProvider* provider)
 {
-    provider->~HT_EventIdProvider();
     ht_free(provider);
 }
 
