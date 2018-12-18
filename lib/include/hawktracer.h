@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_HAWKTRACER_H
 #define HAWKTRACER_HAWKTRACER_H
 
-#include <hawktracer/config.h>
+#include <hawktracer/ht_config.h>
 #include <hawktracer/alloc.h>
 #include <hawktracer/base_types.h>
 #include <hawktracer/core_events.h>

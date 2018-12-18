@@ -1,4 +1,4 @@
-#include "hawktracer/config.h"
+#include "hawktracer/ht_config.h"
 #include "hawktracer/init.h"
 #include "hawktracer/scoped_tracepoint.h"
 #include "internal/registry.h"

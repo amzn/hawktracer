@@ -1,7 +1,7 @@
 #ifndef HAWKTRACER_STRING_SCOPED_TRACEPOINT_H
 #define HAWKTRACER_STRING_SCOPED_TRACEPOINT_H
 
-#include <hawktracer/config.h>
+#include <hawktracer/ht_config.h>
 #include <hawktracer/scoped_tracepoint.h>
 #include <hawktracer/feature_cached_string.h>
 

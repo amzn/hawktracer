@@ -80,7 +80,7 @@ if (BUILD_STATIC_LIB)
     set(HT_COMPILE_STATIC ON)
 endif (BUILD_STATIC_LIB)
 
-configure_file(include/hawktracer/config.h.in include/hawktracer/config.h)
+configure_file(include/hawktracer/ht_config.h.in include/hawktracer/ht_config.h)
 
 set(HAWKTRACER_LIB_SOURCES ${HAWKTRACER_LISTENERS_SOURCES} ${HAWKTRACER_CORE_SOURCES})
 set(HAWKTRACER_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_BINARY_DIR}/include")
@@ -103,10 +103,10 @@ install(TARGETS hawktracer
 install(DIRECTORY include/hawktracer
     DESTINATION include
     COMPONENT coredevelopment
-    PATTERN "config.h.in" EXCLUDE)
+    PATTERN "ht_config.h.in" EXCLUDE)
 
 install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/include/hawktracer/config.h
+    ${CMAKE_CURRENT_BINARY_DIR}/include/hawktracer/ht_config.h
     DESTINATION include/hawktracer/
     COMPONENT coredevelopment)
 install(FILES

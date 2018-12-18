@@ -2,7 +2,7 @@
 #define HAWKTRACER_MEMORY_USAGE_H
 
 #include <hawktracer/base_types.h>
-#include <hawktracer/config.h>
+#include <hawktracer/ht_config.h>
 
 #ifdef HT_PLATFORM_FEATURE_MEMORY_USAGE_ENABLED
 

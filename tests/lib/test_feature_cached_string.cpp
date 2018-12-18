@@ -1,6 +1,6 @@
 #include "test_allocator.h"
 
-#include <hawktracer/config.h>
+#include <hawktracer/ht_config.h>
 #include <hawktracer/feature_cached_string.h>
 
 #include "test_common.h"
