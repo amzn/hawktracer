@@ -97,4 +97,4 @@ HT_API HT_DurationNs ht_task_scheduler_get_optimal_tick_period(HT_TaskScheduler*
 
 HT_DECLS_END
 
-#endif // HAWKTRACER_SCHEDULER_H
+#endif /* HAWKTRACER_TASK_SCHEDULER_H */

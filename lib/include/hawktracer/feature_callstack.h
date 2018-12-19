@@ -1,5 +1,5 @@
-#ifndef HT_FEATURE_CALLSTACK_H
-#define HT_FEATURE_CALLSTACK_H
+#ifndef HAWKTRACER_FEATURE_CALLSTACK_H
+#define HAWKTRACER_FEATURE_CALLSTACK_H
 
 #include <hawktracer/core_events.h>
 #include <hawktracer/timeline.h>
@@ -22,4 +22,4 @@ HT_API void ht_feature_callstack_start_string(HT_Timeline* timeline, const char*
 
 HT_DECLS_END
 
-#endif /* HT_FEATURE_CALLSTACK_H */
+#endif /* HAWKTRACER_FEATURE_CALLSTACK_H */

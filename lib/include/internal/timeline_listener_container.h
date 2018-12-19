@@ -17,4 +17,4 @@ void ht_timeline_listener_container_unref(HT_TimelineListenerContainer* containe
 
 HT_DECLS_END
 
-#endif /* TIMELINE_LISTENER_CONTAINER_H */
+#endif /* HAWKTRACER_TIMELINE_LISTENER_CONTAINER_H */
