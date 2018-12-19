@@ -18,12 +18,14 @@ matrix:
         apt:
           packages:
             - lcov
-            - python
             - doxygen
-            - python3-dev
 
       before_install:
         - pip install --user codecov
+        - sudo add-apt-repository ppa:jonathonf/python-3.6 -y
+        - sudo apt-get update -q
+        - sudo apt-get install python3.6 python3.6-dev
+        - sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 10
 
       before_script:
         - cmake -DENABLE_PYTHON_BINDINGS=ON -DENABLE_ALLOC_HOOKS_FEATURE=ON -DBUILD_STATIC_LIB=ON .
@@ -37,11 +39,19 @@ matrix:
     - os: linux
       compiler: clang
 
+      before_install:
+        - sudo add-apt-repository ppa:jonathonf/python-3.6 -y
+        - sudo apt-get update -q
+        - sudo apt-get install python3.6
+        - sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 10
+
 script:
   - cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_ASAN=ON -DENABLE_BENCHMARKS=ON -DENABLE_CODE_COVERAGE=ON -DENABLE_EXAMPLES=ON -DENABLE_TESTS=ON .
   - make
   - make test CTEST_OUTPUT_ON_FAILURE=TRUE
   - ./benchmarks/hawktracer_benchmarks
+  - make amalgamated_hawktracer_c
+  - make amalgamated_hawktracer_cpp
 
 branches:
   only:

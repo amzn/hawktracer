@@ -17,8 +17,24 @@ extern void *__libc_calloc(size_t, size_t);
 extern void __libc_free(void*);
 extern void* __libc_realloc(void*, size_t);
 
-void *
-malloc(size_t size)
+
+#if defined (__THROW)
+#  ifdef __cplusplus
+#    define HT_PRE_THROW
+#    define HT_POST_THROW __THROW
+#  else
+#    define HT_PRE_THROW __THROW
+#    define HT_POST_THROW
+#  endif
+#else
+#  define HT_PRE_THROW
+#  define HT_POST_THROW
+#endif
+
+#define HT_THROWABLE_DECL(declaration) \
+    HT_PRE_THROW declaration HT_POST_THROW
+
+HT_THROWABLE_DECL(void *malloc(size_t size))
 {
     void* ret_ptr;
 
@@ -37,8 +53,7 @@ malloc(size_t size)
     return ret_ptr;
 }
 
-void *
-calloc(size_t num, size_t size)
+HT_THROWABLE_DECL(void *calloc(size_t num, size_t size))
 {
     void* ret_ptr;
 
@@ -57,8 +72,7 @@ calloc(size_t num, size_t size)
     return ret_ptr;
 }
 
-void *
-realloc(void* ptr, size_t size)
+HT_THROWABLE_DECL(void *realloc(void* ptr, size_t size))
 {
     void* ret_ptr;
 
@@ -77,8 +91,7 @@ realloc(void* ptr, size_t size)
     return ret_ptr;
 }
 
-void
-free(void* ptr)
+HT_THROWABLE_DECL(void free(void* ptr))
 {
     if (_pre_free_hook)
     {

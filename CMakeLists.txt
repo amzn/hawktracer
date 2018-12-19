@@ -51,6 +51,7 @@ if(ENABLE_RELEASE_MODE)
 endif(ENABLE_RELEASE_MODE)
 
 include(warnings)
+include(test_amalgamation)
 
 if(ENABLE_ASAN)
     include(asan)
