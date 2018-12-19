@@ -13,4 +13,32 @@
 #define HT_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define HT_VERSION_PATCH @PROJECT_VERSION_PATCH@
 
+/******* Mutex implementation *******/
+/**
+ * Define one of the values below only if the target platform has
+ * very unusual setup. Otherwise mutex implementation will be automatically
+ * selected based on the environment.
+ */
+/** Custom mutex implementation must be provided */
+/* #define HT_MUTEX_IMPL_CUSTOM */
+/** Use pthread mutex implementation */
+/* #define HT_MUTEX_IMPL_POSIX */
+/** Use Win32 mutex implementation */
+/* #define HT_MUTEX_IMPL_WIN32 */
+/** Use C++11 mutex implementation */
+/* #define HT_MUTEX_IMPL_CPP11 */
+
+/******* Thread implementation *******/
+/**
+ * Define one of the values below only if the target platform has
+ * very unusual setup. Otherwise thread implementation will be automatically
+ * selected based on the environment.
+ */
+/** Use pthread thread implementation */
+/* #define HT_THREAD_IMPL_POSIX */
+/** Use Win32 thread implementation */
+/* #define HT_THREAD_IMPL_WIN32 */
+/** Use C++11 thread implementation */
+/* #define HT_THREAD_IMPL_CPP11 */
+
 #endif /* HAWKTRACER_HT_CONFIG_H */

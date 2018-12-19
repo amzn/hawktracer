@@ -2,6 +2,7 @@
 #include "internal/bag.h"
 #include "internal/mutex.h"
 #include "hawktracer/alloc.h"
+#include "hawktracer/ht_config.h"
 
 #if defined(HT_THREAD_IMPL_CPP11) || defined(HT_THREAD_IMPL_WIN32) || defined(HT_THREAD_IMPL_POSIX)
 #  define HT_THREAD_FORCE_SELECTED
