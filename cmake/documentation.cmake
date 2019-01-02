@@ -26,12 +26,6 @@ if (DOXYGEN_FOUND)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 
-    if(WIN32 AND NOT CYGWIN)
-        set(INSTALL_DOC_DIR doc)
-    else()
-        set(INSTALL_DOC_DIR share/doc/hawktracer)
-    endif()
-
     install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_BINARY_DIR} --target doc_doxygen)")
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen_doc/html/ DESTINATION ${INSTALL_DOC_DIR})
       

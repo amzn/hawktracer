@@ -30,6 +30,13 @@ define_platform_feature(CPU_USAGE "cpu_usage.c" DEFAULT)
 define_platform_feature(MEMORY_USAGE "memory_usage.c" DEFAULT)
 define_platform_feature(ALLOC_HOOKS "alloc_hooks.c" OFF)
 
+# VARIABLES
+if(WIN32 AND NOT CYGWIN)
+    set(INSTALL_DOC_DIR doc)
+else()
+    set(INSTALL_DOC_DIR share/doc/hawktracer)
+endif()
+
 set (CMAKE_CXX_STANDARD 11)
 set (CMAKE_C_STANDARD 99)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -90,7 +97,7 @@ endif(ENABLE_TESTS)
 if(ENABLE_EXAMPLES)
     add_subdirectory(examples)
 endif(ENABLE_EXAMPLES)
-install(DIRECTORY examples DESTINATION .)
+install(DIRECTORY examples DESTINATION ${INSTALL_DOC_DIR})
 
 if(ENABLE_BENCHMARKS)
     add_subdirectory(benchmarks)
