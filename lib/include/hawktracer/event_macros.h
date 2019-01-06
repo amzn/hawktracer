@@ -63,7 +63,7 @@
             NULL, \
             HT_EVENT_SERIALIZE_FUNCTION(TYPE_NAME), \
             HT_EVENT_GET_SIZE_FUNCTION(TYPE_NAME), \
-            0 \
+            HT_INVALID_KLASS_ID \
         }; \
         return &klass_instance; \
     }

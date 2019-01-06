@@ -106,7 +106,7 @@ HT_EventKlassId KlassRegister::get_klass_id(const std::string& name) const
         }
     }
 
-    return 0;
+    return HT_INVALID_KLASS_ID;
 }
 
 void KlassRegister::_add_klass(std::unique_ptr<EventKlass> klass)

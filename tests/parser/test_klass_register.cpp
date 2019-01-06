@@ -1,6 +1,8 @@
 #include <hawktracer/parser/klass_register.hpp>
 #include <hawktracer/parser/event.hpp>
 
+#include <hawktracer/events.h>
+
 #include <gtest/gtest.h>
 
 using namespace HawkTracer::parser;
@@ -83,7 +85,7 @@ TEST(TestKlassRegister, GetKlassIdShouldReturnZeroIfKlassDoesNotExist)
     KlassRegister klass_register;
 
     // Act & Assert
-    ASSERT_EQ(0u, klass_register.get_klass_id("non-existing-klass"));
+    ASSERT_EQ(HT_INVALID_KLASS_ID, klass_register.get_klass_id("non-existing-klass"));
 }
 
 TEST(TestKlassRegister, GetKlassIdShouldReturnCorrectIdIfKlassExists)

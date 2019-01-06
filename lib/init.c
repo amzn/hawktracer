@@ -17,8 +17,8 @@ ht_init(int argc, char** argv)
 
     ht_registry_init();
 
-    HT_REGISTER_EVENT_KLASS(HT_Event);
     HT_REGISTER_EVENT_KLASS(HT_EndiannessInfoEvent);
+    HT_REGISTER_EVENT_KLASS(HT_Event);
     HT_REGISTER_EVENT_KLASS(HT_EventKlassInfoEvent);
     HT_REGISTER_EVENT_KLASS(HT_EventKlassFieldInfoEvent);
     HT_REGISTER_EVENT_KLASS(HT_CallstackBaseEvent);
