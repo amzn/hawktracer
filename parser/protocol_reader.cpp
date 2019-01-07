@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <cstdlib>
 
 namespace HawkTracer
 {
@@ -141,7 +142,17 @@ bool ProtocolReader::_read_string(FieldType& value)
 {
     size_t length = 32;
     size_t pos = 0;
-    char* data = (char*)malloc(length);
+    char* data;
+
+    if (void *tmp = std::malloc(length))
+    {
+        data = static_cast<char*>(tmp);
+    }
+    else
+    {
+        throw std::bad_alloc();
+    }
+
     int c;
     while ((c = _stream->read_byte()) > 0)
     {
@@ -149,12 +160,20 @@ bool ProtocolReader::_read_string(FieldType& value)
         if (pos == length)
         {
             length *= 2;
-            data = (char*)realloc(data, length);
+            if (void *tmp = std::realloc(data, length))
+            {
+                data = static_cast<char*>(tmp);
+            }
+            else
+            {
+                std::free(data);
+                throw std::bad_alloc();
+            }
         }
     }
     if (c < 0)
     {
-        free(data);
+        std::free(data);
         return false;
     }
 
