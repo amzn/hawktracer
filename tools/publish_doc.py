@@ -21,7 +21,7 @@ def call_process(call_args, custom_error, exit_on_error=False):
 parser = argparse.ArgumentParser(description='Publishes HawkTracer documentation')
 parser.add_argument('-b', '--build-dir', help='HawkTracer build directory', required=True)
 parser.add_argument('-r', '--repository', help='HawkTracer repository path',
-                    default='git@github.com:amzn/hawktracer.git')
+                    default='git@github.com:hawktracer/doc.git')
 args = parser.parse_args()
 
 call_process(['cmake', '--build', args.build_dir, '--target', 'doc_doxygen'], 'Building documentation failed.', True)
