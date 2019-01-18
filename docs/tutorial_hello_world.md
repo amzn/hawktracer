@@ -6,10 +6,27 @@
 
 After this tutorial you'll know how to get time measurements from your own application.
 
+## Before you start...
+Make sure you already have HawkTracer installed in your system. See @ref build_install section to see how to install the project.
+
 ## Hello World!
 Please copy the text below to a file named `hawktracer-hello-world.c` (you can find this file [in the repository as well](@repocodeurl/examples/tutorials/hello_world/hawktracer-hello-world.c).
 
 @include examples/tutorials/hello_world/hawktracer-hello-world.c
+
+### Building and running the example
+You can see @ref integration in order to see how to integrate HawkTracer to your project. For the purpose of the example, here are few shortcuts for most popular platforms:
+* **Linux**  
+In the terminal, run the following command:
+~~~.sh
+$ gcc hawktracer-hello-world.c $(pkg-config --cflags --libs hawktracer) -o hawktracer-hello-world # compiling the code
+$ ./hawktracer-hello-world # running the example
+~~~
+Scroll to [Getting the results](#tutorial_hello_world_getting_the_result) section to see how to read and analyze profiling results.
+
+
+[comment]: # (TODO: create section "building examples")
+
 
 ## Walkthrough
 At the very beginning, we have to initialize the library. The function allocates internal buffers, initializes klass registry etc.
@@ -97,11 +114,11 @@ ht_file_dump_listener_destroy(listener);
 ht_deinit();
 ~~~
 
-## Getting the results
-After compiling and running the code (see @ref integration), you should see `hello-world-out.htdump` file. This file contains binary data, and can't be directly used for performance analysis.
-%HawkTracer doesn't provide it's own viewer yet, but it provide converters to existing and well-known viewers. To convert file to json format (which can be opened by [Catapult Trace Viewer](https://github.com/catapult-project/catapult/tree/master/tracing), run the following command:
+## Getting the results <a name="tutorial_hello_world_getting_the_result"></a>
+After compiling and running the code, you should see `hello-world-out.htdump` file. This file contains binary data, and can't be directly used for performance analysis.
+%HawkTracer doesn't provide it's own viewer yet, but it provide converters to formats supported existing and well-known viewer tools. For example, in order to convert file to json format (which can be opened by [Catapult Trace Viewer](https://github.com/catapult-project/catapult/tree/master/tracing), run the following command:
 ~~~.sh
-hawktracer-to-json --source hello-world-out.htdump --output hello-world-out.json
+hawktracer-converter --source hello-world-out.htdump --output hello-world-out.json
 ~~~
 Catapult Trace Viewer is provided with Google Chrome and Chromium browsers, so we recommend to install one of them.
 Open Google Chrome or Chromium browser, and go to [chrome://tracing](chrome://tracing) URL. In the top left corner you should see *Load* button, which allow you to specify a path to the json file (in our case, it's `hello-world-out.json`). After this, you should see a callstack view of your the program.
