@@ -20,6 +20,8 @@ def call_process(call_args, custom_error, exit_on_error=False):
 
 parser = argparse.ArgumentParser(description='Publishes HawkTracer documentation')
 parser.add_argument('-b', '--build-dir', help='HawkTracer build directory', required=True)
+parser.add_argument('-d', '--publish-dirs', nargs='+',
+                    help='Directories for this version of the documentation, e.g. 0.7.0, stable etc.')
 parser.add_argument('-r', '--repository', help='HawkTracer repository path',
                     default='git@github.com:hawktracer/doc.git')
 args = parser.parse_args()
@@ -40,10 +42,13 @@ try:
     call_process(['git', 'checkout', 'gh-pages'], 'Unable to switch to doc branch.')
 
     print('Removing old documentation...')
-    call_process(['git', 'rm', '-rfq', '*'], 'Unable to remove previous documentation')
+    for publish_dir in args.publish_dirs:
+        publish_dir = os.path.join(clone_dir, publish_dir)
+        if os.path.isdir(publish_dir):
+            call_process(['git', 'rm', '-rfq', publish_dir], 'Unable to remove previous documentation')
 
-    print('Copying documentation to a repository...')
-    distutils.dir_util.copy_tree(doc_path, clone_dir)
+        print('Copying documentation to a repository...')
+        distutils.dir_util.copy_tree(doc_path, publish_dir)
 
     print("Committing documentation...")
     call_process(['git', 'add', '.'], 'Unable to add files to commit.')
