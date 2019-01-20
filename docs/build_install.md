@@ -2,7 +2,7 @@
 ## Downloading source code
 Source code is hosted on GitHub servers. To download the code, just run following command:
 ~~~.sh
-git clone https://github.com/amzn/hawktracer.git
+git clone https://github.com/loganek/hawktracer.git
 ~~~
 You can also download a tarball for a specific release. All the available releases and their tarballs can be found on [the release page](@repourl/releases).
 

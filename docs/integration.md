@@ -1,6 +1,6 @@
 # Integrate %HawkTracer to existing project {#integration}
 
-%HawkTracer is a library which provides functions for instrumenting the code. To provide best user experience, %HawkTracer supports multiple build systems. If you can't find the one you use, please [let us know](https://github.com/amzn/hawktracer/issues/new).
+%HawkTracer is a library which provides functions for instrumenting the code. To provide best user experience, %HawkTracer supports multiple build systems. If you can't find the one you use, please [let us know](https://github.com/loganek/hawktracer/issues/new).
 Following build systems/tools are already supported:
 * [CMake](#CMake)
 * [pkg-config](#pkg-config)

@@ -48,4 +48,4 @@ setup(name = 'HawkTracer',
       cmdclass = {'build_ext': HTBuildExt},
       author = 'Marcin Kolny',
       author_email='marcin.kolny@gmail.com',
-      url = 'https://github.com/amzn/hawktracer')
+      url = 'https://www.hawktracer.org')
