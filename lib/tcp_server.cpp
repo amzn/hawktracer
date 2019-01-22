@@ -242,6 +242,7 @@ ht_tcp_server_write(HT_TCPServer* server, char* buffer, size_t size)
     {
         if (!ht_tcp_server_write_to_socket(server, ht_bag_nth(server->client_sock_fd, i), buffer, size))
         {
+            ht_bag_int_remove_nth(&server->client_sock_fd, i);
             i--;
         }
     }
