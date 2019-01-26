@@ -19,10 +19,11 @@ ChromeTraceConverter::~ChromeTraceConverter()
 
 bool ChromeTraceConverter::init(const std::string& file_name)
 {
+    _first_event_saved = false;
     _file.open(file_name);
     if (_file.is_open())
     {
-        _file << "{\"traceEvents\": [ {} ";
+        _file << "{\"traceEvents\": [";
         return true;
     }
     return false;
@@ -37,9 +38,18 @@ void ChromeTraceConverter::process_event(const parser::Event& event)
         return;
     }
 
+    if (_first_event_saved)
+    {
+        _file << ",";
+    }
+    else
+    {
+        _first_event_saved = true;
+    }
+
     // Chrome expects the timestamps/durations to be microseconds
     // so we need to convert from nano to micro
-    _file << ",{\"name\": \"" << label
+    _file << "{\"name\": \"" << label
          << "\", \"ph\": \"X\", \"ts\": " << ns_to_ms(event.get_timestamp())
          << ", \"dur\": " << ns_to_ms(event.get_value_or_default<HT_DurationNs>("duration", 0u))
          << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<HT_ThreadId>("thread_id", 0u)

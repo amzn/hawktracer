@@ -26,6 +26,7 @@ private:
     static std::string _get_json_value(const parser::Event::Value& value);
 
     std::ofstream _file;
+    bool _first_event_saved = false;
 };
 
 } // namespace client
