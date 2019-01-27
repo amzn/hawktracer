@@ -80,11 +80,11 @@ ht_memory_usage_get_usage(HT_MemoryUsageContext* context,
     {
         *virtual_memory_bytes = virt_mem * page_size;
     }
-    if (virtual_memory_bytes)
+    if (resident_memory_bytes)
     {
         *resident_memory_bytes = resident_mem * page_size;
     }
-    if (virtual_memory_bytes)
+    if (shared_memory_bytes)
     {
         *shared_memory_bytes = shared_mem * page_size;
     }
