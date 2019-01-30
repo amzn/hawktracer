@@ -1,15 +1,10 @@
 ############ pkg-config ############
-set(INSTALL_PKGCONFIG_DIR "share/pkgconfig")
-
-set(INSTALL_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
-set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-
 configure_file(hawktracer.pc.in hawktracer.pc @ONLY)
 
 install(
     FILES
         "${CMAKE_CURRENT_BINARY_DIR}/hawktracer.pc"
-    DESTINATION ${INSTALL_PKGCONFIG_DIR}
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
     COMPONENT pkgconfig)
 
 
@@ -28,7 +23,7 @@ endfunction(configure_hawktracer_config_file)
 if(WIN32 AND NOT CYGWIN)
     set(INSTALL_CMAKE_DIR CMake)
 else()
-    set(INSTALL_CMAKE_DIR lib/cmake/HawkTracer)
+    set(INSTALL_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/HawkTracer)
 endif()
 
 export(TARGETS hawktracer

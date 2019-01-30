@@ -14,5 +14,5 @@ target_include_directories(hawktracer_client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
 target_link_libraries(hawktracer-converter hawktracer_client)
 
 install(TARGETS hawktracer-converter
-    RUNTIME DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     COMPONENT applications)

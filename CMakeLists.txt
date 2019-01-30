@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.1)
 project(HawkTracer
     VERSION 0.7.0)
 
+include(GNUInstallDirs)
+
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_TESTS "Enable unit tests" OFF)
 option(ENABLE_CODE_COVERAGE "Enable code coverage" OFF)
@@ -34,7 +36,7 @@ define_platform_feature(ALLOC_HOOKS "alloc_hooks.c" OFF)
 if(WIN32 AND NOT CYGWIN)
     set(INSTALL_DOC_DIR doc)
 else()
-    set(INSTALL_DOC_DIR share/doc/hawktracer)
+    set(INSTALL_DOC_DIR ${CMAKE_INSTALL_DATAROOTDIR}/doc/hawktracer-${PROJECT_VERSION})
 endif()
 
 set (CMAKE_CXX_STANDARD 11)

@@ -1,5 +1,6 @@
-libdir=@INSTALL_LIB_DIR@
-includedir=@INSTALL_INCLUDE_DIR@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 
 Name: HawkTracer
 Description: Highly portable, low-overhead user-space profiling tool
