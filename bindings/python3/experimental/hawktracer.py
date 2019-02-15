@@ -40,6 +40,7 @@ def disable_decorator():
 
 def _start(region_name):
     # Actual code that starts a hawktracer region
+    print("Region",region_name,"Started!")
     pass
 
 def _stop():
