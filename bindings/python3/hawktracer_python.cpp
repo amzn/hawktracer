@@ -205,7 +205,7 @@ static struct PyModuleDef HawkTracer_module = {
 }
 
 PyMODINIT_FUNC
-PyInit_HawkTracer(void)
+PyInit_Client(void)
 {
     if (PyType_Ready(&HawkTracer::Python::HT_Python_Client_type_object) < 0)
     {

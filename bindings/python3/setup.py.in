@@ -34,16 +34,16 @@ class HTBuildExt(build_ext):
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)
 
-module = Extension('HawkTracer',
+module = Extension('HawkTracer.Client',
                     sources = read_parameters("--sources"),
                     libraries = read_parameters("--libraries"),
                     library_dirs = read_parameters("--lib-dirs"),
                     include_dirs = read_parameters("--include-dirs"),
                     runtime_library_dirs = ['@CMAKE_INSTALL_PREFIX@/lib'])
 
-setup(name = 'HawkTracer',
+setup(name = 'HawkTracer.Client',
       version = '@PROJECT_VERSION@',
-      description = 'HawkTracer',
+      description = 'HawkTracer Client',
       ext_modules = [module],
       cmdclass = {'build_ext': HTBuildExt},
       author = 'Marcin Kolny',
