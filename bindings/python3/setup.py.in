@@ -14,6 +14,11 @@ def read_parameters(argument_name):
     finally:
         return out_list
 
+def read_include_dirs():
+    # compiler might not handle empty include dirs properly,
+    # so we need to manually remove them if they exist
+    return list(filter(None, read_parameters("--include-dirs")))
+
 def compiler_has_flag(compiler, flag):
     import tempfile
     with tempfile.NamedTemporaryFile('w', suffix='.cpp') as f:
@@ -34,14 +39,14 @@ class HTBuildExt(build_ext):
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)
 
-module = Extension('HawkTracer.Client',
+module = Extension('@PY_MODULE_NAME@',
                     sources = read_parameters("--sources"),
                     libraries = read_parameters("--libraries"),
                     library_dirs = read_parameters("--lib-dirs"),
-                    include_dirs = read_parameters("--include-dirs"),
+                    include_dirs = read_include_dirs(),
                     runtime_library_dirs = ['@CMAKE_INSTALL_PREFIX@/lib'])
 
-setup(name = 'HawkTracer.Client',
+setup(name = '@PY_MODULE_NAME@',
       version = '@PROJECT_VERSION@',
       description = 'HawkTracer Client',
       ext_modules = [module],

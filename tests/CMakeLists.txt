@@ -41,6 +41,7 @@ set(HAWKTRACER_GTEST_TEST_SOURCES
     test_path.cpp)
 
 add_subdirectory(lib)
+add_subdirectory(bindings)
 
 if(ENABLE_CLIENT)
     add_subdirectory(parser)

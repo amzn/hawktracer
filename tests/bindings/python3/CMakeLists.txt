@@ -1,0 +1,8 @@
+find_package(PythonInterp 3 REQUIRED)
+
+execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/get_build_path.py OUTPUT_VARIABLE PYTHON3_BUILD_PATH)
+
+add_test(NAME python3_core_test
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/core_test.py)
+
+set_tests_properties(python3_core_test PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/${PYTHON3_BUILD_PATH}")
