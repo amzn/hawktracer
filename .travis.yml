@@ -28,7 +28,7 @@ matrix:
         - sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 10
 
       before_script:
-        - cmake -DENABLE_PYTHON_BINDINGS=ON -DENABLE_ALLOC_HOOKS_FEATURE=ON -DBUILD_STATIC_LIB=ON .
+        - cmake -DENABLE_PYTHON_BINDINGS=ON -DENABLE_ALLOC_HOOKS_FEATURE=ON -DBUILD_STATIC_LIB=ON -DENABLE_POSITION_INDEPENDENT_CODE=ON .
 
       after_script:
         - make coverage_base

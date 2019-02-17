@@ -14,6 +14,9 @@ option(ENABLE_DOC "Build documentation" ON)
 option(ENABLE_CLIENT "Enable client application for parsing HawkTracer stream" ON)
 option(ENABLE_PYTHON_BINDINGS "Enable Python bindings (requires ENABLE_CLIENT=ON)" OFF)
 
+option(ENABLE_POSITION_INDEPENDENT_CODE "Enable position independent code of
+    the HawkTracer library. For most of the casses, it adds -fPIC flag to a compiler." OFF)
+
 option(BUILD_STATIC_LIB "Build static hawktracer library" OFF)
 
 option(ENABLE_MAINTAINER_MODE "Enables maintainer mode. Overrides some flags

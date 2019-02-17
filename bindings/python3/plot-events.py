@@ -1,13 +1,13 @@
 """Example HawkTracer client
 
 This application demonstrates how to implement simple
-HawkTracer client using HawkTracer.Client.Client class.
+HawkTracer client using hawktracer.client.Client class.
 This application visualizes selected event's field values
 on a graph.
 """
 
 import argparse
-import HawkTracer.Client
+import hawktracer.client
 import matplotlib.pyplot as plt
 import os
 import time
@@ -25,7 +25,7 @@ parser.add_argument('-e', '--klass', help='Klass of event to draw on the graph',
 parser.add_argument('-f', '--field', help='A field of event\'s klass to draw on the graph', required=True)
 args = parser.parse_args()
 
-client = HawkTracer.Client.Client()
+client = hawktracer.client.Client()
 client.start(args.source)
 
 data = []
