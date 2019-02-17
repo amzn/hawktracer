@@ -12,6 +12,12 @@ HT_DECLS_BEGIN
  * from this library. The only exception is ht_allocator_set(),
  * which must be called before ht_init().
  *
+ * The function can be called multiple times, but only the first
+ * call initializes the library. All the other calls don't have any effect.
+ *
+ * This function is not thread-safe, i.e. it must not be called from
+ * two different threads at the same time.
+ *
  * @param argc a number of arguments of the @a argv array.
  * @param argv an array of strings - arguments for HawkTracer library.
  */
@@ -25,6 +31,9 @@ HT_API void ht_init(int argc, char** argv); /* TODO: consider passing allocator 
  * ht_timeline_deinit() which might be called after ht_deinit(),
  * however, it's highly not recommended and should be avoided
  * when possible.
+ *
+ * This function is not thread-safe, i.e. it must not be called from
+ * two different threads at the same time.
  */
 HT_API void ht_deinit(void);
 

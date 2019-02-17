@@ -8,6 +8,8 @@
 #  include "hawktracer/posix_mapped_tracepoint.h"
 #endif
 
+static int _ht_init_counter = 0;
+
 void
 ht_init(int argc, char** argv)
 {
@@ -32,14 +34,19 @@ ht_init(int argc, char** argv)
 #ifdef HT_USE_PTHREADS
     _ht_posix_mapped_tracepoint_init();
 #endif
+
+    _ht_init_counter++;
 }
 
 
 void ht_deinit(void)
 {
+    if (_ht_init_counter > 0 && --_ht_init_counter)
+    {
 #ifdef HT_USE_PTHREADS
-    _ht_posix_mapped_tracepoint_deinit();
+        _ht_posix_mapped_tracepoint_deinit();
 #endif
 
-    ht_registry_deinit();
+        ht_registry_deinit();
+    }
 }
