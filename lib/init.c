@@ -38,8 +38,15 @@ ht_init(int argc, char** argv)
     _ht_init_counter++;
 }
 
+HT_Boolean
+ht_is_initialized(void)
+{
+    return _ht_init_counter > 0;
+}
 
-void ht_deinit(void)
+
+void
+ht_deinit(void)
 {
     if (_ht_init_counter > 0 && --_ht_init_counter)
     {

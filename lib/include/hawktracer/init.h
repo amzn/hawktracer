@@ -1,6 +1,7 @@
 #ifndef HAWKTRACER_INIT_H
 #define HAWKTRACER_INIT_H
 
+#include <hawktracer/base_types.h>
 #include <hawktracer/macros.h>
 
 HT_DECLS_BEGIN
@@ -36,6 +37,13 @@ HT_API void ht_init(int argc, char** argv); /* TODO: consider passing allocator 
  * two different threads at the same time.
  */
 HT_API void ht_deinit(void);
+
+/**
+ * Checks if the HawkTracer library is initialized.
+ *
+ * @return #HT_TRUE, if the library is initialized; otherwise, #HT_FALSE.
+ */
+HT_API HT_Boolean ht_is_initialized(void);
 
 HT_DECLS_END
 

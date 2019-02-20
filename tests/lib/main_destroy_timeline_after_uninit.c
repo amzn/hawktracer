@@ -9,11 +9,26 @@
  */
 int main(int argc, char** argv)
 {
+    if (ht_is_initialized())
+    {
+        return 1;
+    }
+
     ht_init(argc, argv);
+
+    if (!ht_is_initialized())
+    {
+        return 1;
+    }
 
     HT_Timeline* timeline = ht_timeline_create(10, HT_FALSE, HT_FALSE, NULL, NULL);
 
     ht_deinit();
+
+    if (ht_is_initialized())
+    {
+        return 1;
+    }
 
     ht_timeline_destroy(timeline);
 
