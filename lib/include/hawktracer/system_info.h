@@ -4,12 +4,12 @@
 #include <hawktracer/core_events.h>
 
 HT_DECLS_BEGIN
-
+/**
+ * Gets the endianness of the system.
+ *
+ * @return endianness of the system.
+ */
 HT_API HT_Endianness ht_system_info_get_endianness(void);
-
-HT_API size_t ht_system_info_push_endianness_info_to_listener(HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize);
-
-HT_API size_t ht_system_info_push_system_info_to_listener(HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize);
 
 HT_DECLS_END
 

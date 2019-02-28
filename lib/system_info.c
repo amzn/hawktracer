@@ -1,5 +1,6 @@
 #include "hawktracer/system_info.h"
 #include "internal/event_utils.h"
+#include "internal/system_info.h"
 
 HT_Endianness
 ht_system_info_get_endianness(void)

@@ -7,6 +7,7 @@
 #include "internal/registry.h"
 #include "internal/mutex.h"
 #include "internal/timeline_listener_container.h"
+#include "internal/system_info.h"
 
 #include <assert.h>
 
