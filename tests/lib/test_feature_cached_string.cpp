@@ -13,16 +13,16 @@ TEST(TestFeatureCachedString, AddMappingShouldEmitStringMappingEvent)
     NotifyInfo<HT_StringMappingEvent> string_map_info;
 
     HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
-    ht_feature_cached_string_enable(timeline);
+    ht_feature_cached_string_enable(timeline, HT_TRUE);
 
     ht_timeline_register_listener(timeline, test_listener<HT_StringMappingEvent>, &string_map_info);
 
     // Act
-    const char* new_label = ht_feature_cached_string_add_mapping(timeline, label);
+    uintptr_t hash = ht_feature_cached_string_add_mapping(timeline, label);
     ht_timeline_flush(timeline);
 
     // Assert
-    ASSERT_EQ(label, new_label);
+    ASSERT_EQ((uintptr_t)label, hash);
     ASSERT_EQ(1u, string_map_info.values.size());
     ASSERT_STREQ(label, string_map_info.values.front().label);
 
@@ -37,10 +37,10 @@ TEST(TestFeatureCachedString, PushMappingShouldEmitStringMappingEventForEachEntr
     NotifyInfo<HT_StringMappingEvent> string_map_info;
 
     HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
-    ht_feature_cached_string_enable(timeline);
+    ht_feature_cached_string_enable(timeline, HT_FALSE);
 
-    const char* new_label_1 = ht_feature_cached_string_add_mapping(timeline, label_1);
-    const char* new_label_2 = ht_feature_cached_string_add_mapping(timeline, label_2);
+    uintptr_t hash_1 = ht_feature_cached_string_add_mapping(timeline, label_1);
+    uintptr_t hash_2 = ht_feature_cached_string_add_mapping(timeline, label_2);
     ht_timeline_flush(timeline);
 
     ht_timeline_register_listener(timeline, test_listener<HT_StringMappingEvent>, &string_map_info);
@@ -50,8 +50,8 @@ TEST(TestFeatureCachedString, PushMappingShouldEmitStringMappingEventForEachEntr
     ht_timeline_flush(timeline);
 
     // Assert
-    ASSERT_EQ(label_1, new_label_1);
-    ASSERT_EQ(label_2, new_label_2);
+    ASSERT_EQ((uintptr_t)label_1, hash_1);
+    ASSERT_EQ((uintptr_t)label_2, hash_2);
     ASSERT_EQ(2u, string_map_info.values.size());
     ASSERT_STREQ(label_1, string_map_info.values.front().label);
     ASSERT_STREQ(label_2, string_map_info.values[1].label);
@@ -67,7 +67,7 @@ TEST(TestFeatureCachedString, EnableFeatureShouldFailIfCantAllocMemory)
     ScopedSetAlloc allocator(ht_test_null_realloc);
 
     // Act
-    HT_ErrorCode error_code = ht_feature_cached_string_enable(timeline);
+    HT_ErrorCode error_code = ht_feature_cached_string_enable(timeline, HT_TRUE);
 
     // Assert
     allocator.reset();
@@ -79,21 +79,44 @@ TEST(TestFeatureCachedString, AddMappingShouldFailIfCantAllocMemory)
 {
     // Arrange
     HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
-    ht_feature_cached_string_enable(timeline);
+    ht_feature_cached_string_enable(timeline, HT_FALSE);
 
     ScopedSetAlloc allocator(ht_test_null_realloc);
-    const char* result = nullptr;
+    uintptr_t result = 0;
     int counter = 0;
 
     // Act
     do
     {
         result = ht_feature_cached_string_add_mapping(timeline, "test");
-    } while (result != nullptr && counter < 2048);
+    } while (result != 0 && counter < 2048);
 
     // Assert
     allocator.reset();
-    ASSERT_EQ(nullptr, result);
+    ASSERT_EQ(0u, result);
+    ht_timeline_destroy(timeline);
+}
+
+TEST(TestFeatureCachedString, DynamicStrings)
+{
+    // Arrange
+    HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
+    ht_feature_cached_string_enable(timeline, HT_FALSE);
+    const char* label = "test_label";
+    NotifyInfo<HT_StringMappingEvent> string_map_info;
+
+    ht_timeline_register_listener(timeline, test_listener<HT_StringMappingEvent>, &string_map_info);
+
+    // Act
+    uintptr_t hash_1 = ht_feature_cached_string_add_mapping_dynamic(timeline, label);
+    uintptr_t hash_2 = ht_feature_cached_string_add_mapping_dynamic(timeline, label);
+    ht_timeline_flush(timeline);
+
+    // Assert
+    ASSERT_EQ(string_map_info.values.size(), 1u);
+    ASSERT_EQ(string_map_info.values.front().identifier, hash_1);
+    ASSERT_STREQ(string_map_info.values.front().label, label);
+    ASSERT_EQ(hash_1, hash_2);
     ht_timeline_destroy(timeline);
 }
 
@@ -108,7 +131,7 @@ TEST(TestFeatureCachedString, PosixMappingShouldAddMappingWhenEnterFunction)
     const char* label = "test-label";
 
     HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
-    ht_feature_cached_string_enable(timeline);
+    ht_feature_cached_string_enable(timeline, HT_TRUE);
 
     ht_timeline_register_listener(timeline, test_listener<HT_StringMappingEvent>, &string_map_info);
 
