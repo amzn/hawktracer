@@ -5,7 +5,7 @@ static HT_Timeline* _ht_global_timeline_create(void)
     HT_Timeline* c_timeline = ht_timeline_create(1024, HT_FALSE, HT_TRUE, "HT_GlobalTimeline", NULL);
 
     ht_feature_callstack_enable(c_timeline);
-    ht_feature_cached_string_enable(c_timeline);
+    ht_feature_cached_string_enable(c_timeline, HT_FALSE);
 
     return c_timeline;
 }
@@ -48,7 +48,7 @@ static void _ht_destroy_timeline(void* timeline)
     ht_timeline_destroy((HT_Timeline*)timeline);
 }
 
-static void create_key()
+static void create_key(void)
 {
     pthread_key_create(&timeline_key, _ht_destroy_timeline);
 }

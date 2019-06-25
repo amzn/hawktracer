@@ -4,7 +4,8 @@
  * Please note this file won't compile in for other than GNU C or C++ compilers.
  */
 #include <hawktracer.h>
-#include <stdio.h>
+#include <cstdio>
+#include <string>
 
 static void hello_world()
 {
@@ -16,8 +17,13 @@ static void hello_world()
     for (int i = 0; i < 100; i++)
     {
         /* Another scoped tracepoint, but we can set the label manually */
-        HT_TP_G_STRACEPOINT("printf()")
+        HT_TP_G_STRACEPOINT("iteration")
         printf("2 * %d = %d\n", i, 2*i);
+
+        /* Dynamic string used as a label */
+        std::string txt = "Iteration (mod 10): " + std::to_string(i % 10);
+        HT_TP_G_DYN_STRACEPOINT(txt.c_str());
+        printf("text: %s\n", txt.c_str());
     }
 }
 

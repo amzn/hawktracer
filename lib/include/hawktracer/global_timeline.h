@@ -17,6 +17,8 @@ HT_DECLS_END
 
 #define HT_TP_G_STRACEPOINT(label) HT_TP_STRACEPOINT(ht_global_timeline_get(), label)
 
+#define HT_TP_G_DYN_STRACEPOINT(label) HT_TP_DYN_STRACEPOINT(ht_global_timeline_get(), label)
+
 #define HT_TP_G_FUNCTION() HT_TP_FUNCTION(ht_global_timeline_get())
 
 #endif /* HAWKTRACER_GLOBAL_TIMELINE_H */
