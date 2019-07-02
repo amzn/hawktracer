@@ -8,6 +8,7 @@ The library provides many different types of events (e.g. CPU usage event, durat
 * @subpage build_install
 * @subpage tutorials
 * @subpage integration
+* @subpage design
 * Frequently asked question
 * Core concepts
  * Event
