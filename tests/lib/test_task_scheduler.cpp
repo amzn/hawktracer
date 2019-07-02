@@ -8,10 +8,18 @@
 #include <thread>
 #include <chrono>
 
-static void test_callback(void* ud)
+static HT_Boolean test_callback(void* ud)
 {
     int* value = static_cast<int*>(ud);
     (*value)++;
+    return HT_TRUE;
+}
+
+static HT_Boolean test_callback_false(void* ud)
+{
+    int* value = static_cast<int*>(ud);
+    (*value)++;
+    return HT_FALSE;
 }
 
 class TestTaskScheduler : public ::testing::Test
@@ -232,6 +240,27 @@ TEST_F(TestTaskScheduler, SchedulerShouldExecuteDelayedTasks_IgnoreDelays)
 
     // Assert
     ASSERT_LE(3, value);
+}
+
+TEST_F(TestTaskScheduler, SchedulerShouldRemoveTaskIfItReturnsFalse)
+{
+    // Arrange
+    int value = 0;
+    const HT_DurationNs period = 1; // 1ns
+    ht_task_scheduler_schedule_task(_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, period, test_callback, &value);
+    ht_task_scheduler_schedule_task(_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, period, test_callback_false, &value);
+    ht_task_scheduler_schedule_task(_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, period, test_callback, &value);
+    ht_task_scheduler_schedule_task(_scheduler, HT_TASK_SCHEDULING_IGNORE_DELAYS, period, test_callback, &value);
+
+    // Act
+    for (int i = 0; i < 2; i++)
+    {
+        ht_task_scheduler_tick(_scheduler);
+        std::this_thread::sleep_for(std::chrono::nanoseconds(period * 3));
+    }
+
+    // Assert
+    ASSERT_EQ(7, value);
 }
 
 TEST_F(TestTaskScheduler, SchedulerShouldNotExecuteDelayedTasks_RestartTimer)

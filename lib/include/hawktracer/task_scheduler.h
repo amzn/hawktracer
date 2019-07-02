@@ -5,12 +5,14 @@
 
 HT_DECLS_BEGIN
 
-/** A task scheduler's callback. */
-typedef void(*HT_TaskCallback)(void* user_data);
+/**
+ * A task scheduler's callback.
+ * @return #HT_TRUE if the task should be re-scheduled, or #HT_FALSE if the task should be removed
+ * from scheduler after executing it.
+ */
+typedef HT_Boolean(*HT_TaskCallback)(void* user_data);
 /** A task scheduler's task identifier. */
 typedef int32_t HT_TaskId;
-typedef struct _HT_Task HT_Task;
-
 /** An invalid task identifier. */
 #define HT_TASK_SCHEDULER_INVALID_TASK_ID ((HT_TaskId)-1)
 

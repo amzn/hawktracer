@@ -13,7 +13,7 @@ struct _HT_TaskScheduler
     HT_TaskId next_task_id;
 };
 
-struct _HT_Task
+typedef struct
 {
     HT_TaskCallback callback;
     void* user_data;
@@ -21,7 +21,7 @@ struct _HT_Task
     HT_TimestampNs next_action_ts;
     HT_TaskId id;
     HT_TaskSchedulingMode mode;
-};
+} HT_Task;
 
 #define HT_TASK(task) ((HT_Task*)task)
 
@@ -121,6 +121,7 @@ void
 ht_task_scheduler_tick(HT_TaskScheduler* task_scheduler)
 {
     size_t i;
+    HT_Boolean result;
 
     for (i = 0; i < task_scheduler->tasks.size; i++)
     {
@@ -131,10 +132,20 @@ ht_task_scheduler_tick(HT_TaskScheduler* task_scheduler)
             continue;
         }
 
-        task->callback(task->user_data);
-        task->next_action_ts = task->mode == HT_TASK_SCHEDULING_IGNORE_DELAYS ?
-                    task->next_action_ts + task->period :
-                    ht_monotonic_clock_get_timestamp() + task->period;
+        result = task->callback(task->user_data);
+
+        if (result == HT_FALSE)
+        {
+            ht_bag_void_ptr_remove_nth(&task_scheduler->tasks, i);
+            ht_free(task);
+            i--;
+        }
+        else
+        {
+            task->next_action_ts = task->mode == HT_TASK_SCHEDULING_IGNORE_DELAYS ?
+                        task->next_action_ts + task->period :
+                        ht_monotonic_clock_get_timestamp() + task->period;
+        }
     }
 }
 
