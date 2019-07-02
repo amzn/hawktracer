@@ -15,8 +15,8 @@ static void hello_world(void)
         /* Another tracepoint, we want to measure printf() function */
         ht_feature_callstack_start_string(ht_global_timeline_get(), "printf()");
         printf("2 * %d = %d\n", i, 2*i);
-	/* Stop measurements for printf() */
-	ht_feature_callstack_stop(ht_global_timeline_get());
+        /* Stop measurements for printf() */
+        ht_feature_callstack_stop(ht_global_timeline_get());
     }
     /* Stop measurements for the first tracepoint (hello_world()) */
     ht_feature_callstack_stop(ht_global_timeline_get());
@@ -32,13 +32,13 @@ int main(int argc, char** argv)
     HT_FileDumpListener* listener = ht_file_dump_listener_create("hello-world-out.htdump", 2048, &error_code);
 
     /* Creating listener might fail (e.g. file can't be open),
-     * so we have to check the status 
+     * so we have to check the status
      */
     if (!listener)
     {
         printf("Unable to create listener. Error code: %d\n", error_code);
         ht_deinit();
-	return -1;
+        return -1;
     }
 
     /* Register listener to the global timeline */
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
     ht_file_dump_listener_destroy(listener);
     /* Uninitialize HawkTracer library */
     ht_deinit();
-    
+
     return 0;
 }
-  
+

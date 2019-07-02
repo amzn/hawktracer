@@ -1,1 +1,2 @@
 add_subdirectory(hello_world)
+add_subdirectory(custom_event_type)

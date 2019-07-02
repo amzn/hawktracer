@@ -10,7 +10,7 @@ After this tutorial you'll know how to get time measurements from your own appli
 Make sure you already have HawkTracer installed in your system. See @ref build_install section to see how to install the project.
 
 ## Hello World!
-Please copy the text below to a file named `hawktracer-hello-world.c` (you can find this file [in the repository as well](@repocodeurl/examples/tutorials/hello_world/hawktracer-hello-world.c).
+Please copy the text below to a file named `hawktracer-hello-world.c` (you can find this file [in the repository as well](@repocodeurl/examples/tutorials/hello_world/hawktracer-hello-world.c)).
 
 @include examples/tutorials/hello_world/hawktracer-hello-world.c
 
