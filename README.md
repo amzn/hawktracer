@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/loganek/hawktracer.svg?branch=master)](https://travis-ci.org/loganek/hawktracer)
+[![Build Status](https://travis-ci.org/amzn/hawktracer.svg?branch=master)](https://travis-ci.org/amzn/hawktracer)
 [![Gitter chat](https://img.shields.io/gitter/room/amzn/hawktracer.svg)](https://gitter.im/amzn/hawktracer)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8d0f18c7a6b14f15bb747b0a4cd336bb)](https://www.codacy.com/app/loganek/hawktracer?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=loganek/hawktracer&amp;utm_campaign=Badge_Grade)
 [![codecov](https://codecov.io/gh/loganek/hawktracer/branch/master/graph/badge.svg)](https://codecov.io/gh/loganek/hawktracer)
@@ -25,7 +25,7 @@ The library provides many different types of events (e.g. CPU usage event, durat
 
 ## License Summary
 
-This sample code is made available under the MIT license. 
+This sample code is made available under the MIT license.
 (See [LICENSE](LICENSE) file)
 
 ## Getting Started
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
   ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, listener); // register listener to a timeline
 
   // your code goes here...
-  
+
   ht_timeline_flush(timeline); // flush all remaining events from timeline
   ht_timeline_unregister_all_listeners(timeline); // unregister listeners from timeline
   ht_file_dump_listener_destroy(listener); // deinitialize listener
@@ -120,7 +120,7 @@ For example, you can instrument following code:
 void foo()
 {
   HT_TP_G_FUNCTION() // measure duration of foo function execution
-  
+
   for (int i = 0; i < 100; i++)
   {
     HT_TP_G_STRACEPOINT("in-loop") // measure duration of single loop iteration
