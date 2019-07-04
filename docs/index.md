@@ -9,12 +9,10 @@ The library provides many different types of events (e.g. CPU usage event, durat
 * @subpage tutorials
 * @subpage integration
 * @subpage design
+ * @ref design_library
+ * @ref design_client
+ * @ref design_htdump_format
 * Frequently asked question
-* Core concepts
- * Event
- * Timeline
- * Listeners
- * Timeline Features
 
 ## Core features
 * Multiplatform support: Linux, macOS, Windows
@@ -26,7 +24,7 @@ The library provides many different types of events (e.g. CPU usage event, durat
 ## Community
 Currently the only way to contact the community is to join the Gitter channel [amzn/hawktracer](https://gitter.im/amzn/hawktracer).
 
-For feature requests or bug reports, please use [GitHub form](https://github.com/loganek/hawktracer/issues/new). 
+For feature requests or bug reports, please use [GitHub form](https://github.com/loganek/hawktracer/issues/new).
 
 ## Development
 All development on %HawkTracer is done on the [GitHub project](https://github.com/loganek/hawktracer). Instructions for contributing can be found on the @subpage docs/CONTRIBUTING.md page.
