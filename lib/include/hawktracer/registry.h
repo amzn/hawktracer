@@ -41,6 +41,13 @@ HT_API HT_EventKlassId ht_registry_register_event_klass(HT_EventKlass* event_kla
 HT_API size_t ht_registry_push_registry_klasses_to_listener(HT_TimelineListenerCallback callback, void* listener, HT_Boolean serialize);
 
 /* TODO: this API should probably be removed */
+/**
+ * Returns a list of all the klasses registered in HawkTracer library.
+ *
+ * @param out_klass_count a pointer to variable to store number of klasses.
+ *
+ * @return an array of all the event klasses registered in the library.
+ */
 HT_API HT_EventKlass** ht_registry_get_event_klasses(size_t* out_klass_count);
 
 HT_DECLS_END
