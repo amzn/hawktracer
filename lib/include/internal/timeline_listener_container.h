@@ -5,6 +5,8 @@
 
 HT_DECLS_BEGIN
 
+typedef struct _HT_TimelineListenerContainer HT_TimelineListenerContainer;
+
 void ht_timeline_listener_container_notify_listeners(HT_TimelineListenerContainer* listeners, TEventPtr events, size_t size, HT_Boolean serialize_events);
 
 uint32_t ht_timeline_listener_container_get_id(HT_TimelineListenerContainer* listeners);

@@ -7,10 +7,26 @@
 
 #ifdef __cplusplus
 
+/**
+ * Creates a tracepoint that measures time spent in the scope.
+ *
+ * The label must be a static string. If it's not, use HT_TP_DYN_STRACEPOINT() instead.
+ *
+ * @param timeline a timeline where the event will be posted to.
+ * @param label a string label of the tracepoint.
+ */
 #define HT_TP_STRACEPOINT(timeline, label) \
     static HT_THREAD_LOCAL uintptr_t HT_UNIQUE_VAR_NAME(fnc_track) = ht_feature_cached_string_add_mapping(timeline, label); \
     HT_TP_SCOPED_INT(timeline, (uintptr_t)HT_UNIQUE_VAR_NAME(fnc_track));
 
+/**
+ * Creates a tracepoint that measures time spent in the scope.
+ * This method is slower than HT_TP_STRACEPOINT(), but allows user to use
+ * dynamic strings for label.
+ *
+ * @param timeline a timeline where the event will be posted to.
+ * @param label a string label of the tracepoint.
+ */
 #define HT_TP_DYN_STRACEPOINT(timeline, label) \
     HT_TP_SCOPED_INT(timeline, (uintptr_t)ht_feature_cached_string_add_mapping_dynamic(timeline, label));
 
@@ -28,6 +44,13 @@
 
 #endif
 
+/**
+ * Generates a tracepoint that measures time spent in the function.
+ *
+ * The macro shoudl be called as a first instruction of the traced function.
+ *
+ * @param timeline a timeline where the event will be posted to.
+ */
 #define HT_TP_FUNCTION(timeline) \
     HT_TP_STRACEPOINT(timeline, __func__)
 
