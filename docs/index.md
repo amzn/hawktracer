@@ -9,9 +9,6 @@ The library provides many different types of events (e.g. CPU usage event, durat
 * @subpage tutorials
 * @subpage integration
 * @subpage design
- * @ref design_library
- * @ref design_client
- * @ref design_htdump_format
 * Frequently asked question
 
 ## Core features
