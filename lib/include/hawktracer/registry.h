@@ -2,7 +2,6 @@
 #define HAWKTRACER_REGISTRY_H
 
 #include <hawktracer/timeline.h>
-#include "internal/timeline_listener_container.h"
 
 HT_DECLS_BEGIN
 
