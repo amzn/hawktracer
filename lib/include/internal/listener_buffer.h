@@ -14,11 +14,15 @@ typedef struct
     size_t usage;
 } HT_ListenerBuffer;
 
-typedef void(*HT_ListenerFlushCallback)(void*);
+typedef void(*HT_ListenerFlushCallback)(void* listener, HT_Byte* data, size_t size);
 
 HT_API HT_ErrorCode ht_listener_buffer_init(HT_ListenerBuffer* buffer, size_t max_size);
 
 HT_API void ht_listener_buffer_deinit(HT_ListenerBuffer* buffer);
+
+HT_API void ht_listener_buffer_flush(HT_ListenerBuffer* buffer,
+                                     HT_ListenerFlushCallback flush_callback,
+                                     void* listener);
 
 HT_API void ht_listener_buffer_process_serialized_events(HT_ListenerBuffer* buffer,
                                                          TEventPtr events,

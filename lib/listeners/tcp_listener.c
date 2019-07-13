@@ -19,11 +19,17 @@ struct _HT_TCPListener
 };
 
 static void
+ht_tcp_listener_f_flush(void* listener, HT_Byte* data, size_t size)
+{
+    HT_TCPListener* tcp_listener = (HT_TCPListener*)listener;
+    ht_tcp_server_write(tcp_listener->_tcp_server, (char*)data, size);
+    tcp_listener->_was_flushed = HT_TRUE;
+}
+
+static void
 ht_tcp_listener_flush(HT_TCPListener* listener)
 {
-    ht_tcp_server_write(listener->_tcp_server, (char*)listener->_buffer.data, listener->_buffer.usage);
-    listener->_buffer.usage = 0;
-    listener->_was_flushed = HT_TRUE;
+    ht_listener_buffer_flush(&listener->_buffer, ht_tcp_listener_f_flush, listener);
 }
 
 static void
@@ -77,14 +83,6 @@ ht_tcp_listener_deinit(HT_TCPListener* listener)
     ht_listener_buffer_deinit(&listener->_buffer);
     ht_tcp_server_destroy(listener->_tcp_server);
     ht_mutex_destroy(listener->_push_action_mutex);
-}
-
-static void
-ht_tcp_listener_f_flush(void* listener)
-{
-    HT_TCPListener* tcp_listener = (HT_TCPListener*)listener;
-    ht_tcp_listener_flush(tcp_listener);
-    tcp_listener->_was_flushed = HT_TRUE;
 }
 
 static void

@@ -15,7 +15,7 @@ TEST(TestListenerBuffer, ShouldCallCallbackForSerializedEvent)
 
     // Act
     ht_listener_buffer_process_serialized_events(
-                &buffer, buff, 10, [] (void* user_data) {++*((int*)user_data);}, &num_calls);
+                &buffer, buff, 10, [] (void* user_data, HT_Byte*, size_t) {++*((int*)user_data);}, &num_calls);
 
     // Assert
     ASSERT_EQ(2, num_calls);
@@ -37,7 +37,7 @@ TEST(TestListenerBuffer, ShouldCallCallbackForUnserializedEvent)
 
     // Act
     ht_listener_buffer_process_unserialized_events(
-                &buffer, buff, 3 * sizeof(HT_Event), [] (void* user_data) {++*((int*)user_data);}, &num_calls);
+                &buffer, buff, 3 * sizeof(HT_Event), [] (void* user_data, HT_Byte*, size_t) {++*((int*)user_data);}, &num_calls);
 
     // Assert
     ASSERT_EQ(2, num_calls);
@@ -55,4 +55,21 @@ TEST(TestListenerBuffer, InitShouldFailIfMallocReturnsNull)
 
     // Assert
     ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, error_code);
+}
+
+TEST(TestListenerBuffer, BypassModeEnabled)
+{
+    // Arrange
+    HT_ListenerBuffer buffer;
+    HT_Byte buff[10] = {0};
+    ht_listener_buffer_init(&buffer, 0);
+    int num_calls = 0;
+
+    // Act
+    ht_listener_buffer_process_serialized_events(
+                &buffer, buff, 10, [] (void* user_data, HT_Byte*, size_t) {++*((int*)user_data);}, &num_calls);
+
+    // Assert
+    ASSERT_EQ(1, num_calls);
+    ht_listener_buffer_deinit(&buffer);
 }

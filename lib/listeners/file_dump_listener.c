@@ -13,12 +13,11 @@ struct _HT_FileDumpListener
 };
 
 inline static void
-_ht_file_dump_listener_flush(void* listener)
+_ht_file_dump_listener_flush(void* listener, HT_Byte* data, size_t size)
 {
     HT_FileDumpListener* fd_listener = (HT_FileDumpListener*) listener;
 
-    fwrite(fd_listener->buffer.data, sizeof(HT_Byte), fd_listener->buffer.usage, fd_listener->p_file);
-    fd_listener->buffer.usage = 0;
+    fwrite(data, sizeof(HT_Byte), size, fd_listener->p_file);
 }
 
 HT_FileDumpListener*
@@ -80,7 +79,7 @@ ht_file_dump_listener_destroy(HT_FileDumpListener* listener)
     if (listener != NULL)
     {
         ht_mutex_lock(listener->mtx);
-        _ht_file_dump_listener_flush(listener);
+        ht_listener_buffer_flush(&listener->buffer, _ht_file_dump_listener_flush, listener);
         ht_listener_buffer_deinit(&listener->buffer);
         fclose(listener->p_file);
         listener->p_file = NULL;
@@ -88,6 +87,28 @@ ht_file_dump_listener_destroy(HT_FileDumpListener* listener)
         ht_mutex_destroy(listener->mtx);
         ht_free(listener);
     }
+}
+
+HT_ErrorCode
+ht_file_dump_listener_flush(HT_FileDumpListener* listener, HT_Boolean flush_stream)
+{
+    HT_ErrorCode ret = HT_ERR_OK;
+
+    ht_mutex_lock(listener->mtx);
+
+    ht_listener_buffer_flush(&listener->buffer, _ht_file_dump_listener_flush, listener);
+
+    if (flush_stream == HT_TRUE)
+    {
+        if (fflush(listener->p_file) != 0)
+        {
+            ret = HT_ERR_UNKNOWN;
+        }
+    }
+
+    ht_mutex_unlock(listener->mtx);
+
+    return ret;
 }
 
 void
