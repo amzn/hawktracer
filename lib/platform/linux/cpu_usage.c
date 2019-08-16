@@ -53,7 +53,7 @@ _get_process_time(unsigned long* total_time, int pid)
     buf[num] = '\0';
 
     /* Read stat file: http://man7.org/linux/man-pages/man5/proc.5.html */
-    sscanf(strrchr(buf, ')') + 2, /* pid (comm) */
+    int ret = sscanf(strrchr(buf, ')') + 2, /* pid (comm) */
            "%c " /* state */
            "%d %d %d %d %d " /* ppid pgrp session tty_nr tpgid */
            "%u " /* flags */
@@ -66,6 +66,11 @@ _get_process_time(unsigned long* total_time, int pid)
            &long_data[0], &long_data[1], &long_data[2], &long_data[3],
            &utime,
            &stime);
+
+    if (ret != 13)
+    {
+        return HT_FALSE;
+    }
 
     *total_time = utime + stime;
 
