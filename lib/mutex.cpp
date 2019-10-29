@@ -30,6 +30,7 @@
 
 #if defined(HT_MUTEX_IMPL_CPP11)
 #  include <mutex>
+#  include <system_error>
 #  define HT_MUTEX_TYPE_ std::mutex
 #elif defined(HT_MUTEX_IMPL_POSIX)
 #  include <pthread.h>
