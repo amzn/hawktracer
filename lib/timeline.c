@@ -9,6 +9,13 @@
 #include <string.h>
 #include <assert.h>
 
+#define _TIMELINE_LOCK(TIMELINE, METHOD) \
+    do { \
+        if (timeline->locking_policy != NULL) { \
+            ht_mutex_##METHOD(TIMELINE->locking_policy); \
+        } \
+    } while (0)
+
 struct _HT_Timeline
 {
     void* features[HT_TIMELINE_MAX_FEATURES];
@@ -20,6 +27,16 @@ struct _HT_Timeline
     struct _HT_Mutex* locking_policy;
     HT_Boolean serialize_events;
 };
+
+static void
+_ht_timeline_flush(HT_Timeline* timeline)
+{
+    if (timeline->buffer_usage)
+    {
+        ht_timeline_listener_container_notify_listeners(timeline->listeners, timeline->buffer, timeline->buffer_usage, timeline->serialize_events);
+        timeline->buffer_usage = 0;
+    }
+}
 
 void
 ht_timeline_init_event(HT_Timeline* timeline, HT_Event* event)
@@ -36,17 +53,14 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
     assert(timeline);
     assert(event);
 
-    if (timeline->locking_policy != NULL)
-    {
-        ht_mutex_lock(timeline->locking_policy);
-    }
+    _TIMELINE_LOCK(timeline, lock);
 
     if (timeline->serialize_events)
     {
         size_t size = klass->get_size(event);
         if (timeline->buffer_capacity < timeline->buffer_usage + size)
         {
-            ht_timeline_flush(timeline);
+            _ht_timeline_flush(timeline);
         }
 
         if (timeline->buffer_capacity < size)
@@ -75,10 +89,10 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
     {
         if (timeline->buffer_capacity < timeline->buffer_usage + klass->type_info->size)
         {
-            ht_timeline_flush(timeline);
+            _ht_timeline_flush(timeline);
         }
 
-        if (timeline->buffer_capacity < klass->type_info->size) 
+        if (timeline->buffer_capacity < klass->type_info->size)
         {
             ht_timeline_listener_container_notify_listeners(timeline->listeners, (TEventPtr)event, klass->type_info->size, timeline->serialize_events);
         }
@@ -89,20 +103,17 @@ ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event)
         }
     }
 
-    if (timeline->locking_policy != NULL)
-    {
-        ht_mutex_unlock(timeline->locking_policy);
-    }
+    _TIMELINE_LOCK(timeline, unlock);
 }
 
 void
 ht_timeline_flush(HT_Timeline* timeline)
 {
-    if (timeline->buffer_usage)
-    {
-        ht_timeline_listener_container_notify_listeners(timeline->listeners, timeline->buffer, timeline->buffer_usage, timeline->serialize_events);
-        timeline->buffer_usage = 0;
-    }
+    _TIMELINE_LOCK(timeline, lock);
+
+    _ht_timeline_flush(timeline);
+
+    _TIMELINE_LOCK(timeline, unlock);
 }
 
 void
