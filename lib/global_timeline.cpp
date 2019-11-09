@@ -1,8 +1,23 @@
+#include "internal/global_timeline.h"
 #include "hawktracer/global_timeline.h"
+
+static size_t global_timeline_buffer_size = 1024;
+
+void
+ht_global_timeline_set_buffer_size(size_t buffer_size)
+{
+    global_timeline_buffer_size = buffer_size;
+}
+
+size_t
+ht_global_timeline_get_buffer_size(void)
+{
+    return global_timeline_buffer_size;
+}
 
 static HT_Timeline* _ht_global_timeline_create(void)
 {
-    HT_Timeline* c_timeline = ht_timeline_create(1024, HT_FALSE, HT_TRUE, "HT_GlobalTimeline", NULL);
+    HT_Timeline* c_timeline = ht_timeline_create(global_timeline_buffer_size, HT_FALSE, HT_TRUE, "HT_GlobalTimeline", NULL);
 
     ht_feature_callstack_enable(c_timeline);
     ht_feature_cached_string_enable(c_timeline, HT_FALSE);

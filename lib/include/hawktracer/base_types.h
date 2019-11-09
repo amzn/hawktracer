@@ -61,7 +61,11 @@ typedef enum
     /** Format of an input data is invalid. */
     HT_ERR_INVALID_FORMAT,
     /** Invalid argument */
-    HT_ERR_INVALID_ARGUMENT
+    HT_ERR_INVALID_ARGUMENT,
+    /** Out of range */
+    HT_ERR_OUT_OF_RANGE,
+    /** Missing argument */
+    HT_ERR_MISSING_ARGUMENT
 } HT_ErrorCode;
 
 /** Defines supported byte ordering */
