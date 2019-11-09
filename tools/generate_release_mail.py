@@ -94,7 +94,7 @@ code_name = sys.argv[1]
 git_info = GitInfo(previous_tag, current_tag)
 
 print("I'm pleased to announce HawkTracer {} ({}) release!".format(current_version, code_name))
-print("URL: https://github.com/loganek/hawktracer/releases/tag/{}".format(current_tag))
+print("URL: https://github.com/amzn/hawktracer/releases/tag/{}".format(current_tag))
 print("Changes")
 print("==========================================")
 found_version = False

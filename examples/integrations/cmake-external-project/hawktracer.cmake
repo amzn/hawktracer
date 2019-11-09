@@ -9,7 +9,7 @@ set(HT_BUILD_STATIC ON)
 # Add new project. You can find more options in CMake documentation:
 # https://cmake.org/cmake/help/v3.0/module/ExternalProject.html
 ExternalProject_Add(HawkTracerExt
-  GIT_REPOSITORY https://github.com/loganek/hawktracer.git
+  GIT_REPOSITORY https://github.com/amzn/hawktracer.git
   GIT_TAG master    # Git ref of the project. It could be commit hash, branch name or tag.
   INSTALL_COMMAND "" # we don't want to install the library, just build it
   CMAKE_ARGS "-DBUILD_STATIC_LIB=${HT_BUILD_STATIC}"
