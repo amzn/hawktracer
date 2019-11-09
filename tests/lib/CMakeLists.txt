@@ -4,6 +4,7 @@ set(LIB_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_alloc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_bag.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_command_line_parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_duration_conversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_feature_cached_string.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_feature_callstack.cpp

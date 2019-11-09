@@ -39,6 +39,7 @@ set(HAWKTRACER_LISTENERS_SOURCES
 set(HAWKTRACER_CORE_SOURCES
     alloc.c
     bag.c
+    command_line_parser.c
     event_id_provider.cpp
     event_utils.c
     events.c
