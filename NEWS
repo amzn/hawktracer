@@ -7,13 +7,13 @@
   * allow configuring Global Timeline buffer size #59
   * documentation improvements
 
-0.8.0 (Frog) (unstable) - 18.03.2018:
+0.8.0 (Frog) (unstable) - 18.03.2019:
   * fix library freeze on closing TCP connection
   * fix crash on multiple ht_init()/ht_deinit() calls
   * add python bindings for a core library
   * documentation improvements
 
-0.7.0 (Rabbit) (unstable) - 14.01.2018:
+0.7.0 (Rabbit) (unstable) - 14.01.2019:
   * fix crash when pushing events of size bigger than timeline's buffer
   * [api change] rename HT_EVENT_GET_CLASS to HT_EVENT_GET_KLASS
   * [api change] remove ht_timeline_listener_container_unref() from public API
