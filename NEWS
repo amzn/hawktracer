@@ -1,3 +1,12 @@
+0.9.0 (Vole) (unstable) - 09.11.2019:
+  * support dynamically allocated strings as labels for tracepoints
+  * support auto-deleting tasks from task scheduler
+  * add function for force-flushing file listener #51
+  * fix compilation on some platforms (thanks Iakov!)
+  * fix thread safety of ht_timeline_flush() API #56
+  * allow configuring Global Timeline buffer size #59
+  * documentation improvements
+
 0.8.0 (Frog) (unstable) - 18.03.2018:
   * fix library freeze on closing TCP connection
   * fix crash on multiple ht_init()/ht_deinit() calls

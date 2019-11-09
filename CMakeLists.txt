@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 project(HawkTracer
-    VERSION 0.8.0)
+    VERSION 0.9.0)
 
 include(GNUInstallDirs)
 
