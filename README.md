@@ -8,7 +8,7 @@
 
 HawkTracer is a highly portable, low-overhead, configurable profiling tool built in Amazon Video for getting performance metrics from low-end devices.
 
-HawkTracer is available on most popular platforms: **Linux**, **Windows**, **OS X**. The library can be used with **C** and **C++**.
+HawkTracer is available on most popular platforms: **Linux**, **Windows**, **OS X**. By default, the library can be used with **C** and **C++**, but there are also wrappers for [**Python**](bindings/python3) and [**Rust**](https://github.com/AlexEne/rust_hawktracer).
 
 The library provides many different types of events (e.g. CPU usage event, duration tracepoint), but the list can easily be extended by the user.
 
@@ -29,6 +29,27 @@ This sample code is made available under the MIT license.
 (See [LICENSE](LICENSE) file)
 
 ## Getting Started
+
+### Hello World! tutorials
+See [the tutorial](https://www.hawktracer.org/doc/stable/tutorial_hello_world.html) to quickly onboard to HawkTracer or check the [examples](examples/) directory.
+The tutorial step by step explains how to build and instrument the code like that:
+```cpp
+static void hello_world()
+{
+    HT_TP_G_FUNCTION()
+
+    for (int i = 0; i < 100; i++)
+    {
+        HT_TP_G_STRACEPOINT("iteration")
+        printf("2 * %d = %d\n", i, 2*i);
+
+        std::string txt = "Iteration (mod 10): " + std::to_string(i % 10);
+        HT_TP_G_DYN_STRACEPOINT(txt.c_str());
+        printf("text: %s\n", txt.c_str());
+    }
+}
+```
+You can also follow instructions below to get HawkTracer up and running.
 
 ### Building library
 ```bash
@@ -81,8 +102,8 @@ int main(int argc, char** argv)
 {
   ht_init(argc, argv); // initialize library
   HT_Timeline* timeline = ht_global_timeline_get(); // timeline, where all events are posted. You can define your own timeline, or use global timeline
-  HT_FileDumpListener* listener = ht_file_dump_listener_create("file_name.htdump", buffer_size, NULL); // initialize listener
   const size_t buffer_size = 4096; // size of internal listener's buffer
+  HT_FileDumpListener* listener = ht_file_dump_listener_create("file_name.htdump", buffer_size, NULL); // initialize listener
   ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, listener); // register listener to a timeline
 
   // your code goes here...
@@ -105,10 +126,10 @@ HawkTracer requires explicit code instrumentation. The library provides a few he
 HT_TIMELINE_PUSH_EVENT(TIMELINE, EVENT_TYPE, EVENT_PARAMETERS,...)
 
 // Reports a duration of specific block of code (available only for C++ or C GNU compiler)
-HT_TP_STRACEPOINT(TIMELINE, LABEL)
+HT_TRACE(TIMELINE, LABEL)
 
 // The same as above, but automatically sets label to current function name
-HT_TP_FUNCTION(TIMELINE)
+HT_TRACE_FUNCTION(TIMELINE)
 ```
 There are few macros which report events to a global timeline, they're prefixed with `G_`:
 ```cpp
