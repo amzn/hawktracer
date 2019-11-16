@@ -22,11 +22,11 @@ public:
         {
         }
 
-        NodeData(std::string name, HT_TimestampNs start, HT_DurationNs dur)
+        NodeData(std::string name, HT_TimestampNs start, HT_DurationNs dur) :
+            label(std::move(name)),
+            start_ts(start),
+            stop_ts(start + dur)
         {
-            label = name;
-            start_ts = start;
-            stop_ts = start_ts + dur;
         }
 
         HT_DurationNs get_duration() const
