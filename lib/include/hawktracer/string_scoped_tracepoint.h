@@ -19,17 +19,6 @@
     static HT_THREAD_LOCAL uintptr_t HT_UNIQUE_VAR_NAME(fnc_track) = ht_feature_cached_string_add_mapping(timeline, label); \
     HT_TP_SCOPED_INT(timeline, (uintptr_t)HT_UNIQUE_VAR_NAME(fnc_track));
 
-/**
- * Creates a tracepoint that measures time spent in the scope.
- * This method is slower than HT_TP_STRACEPOINT(), but allows user to use
- * dynamic strings for label.
- *
- * @param timeline a timeline where the event will be posted to.
- * @param label a string label of the tracepoint.
- */
-#define HT_TP_DYN_STRACEPOINT(timeline, label) \
-    HT_TP_SCOPED_INT(timeline, (uintptr_t)ht_feature_cached_string_add_mapping_dynamic(timeline, label));
-
 #elif defined(HT_USE_PTHREADS) && defined(HT_SCOPED_TRACEPOINT_MACRO_ENABLED)
 
 #include <hawktracer/posix_mapped_tracepoint.h>
@@ -43,6 +32,17 @@
     HT_TP_SCOPED_INT(timeline, (uintptr_t)HT_UNIQUE_VAR_NAME(fnc_track));
 
 #endif
+
+/**
+ * Creates a tracepoint that measures time spent in the scope.
+ * This method is slower than HT_TP_STRACEPOINT(), but allows user to use
+ * dynamic strings for label.
+ *
+ * @param timeline a timeline where the event will be posted to.
+ * @param label a string label of the tracepoint.
+ */
+#define HT_TP_DYN_STRACEPOINT(timeline, label) \
+    HT_TP_SCOPED_INT(timeline, (uintptr_t)ht_feature_cached_string_add_mapping_dynamic(timeline, label));
 
 /**
  * Generates a tracepoint that measures time spent in the function.

@@ -81,8 +81,8 @@ def get_header(line):
     m = header_regex.match(line)
     if not m or 1 != len(m.groups()):
         return None
-    else:
-        return m.groups()[0]
+
+    return m.groups()[0]
 
 
 class Graph:
@@ -108,7 +108,7 @@ class Graph:
         sorted_nodes = []
         init_nodes = copy.deepcopy(self._nodes)
 
-        while len(self._nodes):
+        while self._nodes:
             node = self._get_free_node()
             assert node
             sorted_nodes.append(node)

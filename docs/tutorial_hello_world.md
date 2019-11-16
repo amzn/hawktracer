@@ -16,7 +16,7 @@ Please copy the text below to a file named `hawktracer-hello-world.c` (you can f
 
 ### Building and running the example
 You can see @ref integration in order to see how to integrate HawkTracer to your project. For the purpose of the example, here are few shortcuts for most popular platforms:
-* **Linux**  
+* **Linux**
 In the terminal, run the following command:
 ~~~.sh
 $ gcc hawktracer-hello-world.c $(pkg-config --cflags --libs hawktracer) -o hawktracer-hello-world # compiling the code
@@ -44,7 +44,7 @@ HT_ErrorCode error_code;
 /* Create a listener, it'll handle all the HawkTracer events */
 HT_FileDumpListener* listener = ht_file_dump_listener_create("hello-world-out.htdump", 2048, &error_code);
 /* Creating listener might fail (e.g. file can't be open),
- * so we have to check the status 
+ * so we have to check the status
  */
 if (!listener)
 {
@@ -77,20 +77,20 @@ ht_feature_callstack_stop(ht_global_timeline_get());
 ~~~
 
 #### C++/GNU C instrumentation improvements
-For C++ and GNU C compilers %HawkTracer offers macros HT_TP_G_FUNCTION() and HT_TP_G_STRACEPOINT() which measure the scope of the macro call, e.g. if you put HT_TP_G_FUNCTION() at the beginning of your function, it will automatically measure the scope of the entire function. Moreover, macros above generate less data as they use cache feature. (**TODO:** provide a reference for this feature)
+For C++ and GNU C compilers %HawkTracer offers macros HT_G_TRACE_FUNCTION() and HT_G_TRACE_OPT_STATIC() which measure the scope of the macro call, e.g. if you put HT_G_TRACE_FUNCTION() at the beginning of your function, it will automatically measure the scope of the entire function. Moreover, macros above generate less data as they use cache feature. (**TODO:** provide a reference for this feature)
 
 The instrumented code above can be replaced with the following:
 ~~~.cpp
 /* A function scoped tracepoint - measures a duration of the scope
  * and automatically labels itself with the function name (i.e. "hello_world")
  */
-HT_TP_G_FUNCTION()
+HT_G_TRACE_FUNCTION()
 
 for (int i = 0; i < 100; i++)
 {
-	/* Another scoped tracepoint, but we can set the label manually */
-	HT_TP_G_STRACEPOINT("printf()")
-	printf("2 * %d = %d\n", i, 2*i);
+    /* Another scoped tracepoint, but we can set the label manually */
+    HT_G_TRACE_OPT_STATIC("printf()")
+    printf("2 * %d = %d\n", i, 2*i);
 }
 ~~~
 A full C++/GNU C example can be found [in the repository](@repocodeurl/examples/tutorials/hello_world/hawktracer-hello-world.cpp).

@@ -1,4 +1,4 @@
-#include <hawktracer/scoped_tracepoint.h>
+#include <hawktracer/tracepoint.h>
 
 #include "test_allocator.h"
 #include "test_common.h"
@@ -174,7 +174,7 @@ TEST_F(TestFeatureCallstack, TestScopedTracepoint)
     {
         HT_TP_SCOPED_INT(_timeline, int_label);
         {
-            HT_TP_SCOPED_STRING(_timeline, string_label);
+            HT_TRACE(_timeline, string_label);
         }
     }
 

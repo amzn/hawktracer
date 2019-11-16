@@ -112,19 +112,21 @@ HT_TP_FUNCTION(TIMELINE)
 ```
 There are few macros which report events to a global timeline, they're prefixed with `G_`:
 ```cpp
-HT_TP_G_STRACEPOINT(LABEL)
-HT_TP_G_FUNCTION()
+HT_G_TRACE(LABEL)
+HT_G_TRACE_OPT_STATIC(LABEL)
+HT_G_TRACE_OPT_DYNAMIC(LABEL)
+HT_G_TRACE_FUNCTION()
 ```
 For example, you can instrument following code:
 ```cpp
 void foo()
 {
-  HT_TP_G_FUNCTION() // measure duration of foo function execution
+  HT_G_TRACE_FUNCTION() // measure duration of foo function execution
 
   for (int i = 0; i < 100; i++)
   {
-    HT_TP_G_STRACEPOINT("in-loop") // measure duration of single loop iteration
-	bar();
+    HT_G_TRACE_OPT_STATIC("in-loop") // measure duration of single loop iteration
+    bar();
   }
 }
 ```

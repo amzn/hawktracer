@@ -25,6 +25,7 @@
 #include <hawktracer/thread.h>
 #include <hawktracer/timeline.h>
 #include <hawktracer/timeline_listener.h>
+#include <hawktracer/tracepoint.h>
 
 #include <hawktracer/cpu_usage.h>
 #include <hawktracer/memory_usage.h>

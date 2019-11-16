@@ -61,7 +61,7 @@ void foo(int value)
 {
     if (value == 0)
     {
-        HT_TP_SCOPED_STRING(timeline, "if (...)");
+        HT_TRACE(timeline, "if (...)");
         op1();
         op2();
         op3();

@@ -39,7 +39,7 @@ TEST(TestGlobalTimeline, ScopedTracepoint)
     {
         HT_TP_GLOBAL_SCOPED_INT(int_label);
         {
-            HT_TP_GLOBAL_SCOPED_STRING(string_label);
+            HT_G_TRACE(string_label);
         }
     }
 

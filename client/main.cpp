@@ -1,5 +1,5 @@
-#include "callgrind_converter.hpp" 
-#include "chrome_trace_converter.hpp" 
+#include "callgrind_converter.hpp"
+#include "chrome_trace_converter.hpp"
 
 #include <hawktracer/parser/protocol_reader.hpp>
 #include <hawktracer/parser/make_unique.hpp>
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     std::map<std::string, std::unique_ptr<client::Converter>> formats;
 
     init_supported_formats(formats);
-    
+
     CommandLineParser parser("--", argv[0]);
     parser.register_option("format", CommandLineParser::OptionInfo(false, false, "Output format. Supported formats: " + supported_formats(formats)));
     parser.register_option("output", CommandLineParser::OptionInfo(false, false, "Output file"));
@@ -128,5 +128,4 @@ int main(int argc, char** argv)
     converter->second->stop();
 
     return 0;
-
 }

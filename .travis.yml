@@ -1,4 +1,4 @@
-sudo: required # to run ASAN 
+sudo: required # to run ASAN
 
 language:
   - c

@@ -49,4 +49,3 @@ while True:
     plt.xlim(length - 10, length)
     plt.plot(list(range(1, length+1)), data)
     plt.pause(0.05)
-
