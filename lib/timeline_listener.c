@@ -125,7 +125,7 @@ ht_timeline_listener_container_register_listener(
     HT_ErrorCode error_code;
     ht_mutex_lock(container->mutex);
     /* weird cast because of ISO C forbids passing argument 2 of
-       ‘ht_bag_add’ between function pointer and ‘void *’ */
+       'ht_bag_add' between function pointer and 'void *' */
     error_code = ht_bag_void_ptr_add(&container->callbacks, *(void **)&callback);
     if (error_code != HT_ERR_OK)
     {
