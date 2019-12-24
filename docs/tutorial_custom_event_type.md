@@ -5,16 +5,16 @@ In this tutorial we will learn how to define custom event types.
 We recommend you to go through the @ref tutorial_hello_world tutorial to make sure you have the %HawkTracer library properly installed.
 
 ## Problem statement
-Let's say we'd like to track all the `fopen()` and `fclose()` calls, and additionally we'd like to know how many files are currently open by the application, whether the operation passed or failed, and what were the arguments.  
+Let's say we'd like to track all the `fopen()` and `fclose()` calls, and additionally we'd like to know how many files are currently open by the application, whether the operation passed or failed, and what were the arguments.
 
 ## Code
-Please copy the text below to a file named `hawktracer-custom-event0tep.c` (you can find this file [in the repository as well](@repocodeurl/examples/tutorials/custom_event_type/hawktracer-custom-event-type.c)).
+Please copy the text below to a file named `hawktracer-custom-event-type.c` (you can find this file [in the repository as well](@repocodeurl/examples/tutorials/custom_event_type/hawktracer-custom-event-type.c)).
 
 @include examples/tutorials/custom_event_type/hawktracer-custom-event-type.c
 
 ### Building and running the example
 You can see @ref integration in order to see how to integrate HawkTracer to your project. For the purpose of the example, here are few shortcuts for most popular platforms:
-* **Linux**  
+* **Linux**
 In the terminal, run the following command:
 ~~~.sh
 $ gcc hawktracer-custom-event-type.c $(pkg-config --cflags --libs hawktracer) -o hawktracer-custom-event-type # compiling the code
