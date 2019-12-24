@@ -5,7 +5,7 @@ The purpose of this document is to present and explain all high-level design dec
 * @subpage design_library
  * @subpage design_events
  * @subpage design_timeline
- * @subpage design_features
+ * @subpage design_timeline_features
 * @subpage design_client
 * @subpage design_htdump_format
 

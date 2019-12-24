@@ -5,6 +5,7 @@
 #include <hawktracer/monotonic_clock.h>
 #include <hawktracer/timeline_listener.h>
 #include <hawktracer/event_id_provider.h>
+#include <hawktracer/feature.h>
 
 #include <stddef.h>
 
@@ -80,9 +81,30 @@ HT_API void ht_timeline_push_event(HT_Timeline* timeline, HT_Event* event);
  */
 HT_API void ht_timeline_flush(HT_Timeline* timeline);
 
-HT_API void ht_timeline_set_feature(HT_Timeline* timeline, size_t feature_id, void* feature);
+/**
+ * Enables a specific feature in the timeline.
+ *
+ * The timeline takes ownership of the feature, it means it will automatically destroys
+ * it during timeline's destruction.
+ * The timeline can have multiple features enabled, but it's not possible to
+ * enable the same feature twice (second attempt results with #HT_ERR_FEATURE_ALREADY_REGISTERED
+ * error code).
+ * Before enabling the feature for the timeline, the feature must be registered. If it's not,
+ * the function returns #HT_ERR_FEATURE_NOT_REGISTERED error code.
+ *
+ * @param timeline the timeline.
+ * @param feature the feature.
+ * @return #HT_ERR_OK if enabling the feature completed successfully; otherwise, error code.
+ */
+HT_API HT_ErrorCode ht_timeline_set_feature(HT_Timeline* timeline, HT_Feature* feature);
 
-HT_API void* ht_timeline_get_feature(HT_Timeline* timeline, size_t feature_id);
+/**
+ * Gets the feature object of a specific class from the pipeline.
+ * @param timeline the timeline.
+ * @param feature_klass the feature class.
+ * @return a feature object of the specific class, if the timeline has the feature of this class enabled; otherwise, NULL.
+ */
+HT_API HT_Feature* ht_timeline_get_feature(HT_Timeline* timeline, HT_FeatureKlass* feature_klass);
 
 HT_API HT_EventIdProvider* ht_timeline_get_id_provider(HT_Timeline* timeline);
 

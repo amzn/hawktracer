@@ -5,11 +5,7 @@
 
 HT_DECLS_BEGIN
 
-#define HT_FEATURE_CACHED_STRING 1
-
 HT_API HT_ErrorCode ht_feature_cached_string_enable(HT_Timeline* timeline, HT_Boolean thread_safe);
-
-HT_API void ht_feature_cached_string_disable(HT_Timeline* timeline);
 
 HT_API uintptr_t ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label);
 

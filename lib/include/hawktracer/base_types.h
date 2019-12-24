@@ -33,6 +33,9 @@ typedef uint8_t HT_Byte;
 /** Defines an invalid klass identifier. */
 #define HT_INVALID_KLASS_ID ((HT_EventKlassId)-1)
 
+/** Defines an invalid feature identifier. */
+#define HT_INVALID_FEATURE_ID ((uint32_t)-1)
+
 /** Defines list of possible errors returned by library functions. */
 typedef enum
 {
@@ -46,6 +49,10 @@ typedef enum
     /** Try to register a timeline feature using ID which is already taken
      * by some other feature. */
     HT_ERR_FEATURE_ALREADY_REGISTERED,
+    /** Try to use feature that has not been registered in the system.*/
+    HT_ERR_FEATURE_NOT_REGISTERED,
+    /** Try to register too many features in the system. */
+    HT_ERR_MAX_FEATURE_COUNT_REACHED,
     /** Try to register container with name already used in registry.
      * This error is used internally, and is never returned by public
      * API. TODO: consider removing it from public enum. */

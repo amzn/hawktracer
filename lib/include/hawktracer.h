@@ -9,6 +9,7 @@
 #include <hawktracer/event_id_provider.h>
 #include <hawktracer/event_macros.h>
 #include <hawktracer/events.h>
+#include <hawktracer/feature.h>
 #include <hawktracer/feature_cached_string.h>
 #include <hawktracer/feature_callstack.h>
 #include <hawktracer/global_timeline.h>

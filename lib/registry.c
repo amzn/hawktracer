@@ -13,11 +13,13 @@
 
 static HT_BagVoidPtr event_klass_register;
 static HT_BagVoidPtr listeners_register;
-static HT_FeatureDisableCallback feature_disable_callback[HT_TIMELINE_MAX_FEATURES];
+static HT_Boolean feature_register[HT_TIMELINE_MAX_FEATURES] = {HT_FALSE};
 
 static HT_Mutex* listeners_register_mutex;
 static HT_Mutex* features_register_mutex;
 static HT_Mutex* event_klass_registry_register_mutex;
+
+static size_t feature_count = 0;
 
 #define HT_CREATE_MUTEX_(mutex_var, error_code_var, label_if_fails) \
     do { \
@@ -29,22 +31,35 @@ static HT_Mutex* event_klass_registry_register_mutex;
         } \
     } while(0)
 
-HT_ErrorCode ht_registry_register_feature(uint32_t feature_id, HT_FeatureDisableCallback disable_callback)
+HT_ErrorCode ht_registry_register_feature(HT_FeatureKlass* klass)
 {
-    assert(disable_callback);
-    assert(feature_id < HT_TIMELINE_MAX_FEATURES);
+    HT_ErrorCode err = HT_ERR_OK;
+    uint32_t feature_id = HT_INVALID_FEATURE_ID;
 
     ht_mutex_lock(features_register_mutex);
 
-    if (!feature_disable_callback[feature_id])
+    if (klass->id != HT_INVALID_FEATURE_ID)
     {
-        feature_disable_callback[feature_id] = disable_callback;
-        ht_mutex_unlock(features_register_mutex);
-        return HT_ERR_OK;
+        err = HT_ERR_FEATURE_ALREADY_REGISTERED;
+        feature_id = klass->id;
+        goto register_feature_finalize;
     }
 
+    if (feature_count == HT_TIMELINE_MAX_FEATURES)
+    {
+        err = HT_ERR_MAX_FEATURE_COUNT_REACHED;
+        goto register_feature_finalize;
+    }
+
+    feature_id = feature_count;
+    feature_register[feature_count++] = HT_TRUE;
+
+register_feature_finalize:
     ht_mutex_unlock(features_register_mutex);
-    return HT_ERR_FEATURE_ALREADY_REGISTERED;
+
+    klass->id = feature_id;
+
+    return err;
 }
 
 HT_ErrorCode
@@ -172,15 +187,6 @@ ht_registry_register_listener_container(const char* name, HT_TimelineListenerCon
     return HT_ERR_OK;
 }
 
-void
-ht_feature_disable(HT_Timeline *timeline, size_t id)
-{
-    assert(timeline);
-    assert(feature_disable_callback[id]);
-
-    feature_disable_callback[id](timeline);
-}
-
 #define REGISTRY_LISETNER_BUFF_SIZE 4096
 
 static void
@@ -285,6 +291,6 @@ ht_registry_push_registry_klasses_to_listener(HT_TimelineListenerCallback callba
 void
 ht_feature_register_core_features(void)
 {
-    ht_registry_register_feature(HT_FEATURE_CALLSTACK, ht_feature_callstack_disable);
-    ht_registry_register_feature(HT_FEATURE_CACHED_STRING, ht_feature_cached_string_disable);
+    HT_FeatureCachedString_register(); // TODO error handling
+    HT_FeatureCallstack_register(); // TODO error handling
 }
