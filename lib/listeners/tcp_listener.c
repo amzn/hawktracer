@@ -1,6 +1,8 @@
 #include "hawktracer/listeners/tcp_listener.h"
 #include "hawktracer/alloc.h"
 #include "hawktracer/timeline_listener.h"
+
+#include "internal/error.h"
 #include "internal/listener_buffer.h"
 #include "internal/listeners/tcp_server.h"
 #include "internal/mutex.h"
@@ -119,10 +121,7 @@ ht_tcp_listener_create(int port, size_t buffer_size, HT_ErrorCode* out_err)
     HT_TCPListener* listener = HT_CREATE_TYPE(HT_TCPListener);
     if (!listener)
     {
-        if (out_err)
-        {
-            *out_err = HT_ERR_OUT_OF_MEMORY;
-        }
+        HT_SET_ERROR(out_err, HT_ERR_OUT_OF_MEMORY);
         return NULL;
     }
 
@@ -133,10 +132,7 @@ ht_tcp_listener_create(int port, size_t buffer_size, HT_ErrorCode* out_err)
         listener = NULL;
     }
 
-    if (out_err)
-    {
-        *out_err = error_code;
-    }
+    HT_SET_ERROR(out_err, error_code);
     return listener;
 }
 
