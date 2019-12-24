@@ -1,2 +1,3 @@
 add_subdirectory(hello_world)
 add_subdirectory(custom_event_type)
+add_subdirectory(custom_timeline_feature)

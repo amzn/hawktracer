@@ -1,6 +1,7 @@
 #include <hawktracer/timeline.h>
 #include <hawktracer/alloc.h>
 
+#include "internal/error.h"
 #include "internal/feature.h"
 #include "internal/registry.h"
 #include "internal/mutex.h"
@@ -18,7 +19,7 @@
 
 struct _HT_Timeline
 {
-    void* features[HT_TIMELINE_MAX_FEATURES];
+    HT_Feature* features[HT_TIMELINE_MAX_FEATURES];
     size_t buffer_capacity;
     size_t buffer_usage;
     HT_Byte* buffer;
@@ -116,16 +117,39 @@ ht_timeline_flush(HT_Timeline* timeline)
     _TIMELINE_LOCK(timeline, unlock);
 }
 
-void
-ht_timeline_set_feature(HT_Timeline* timeline, size_t feature_id, void* feature)
+HT_ErrorCode
+ht_timeline_set_feature(HT_Timeline* timeline, HT_Feature* feature)
 {
-    timeline->features[feature_id] = feature;
+    assert(feature);
+    assert(feature->klass);
+
+    HT_ErrorCode error_code = HT_ERR_OK;
+
+    if (feature->klass->id == HT_INVALID_FEATURE_ID)
+    {
+        error_code = HT_ERR_FEATURE_NOT_REGISTERED;
+    }
+    if (timeline->features[feature->klass->id])
+    {
+        error_code = HT_ERR_FEATURE_ALREADY_REGISTERED;
+    }
+    else
+    {
+        timeline->features[feature->klass->id] = feature;
+    }
+
+    if (error_code != HT_ERR_OK)
+    {
+        feature->klass->destroy(feature);
+    }
+
+    return error_code;
 }
 
-void*
-ht_timeline_get_feature(HT_Timeline* timeline, size_t feature_id)
+HT_Feature*
+ht_timeline_get_feature(HT_Timeline* timeline, HT_FeatureKlass* feature_klass)
 {
-    return timeline->features[feature_id];
+    return timeline->features[feature_klass->id];
 }
 
 
@@ -206,10 +230,7 @@ error_allocate_buffer:
     ht_free(timeline);
     timeline = NULL;
 done:
-    if (out_err != NULL)
-    {
-        *out_err = error_code;
-    }
+    HT_SET_ERROR(out_err, error_code);
 
     return timeline;
 }
@@ -230,7 +251,7 @@ ht_timeline_destroy(HT_Timeline* timeline)
     {
         if (timeline->features[i])
         {
-            ht_feature_disable(timeline, i);
+            timeline->features[i]->klass->destroy(timeline->features[i]);
             timeline->features[i] = NULL;
         }
     }

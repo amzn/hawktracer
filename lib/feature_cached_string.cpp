@@ -4,6 +4,8 @@
 #include "internal/hash.h"
 #include "internal/bag.h"
 #include "internal/mutex.h"
+#include "internal/error.h"
+#include "internal/feature.h"
 
 #include <assert.h>
 
@@ -12,14 +14,20 @@
 #include <new>
 #endif /* __cplusplus */
 
+static void
+ht_feature_cached_string_destroy(HT_Feature* f);
+
 typedef struct
 {
+    HT_Feature base;
     HT_BagVoidPtr cached_data;
     HT_Mutex* lock;
 #ifdef __cplusplus
     std::set<uint32_t> hashes;
 #endif /* __cplusplus */
 } HT_FeatureCachedString;
+
+HT_FEATURE_DEFINE(HT_FeatureCachedString, ht_feature_cached_string_destroy)
 
 #define HT_FCS_LOCK_(feature) \
     do { \
@@ -43,19 +51,22 @@ static void ht_feature_cached_string_free_(HT_FeatureCachedString* f)
     ht_free(f);
 }
 
-HT_ErrorCode
-ht_feature_cached_string_enable(HT_Timeline* timeline, HT_Boolean thread_safe)
+static HT_Feature*
+ht_feature_cached_string_create(HT_Boolean thread_safe, HT_ErrorCode* out_err)
 {
-    HT_FeatureCachedString* feature = HT_CREATE_TYPE(HT_FeatureCachedString);
-    HT_ErrorCode error_code;
+    HT_FeatureCachedString* feature = HT_FeatureCachedString_alloc();
+    HT_ErrorCode error_code = HT_ERR_OK;
 
     if (feature == NULL)
     {
-        return HT_ERR_OUT_OF_MEMORY;
+        HT_SET_ERROR(out_err, HT_ERR_OUT_OF_MEMORY);
+        return NULL;
     }
 
 #ifdef __cplusplus
     new (feature) HT_FeatureCachedString();
+    // new() overrides base struct so we need to set it again
+    feature->base.klass = HT_FeatureCachedString_get_class();
 #endif /* __cplusplus */
 
     if (thread_safe)
@@ -63,8 +74,9 @@ ht_feature_cached_string_enable(HT_Timeline* timeline, HT_Boolean thread_safe)
         feature->lock = ht_mutex_create();
         if (feature->lock == NULL)
         {
+            HT_SET_ERROR(out_err, HT_ERR_UNKNOWN);
             ht_feature_cached_string_free_(feature);
-            return HT_ERR_UNKNOWN;
+            return NULL;
         }
     }
     else
@@ -77,28 +89,26 @@ ht_feature_cached_string_enable(HT_Timeline* timeline, HT_Boolean thread_safe)
     if (error_code != HT_ERR_OK)
     {
         ht_feature_cached_string_free_(feature);
-        return error_code;
+        feature = NULL;
     }
 
-    ht_timeline_set_feature(timeline, HT_FEATURE_CACHED_STRING, feature);
-
-    return error_code;
+    HT_SET_ERROR(out_err, error_code);
+    return (HT_Feature*)feature;
 }
 
-void
-ht_feature_cached_string_disable(HT_Timeline* timeline)
+static void
+ht_feature_cached_string_destroy(HT_Feature* f)
 {
-    HT_FeatureCachedString* feature = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
+    HT_FeatureCachedString* feature = (HT_FeatureCachedString*)f;
 
     ht_bag_void_ptr_deinit(&feature->cached_data);
     ht_feature_cached_string_free_(feature);
-    ht_timeline_set_feature(timeline, HT_FEATURE_CACHED_STRING, NULL);
 }
 
 static uintptr_t
 ht_feature_cached_string_add_mapping_(HT_Timeline* timeline, const char* label, uintptr_t hash)
 {
-    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
+    HT_FeatureCachedString* f = HT_FeatureCachedString_from_timeline(timeline);
     HT_ErrorCode error_code;
 
     assert(f);
@@ -127,7 +137,7 @@ ht_feature_cached_string_add_mapping(HT_Timeline* timeline, const char* label)
 void
 ht_feature_cached_string_push_map(HT_Timeline* timeline)
 {
-    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
+    HT_FeatureCachedString* f = HT_FeatureCachedString_from_timeline(timeline);
     size_t i;
 
     assert(f);
@@ -146,7 +156,7 @@ ht_feature_cached_string_push_map(HT_Timeline* timeline)
 uintptr_t
 ht_feature_cached_string_add_mapping_dynamic(HT_Timeline* timeline, const char* label)
 {
-    HT_FeatureCachedString* f = HT_TIMELINE_FEATURE(timeline, HT_FEATURE_CACHED_STRING, HT_FeatureCachedString);
+    HT_FeatureCachedString* f = HT_FeatureCachedString_from_timeline(timeline);
     uintptr_t hash_value;
 
     assert(f);
@@ -170,3 +180,17 @@ ht_feature_cached_string_add_mapping_dynamic(HT_Timeline* timeline, const char* 
     return hash_value;
 }
 #endif /* __cplusplus */
+
+HT_ErrorCode
+ht_feature_cached_string_enable(HT_Timeline* timeline, HT_Boolean thread_safe)
+{
+    HT_ErrorCode error_code;
+    HT_Feature* feature = ht_feature_cached_string_create(thread_safe, &error_code);
+
+    if (!feature)
+    {
+        return error_code;
+    }
+
+    return ht_timeline_set_feature(timeline, feature);
+}
