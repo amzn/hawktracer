@@ -2,6 +2,7 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/timeline_listener.h"
 
+#include "internal/error.h"
 #include "internal/listener_buffer.h"
 #include "internal/mutex.h"
 
@@ -65,10 +66,7 @@ error_open_file:
     listener = NULL;
 
 done:
-    if (out_err != NULL)
-    {
-        *out_err = error_code;
-    }
+    HT_SET_ERROR(out_err, error_code);
 
     return listener;
 }

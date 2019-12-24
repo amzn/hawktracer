@@ -2,6 +2,7 @@
 #include "hawktracer/alloc.h"
 #include "hawktracer/monotonic_clock.h"
 #include "internal/bag.h"
+#include "internal/error.h"
 
 #include <string.h>
 
@@ -61,10 +62,7 @@ ht_task_scheduler_create(HT_ErrorCode* out_err)
     task_scheduler->next_task_id = 0;
 
 done:
-    if (out_err != NULL)
-    {
-        *out_err = error_code;
-    }
+    HT_SET_ERROR(out_err, error_code);
 
     return task_scheduler;
 }
