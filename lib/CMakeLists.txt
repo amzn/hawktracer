@@ -44,9 +44,10 @@ set(HAWKTRACER_CORE_SOURCES
     event_id_provider.cpp
     event_utils.c
     events.c
-    feature_cached_string.cpp
+    feature_cached_string.c
     feature_callstack.c
     global_timeline.cpp
+    hash_map.c
     init.c
     listener_buffer.c
     monotonic_clock.cpp

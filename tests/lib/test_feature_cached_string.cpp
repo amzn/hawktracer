@@ -5,6 +5,7 @@
 
 #include "test_common.h"
 #include <gtest/gtest.h>
+#include <unordered_map>
 
 TEST(TestFeatureCachedString, AddMappingShouldEmitStringMappingEvent)
 {
@@ -53,8 +54,12 @@ TEST(TestFeatureCachedString, PushMappingShouldEmitStringMappingEventForEachEntr
     ASSERT_EQ((uintptr_t)label_1, hash_1);
     ASSERT_EQ((uintptr_t)label_2, hash_2);
     ASSERT_EQ(2u, string_map_info.values.size());
-    ASSERT_STREQ(label_1, string_map_info.values.front().label);
-    ASSERT_STREQ(label_2, string_map_info.values[1].label);
+    std::set<std::string> expected{label_1, label_2};
+    std::set<std::string> actual{
+        string_map_info.values.front().label,
+                string_map_info.values[1].label
+    };
+    ASSERT_EQ(expected, actual);
 
     ht_timeline_destroy(timeline);
 }
@@ -84,12 +89,15 @@ TEST(TestFeatureCachedString, AddMappingShouldFailIfCantAllocMemory)
     ScopedSetAlloc allocator(ht_test_null_realloc);
     uintptr_t result = 0;
     int counter = 0;
+    std::vector<std::string> labels;
 
     // Act
     do
     {
-        result = ht_feature_cached_string_add_mapping(timeline, "test");
-    } while (result != 0 && counter < 2048);
+        labels.push_back("x");
+        result = ht_feature_cached_string_add_mapping(timeline, labels.back().c_str());
+        counter++;
+    } while (result != 0 && counter < 1024*16 + 1);
 
     // Assert
     allocator.reset();
@@ -117,6 +125,41 @@ TEST(TestFeatureCachedString, DynamicStrings)
     ASSERT_EQ(string_map_info.values.front().identifier, hash_1);
     ASSERT_STREQ(string_map_info.values.front().label, label);
     ASSERT_EQ(hash_1, hash_2);
+    ht_timeline_destroy(timeline);
+}
+
+TEST(TestFeatureCachedString, PushMapShouldSendDynamicAndStaticMapping)
+{
+    // Arrange
+    NotifyInfo<HT_StringMappingEvent> string_map_info;
+
+    HT_Timeline* timeline = ht_timeline_create(1024, HT_FALSE, HT_FALSE, NULL, NULL);
+    ht_feature_cached_string_enable(timeline, HT_FALSE);
+
+    std::unordered_map<std::string, uint64_t> labels = {
+        {"label1", ht_feature_cached_string_add_mapping(timeline, "label1")},
+        {"label2", ht_feature_cached_string_add_mapping_dynamic(timeline, "label2")},
+        {"label3", ht_feature_cached_string_add_mapping_dynamic(timeline, "label3")},
+        {"label4", ht_feature_cached_string_add_mapping(timeline, "label4")}
+    };
+
+    ht_timeline_flush(timeline);
+
+    ht_timeline_register_listener(timeline, test_listener<HT_StringMappingEvent>, &string_map_info);
+
+    // Act
+    ht_feature_cached_string_push_map(timeline);
+    ht_timeline_flush(timeline);
+
+    // Assert
+    std::unordered_map<std::string, uint64_t> actual_labels;
+    for (const auto& element : string_map_info.values)
+    {
+        actual_labels[element.label] = element.identifier;
+    }
+
+    ASSERT_EQ(labels, actual_labels);
+
     ht_timeline_destroy(timeline);
 }
 

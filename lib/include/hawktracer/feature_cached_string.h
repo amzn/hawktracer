@@ -40,9 +40,7 @@ HT_API uintptr_t ht_feature_cached_string_add_mapping(HT_Timeline* timeline, con
  */
 HT_API void ht_feature_cached_string_push_map(HT_Timeline* timeline);
 
-#ifdef HT_CPP11
 HT_API uintptr_t ht_feature_cached_string_add_mapping_dynamic(HT_Timeline* timeline, const char* label);
-#endif
 
 HT_DECLS_END
 

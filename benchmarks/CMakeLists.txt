@@ -35,6 +35,8 @@ add_dependencies(${BENCHMARK_LIBRARY} googlebenchmark)
 
 add_executable(hawktracer_benchmarks
     benchmark_main.cpp
+    benchmark_feature_cached_string.cpp
+    benchmark_hash_map.cpp
     benchmark_timeline.cpp)
 
 target_include_directories(hawktracer_benchmarks PRIVATE ${BENCHMARK_INCLUDE_DIRS})
