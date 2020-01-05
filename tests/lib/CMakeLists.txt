@@ -8,6 +8,7 @@ set(LIB_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_duration_conversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_feature_cached_string.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_feature_callstack.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_hash_map.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_event.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_listener_buffer.cpp

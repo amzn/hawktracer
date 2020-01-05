@@ -29,6 +29,7 @@ HT_DECLS_BEGIN
 #define ht_bag_size(bag) bag.size
 #define ht_bag_nth(bag, nth) bag.data[nth]
 
+HT_DECLARE_BAG_TYPE(UInt64, _uint64, uint64_t)
 HT_DECLARE_BAG_TYPE(VoidPtr, _void_ptr, void*)
 HT_DECLARE_BAG_TYPE(Int, _int, int)
 
