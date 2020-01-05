@@ -82,6 +82,7 @@ protected:
 
         auto event_callback =[](TEventPtr events, size_t event_count, HT_Boolean serialized, void* user_data)
         {
+            HT_UNUSED(serialized);
             auto data = static_cast<std::vector<HT_Byte>*>(user_data);
             assert(serialized);
 

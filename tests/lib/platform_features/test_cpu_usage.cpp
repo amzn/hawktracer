@@ -10,6 +10,7 @@ TEST(TestCPUUsage, CPUUsageShouldReturnValueInExpectedRange)
     HT_CPUUsageContext* context = ht_cpu_usage_context_create(NULL);
 
     // Act
+    ht_cpu_usage_get_percentage(context);
     float usage = ht_cpu_usage_get_percentage(context);
 
     // Assert
