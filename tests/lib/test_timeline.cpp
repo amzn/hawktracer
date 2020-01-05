@@ -250,3 +250,28 @@ TEST_F(TestTimeline, PushingLargeEventShouldNotCrashApplication)
     ht_timeline_unregister_all_listeners(timeline);
     ht_timeline_destroy(timeline);
 }
+
+typedef struct
+{
+    HT_Feature base;
+} TimelineTestFeature;
+static void
+test_feature_destroy(HT_Feature* feature)
+{
+    ht_free(feature);
+}
+
+HT_FEATURE_DEFINE(TimelineTestFeature, test_feature_destroy)
+
+TEST_F(TestTimeline, SettingFeatureIdWithInvalidIdentifierShouldFail)
+{
+    // Arrange
+    TimelineTestFeature_get_class()->id = 99999;
+    TimelineTestFeature* feature = TimelineTestFeature_alloc();
+
+    // Act
+    HT_ErrorCode ret = ht_timeline_set_feature(_timeline, (HT_Feature*)feature);
+
+    // Assert
+    ASSERT_EQ(HT_ERR_FEATURE_NOT_REGISTERED, ret);
+}

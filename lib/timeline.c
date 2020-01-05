@@ -125,11 +125,11 @@ ht_timeline_set_feature(HT_Timeline* timeline, HT_Feature* feature)
 
     HT_ErrorCode error_code = HT_ERR_OK;
 
-    if (feature->klass->id == HT_INVALID_FEATURE_ID)
+    if (feature->klass->id == HT_INVALID_FEATURE_ID || feature->klass->id >= HT_TIMELINE_MAX_FEATURES)
     {
         error_code = HT_ERR_FEATURE_NOT_REGISTERED;
     }
-    if (timeline->features[feature->klass->id])
+    else if (timeline->features[feature->klass->id])
     {
         error_code = HT_ERR_FEATURE_ALREADY_REGISTERED;
     }
