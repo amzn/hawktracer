@@ -43,6 +43,8 @@ HT_API void ht_timeline_destroy(HT_Timeline* timeline);
  * @param user_data additional data that will be passed to the listener's callback.
  *
  * @return #HT_ERR_OK if registration completed successfully; otherwise, error code.
+ *
+ * @deprecated use ht_timeline_register_listener_full() instead.
  */
 HT_API HT_ErrorCode ht_timeline_register_listener(
         HT_Timeline* timeline,
@@ -50,9 +52,31 @@ HT_API HT_ErrorCode ht_timeline_register_listener(
         void* user_data);
 
 /**
- * Removes all the listeners from a timeline
+ * Registers new listener to a timeline.
+ *
+ * The timeline will call @a destroy_callback callback to destroy @a user_data value when it
+ * is no longer needed, so the user must not free @a user_data, unless the value of
+ * @a destroy_callback is NULL - in that case, no destroy callback will be called.
  *
  * @param timeline the timeline.
+ * @param callback a callback of the listener.
+ * @param user_data additional data that will be passed to the listener's callback.
+ * @param destroy_callback functor called when @a user_data is no longer needed.
+ *
+ * @return #HT_ERR_OK if registration completed successfully; otherwise, error code.
+ */
+HT_API HT_ErrorCode ht_timeline_register_listener_full(
+        HT_Timeline* timeline,
+        HT_TimelineListenerCallback callback,
+        void* user_data,
+        HT_DestroyCallback destroy_callback);
+
+/**
+ * Removes all the listeners from a timeline.
+ *
+ * @param timeline the timeline.
+ *
+ * @deprecated HawkTracer no longer allows unregistering listeners.
  */
 HT_API void ht_timeline_unregister_all_listeners(HT_Timeline* timeline);
 

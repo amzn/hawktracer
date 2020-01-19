@@ -25,6 +25,14 @@ typedef uint32_t HT_ThreadId;
 /** An unsigned integer guaranteed to be 8 bits on all platforms. */
 typedef uint8_t HT_Byte;
 
+/**
+ * A type of function called to destroy @a data element.
+ * It should free all the memory and resources held by the @a data element.
+ *
+ * @param data the element to be destroyed.
+ */
+typedef void(*HT_DestroyCallback)(void* data);
+
 /** Defines @b true value for the HT_Boolean type. */
 #define HT_TRUE 1
 /** Defines @b false value for the HT_Boolean type. */

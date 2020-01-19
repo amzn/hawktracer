@@ -55,8 +55,12 @@ if (!listener)
 ~~~
 Once we created a listener, it can finally be registered to a timeline. %HawkTracer allows you to create your own timelines, but provides a global timeline which doesn't require any extra initialization. We register the listener to the global timeline.
 ~~~.c
-ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, listener);
+ht_timeline_register_listener_full(
+            ht_global_timeline_get(),
+            ht_file_dump_listener_callback, listener,
+            (HT_DestroyCallback)ht_file_dump_listener_destroy);
 ~~~
+Please note we're passing `ht_file_dump_listener_destroy` callback to the function. That means, that %HawkTracer will automatically destroy the listener when it's no longer needed, so user doesn't have to worry about that.
 
 ### Code instrumentation
 After the initialization, we can instrument the code we want to profile. Pair of functions: ht_feature_callstack_start_string() and ht_feature_callstack_stop() measure the duration of execution of the code between those functions, and label the measurement with the string specified as a second argument.
@@ -96,20 +100,9 @@ for (int i = 0; i < 100; i++)
 A full C++/GNU C example can be found [in the repository](@repocodeurl/examples/tutorials/hello_world/hawktracer-hello-world.cpp).
 
 ### Cleanup
-All the events pushed to a timeline are buffered, and they're flushed to listeners if the internal buffer of a timeline is full. Since we're about to finish the program, and there still might be some events buffered in a timeline, we have to manually flush the timeline:
+As mentioned in previous sections, %HawkTracer takes care of destroying the listener object, so even though we allocated it, we don't have to manage it - the ownership has been transfered to the timeline.
+The only operation we have to do, is to deinitialize the library:
 ~~~.c
-/* Flush all the buffered events in a timeline */
-ht_timeline_flush(ht_global_timeline_get());
-~~~
-Before destroying any listener, we need to make sure that it's not used by the library. The safest way to achieve it is to unregister listeners from the timeline:
-~~~.c
-/* Unregister all the listeners from the global timeline, so we can safely destroy them */
-ht_timeline_unregister_all_listeners(ht_global_timeline_get());
-~~~
-After that we can safely destroy our listener and uninitialize the library.
-~~~.c
-/* Destroy listeners */
-ht_file_dump_listener_destroy(listener);
 /* Uninitialize HawkTracer library */
 ht_deinit();
 ~~~

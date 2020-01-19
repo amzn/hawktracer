@@ -42,17 +42,14 @@ int main(int argc, char** argv)
     }
 
     /* Register listener to the global timeline */
-    ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, listener);
+    ht_timeline_register_listener_full(
+                ht_global_timeline_get(),
+                ht_file_dump_listener_callback, listener,
+                (HT_DestroyCallback)ht_file_dump_listener_destroy);
 
     /* Run the actual code */
     hello_world();
 
-    /* Flush all the buffered events in a timeline */
-    ht_timeline_flush(ht_global_timeline_get());
-    /* Unregister all the listeners from the global timeline, so we can safely destroy them */
-    ht_timeline_unregister_all_listeners(ht_global_timeline_get());
-    /* Destroy listeners */
-    ht_file_dump_listener_destroy(listener);
     /* Uninitialize HawkTracer library */
     ht_deinit();
 

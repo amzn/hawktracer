@@ -25,13 +25,15 @@ HT_TimelineListenerContainer* ht_timeline_listener_container_create(void);
  * @param container a pointer to the container.
  * @param callback a timeline listener callback.
  * @param user_data a user data passed to a @a callback when gets called.
+ * @param destroy_cb a function which is called to destroy the @a user_data object.
  *
  * @returns #HT_ERR_OK, if registration completed successfully; otherwise, appropriate error code.
  */
 HT_ErrorCode ht_timeline_listener_container_register_listener(
         HT_TimelineListenerContainer* container,
         HT_TimelineListenerCallback callback,
-        void* user_data);
+        void* user_data,
+        HT_DestroyCallback destroy_cb);
 
 /**
  * Finds an container in a global registry or create one if container doesn't exist.
