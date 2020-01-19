@@ -1,3 +1,18 @@
+0.10.0 (Squirrel) (unstable) - 19.01.2020:
+  * fix amalgamation process for non POSIX.utf-8 locale (#65)
+  * restore Python binding tests
+  * simplify and document timeline features
+  * allow using dynamic strings as labels for tracepoints in C language (C++ already had that feature)
+  * fix memory leak on uninitializing HawkTracer library
+  * implement automatic memory management for listeners (so the listener object no longer needs to be manually destroyed)
+  * simplify FileDump and TCP listener's API (introduce one function to create listener and register it to a timeline)
+  * introduce new, polished tracepoint macros
+  * add more benchmark tests
+  * minor bugfixes and documentation improvements
+  * deprecate:
+    - ht_timeline_register_listener: ht_timeline_register_listener_full should be used instead
+    - ht_timeline_unregister_all_listeners: HawkTracer no longer allows unregistering listeners. Instead, user should call _stop() methods on the listener object
+
 0.9.0 (Vole) (unstable) - 09.11.2019:
   * support dynamically allocated strings as labels for tracepoints
   * support auto-deleting tasks from task scheduler
