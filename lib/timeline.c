@@ -159,8 +159,18 @@ ht_timeline_register_listener(
         HT_TimelineListenerCallback callback,
         void* user_data)
 {
+    return ht_timeline_register_listener_full(timeline, callback, user_data, NULL);
+}
+
+HT_ErrorCode
+ht_timeline_register_listener_full(
+        HT_Timeline* timeline,
+        HT_TimelineListenerCallback callback,
+        void* user_data,
+        void (*destroy_cb)(void*))
+{
     return ht_timeline_listener_container_register_listener(
-                timeline->listeners, callback, user_data);
+                timeline->listeners, callback, user_data, destroy_cb);
 }
 
 void

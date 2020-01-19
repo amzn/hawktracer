@@ -251,6 +251,37 @@ TEST_F(TestTimeline, PushingLargeEventShouldNotCrashApplication)
     ht_timeline_destroy(timeline);
 }
 
+TEST_F(TestTimeline, DestroyShouldCallDestroyCallbacksIfSpecified)
+{
+    // Arrange
+    struct UD
+    {
+        void* self = nullptr;
+        int cb_call_count = 0;
+    };
+    auto cb = [](TEventPtr, size_t, HT_Boolean, void* data) {
+        reinterpret_cast<UD*>(data)->cb_call_count++;
+    };
+    auto destroy_cb = [](void* data) {
+        reinterpret_cast<UD*>(data)->self = data;
+    };
+
+    UD user_data;
+    HT_Timeline* timeline = ht_timeline_create(1, HT_TRUE, HT_TRUE, nullptr, nullptr);
+    ht_timeline_register_listener_full(timeline, cb, &user_data, destroy_cb);
+
+    HT_DECL_EVENT(HT_Event, event);
+    ht_timeline_push_event(timeline, &event);
+
+    // Act
+    ht_timeline_destroy(timeline);
+
+    // Assert
+    ASSERT_EQ(&user_data, user_data.self);
+    ASSERT_EQ(1, user_data.cb_call_count);
+}
+
+
 typedef struct
 {
     HT_Feature base;
