@@ -131,7 +131,7 @@ ht_python_core_clear_module(PyObject* m)
 
         if (file_listener)
         {
-            ht_file_dump_listener_destroy(file_listener);
+            ht_file_dump_listener_stop(file_listener);
         }
 
         ht_deinit();
@@ -165,14 +165,12 @@ ht_python_core_register_file_listener(PyObject* Py_UNUSED(self), PyObject* args)
        In the future we might support multiple listeners as well.
        */
 
-    file_listener = ht_file_dump_listener_create(file_path, buffer_size, &err);
+    file_listener = ht_file_dump_listener_register(ht_global_timeline_get(), file_path, buffer_size, &err);
 
     if (!file_listener)
     {
         return PyErr_Format(PyExc_Exception, "Unable to initalize file listener. Error code: %d", err);
     }
-
-    ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, file_listener);
 
     Py_RETURN_NONE;
 }

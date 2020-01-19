@@ -81,31 +81,23 @@ int main(int argc, char** argv)
     HT_REGISTER_EVENT_KLASS(CloseFileEvent);
 
     HT_ErrorCode error_code;
-    /* Create a listener, it'll handle all the HawkTracer events */
-    HT_FileDumpListener* listener = ht_file_dump_listener_create("tutorial-custom-event-type.htdump", 2048, &error_code);
+    /* Create a listener and register it to a timeline, it'll handle all the HawkTracer events */
+    ht_file_dump_listener_register(
+                ht_global_timeline_get(), "tutorial-custom-event-type.htdump", 2048, &error_code);
 
     /* Creating listener might fail (e.g. file can't be open),
      * so we have to check the status
      */
-    if (!listener)
+    if (error_code != HT_ERR_OK)
     {
         printf("Unable to create listener. Error code: %d\n", error_code);
         ht_deinit();
         return -1;
     }
 
-    /* Register listener to the global timeline */
-    ht_timeline_register_listener(ht_global_timeline_get(), ht_file_dump_listener_callback, listener);
-
     /* Run the actual code */
     tutorial_run();
 
-    /* Flush all the buffered events in a timeline */
-    ht_timeline_flush(ht_global_timeline_get());
-    /* Unregister all the listeners from the global timeline, so we can safely destroy them */
-    ht_timeline_unregister_all_listeners(ht_global_timeline_get());
-    /* Destroy listeners */
-    ht_file_dump_listener_destroy(listener);
     /* Uninitialize HawkTracer library */
     ht_deinit();
 }

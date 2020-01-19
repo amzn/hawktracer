@@ -20,6 +20,12 @@ struct _HT_TCPListener
     HT_Boolean _was_flushed;
 };
 
+HT_INLINE static HT_Boolean
+_ht_tcp_listener_is_stopped(HT_TCPListener* listener)
+{
+    return listener->_tcp_server == NULL;
+}
+
 static void
 ht_tcp_listener_f_flush(void* listener, HT_Byte* data, size_t size)
 {
@@ -78,24 +84,19 @@ ht_tcp_listener_init(HT_TCPListener* listener, int port, size_t buffer_size)
 }
 
 static void
-ht_tcp_listener_deinit(HT_TCPListener* listener)
-{
-    ht_tcp_listener_flush(listener);
-    ht_tcp_server_stop(listener->_tcp_server);
-    ht_listener_buffer_deinit(&listener->_buffer);
-    ht_tcp_server_destroy(listener->_tcp_server);
-    ht_mutex_destroy(listener->_push_action_mutex);
-}
-
-static void
 ht_tcp_listener_push_events(HT_TCPListener* listener, TEventPtr events, size_t size, HT_Boolean serialized)
 {
-    if (!ht_tcp_server_is_running(listener->_tcp_server))
+    ht_mutex_lock(listener->_push_action_mutex);
+
+    if (_ht_tcp_listener_is_stopped(listener))
     {
-        return;
+        goto push_event_done;
     }
 
-    ht_mutex_lock(listener->_push_action_mutex);
+    if (!ht_tcp_server_is_running(listener->_tcp_server))
+    {
+        goto push_event_done;
+    }
 
     if (serialized)
     {
@@ -112,6 +113,7 @@ ht_tcp_listener_push_events(HT_TCPListener* listener, TEventPtr events, size_t s
         listener->_was_flushed = HT_FALSE;
     }
 
+push_event_done:
     ht_mutex_unlock(listener->_push_action_mutex);
 }
 
@@ -136,10 +138,41 @@ ht_tcp_listener_create(int port, size_t buffer_size, HT_ErrorCode* out_err)
     return listener;
 }
 
+HT_TCPListener*
+ht_tcp_listener_register(HT_Timeline* timeline, int port, size_t buffer_size, HT_ErrorCode* out_err)
+{
+    HT_ErrorCode err = HT_ERR_OK;
+    HT_TCPListener* listener = ht_tcp_listener_create(port, buffer_size, &err);
+
+    if (!listener)
+    {
+        goto register_done;
+    }
+
+    err = ht_timeline_register_listener_full(
+                timeline,
+                ht_tcp_listener_callback,
+                listener,
+                (HT_DestroyCallback)ht_tcp_listener_destroy);
+    if (err != HT_ERR_OK)
+    {
+        ht_tcp_listener_destroy(listener);
+        listener = NULL;
+    }
+
+register_done:
+    HT_SET_ERROR(out_err, err);
+    return listener;
+}
+
 void
 ht_tcp_listener_destroy(HT_TCPListener* listener)
 {
-    ht_tcp_listener_deinit(listener);
+    if (!_ht_tcp_listener_is_stopped(listener))
+    {
+        ht_tcp_listener_stop(listener);
+    }
+    ht_mutex_destroy(listener->_push_action_mutex);
     ht_free(listener);
 }
 
@@ -147,4 +180,25 @@ void
 ht_tcp_listener_callback(TEventPtr events, size_t size, HT_Boolean serialized, void* user_data)
 {
     ht_tcp_listener_push_events((HT_TCPListener*)user_data, events, size, serialized);
+}
+
+void
+ht_tcp_listener_stop(HT_TCPListener* listener)
+{
+    ht_mutex_lock(listener->_push_action_mutex);
+
+    if (!_ht_tcp_listener_is_stopped(listener))
+    {
+        ht_mutex_unlock(listener->_push_action_mutex);
+    }
+
+    ht_tcp_listener_flush(listener);
+    ht_tcp_server_stop(listener->_tcp_server);
+    ht_listener_buffer_deinit(&listener->_buffer);
+    ht_tcp_server_destroy(listener->_tcp_server);
+    listener->_tcp_server = NULL;
+
+    ht_mutex_unlock(listener->_push_action_mutex);
+
+    ht_mutex_unlock(listener->_push_action_mutex);
 }

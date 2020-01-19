@@ -36,31 +36,25 @@ ht_init(argc, argv);
 
 ~~~
 
-%HawkTracer for each measurement generates an %Event. Those events are posted to a timeline. In order to process those events, we have to create timeline listeners, which get events from a timeline. It is possible to write your own listener, but the library already provides few of them. One of existing listeners is HT_FileDumpListener which saves events to a file. As an argument, ht_file_dump_listener_create() takes a file name, and internal buffer size. Parameter `error_code` is optional (i.e. can be `NULL`), and will contain information about failure reason if the listener can't be created.
-At the end of the program, the listener should be destroyed.
+%HawkTracer for each measurement generates an %Event. Those events are posted to a timeline. In order to process those events, we have to create timeline listeners, which get events from a timeline. It is possible to write your own listener, but the library already provides few of them. One of existing listeners is HT_FileDumpListener which saves events to a file.
+The listener is created and attached to a timeline by calling `ht_file_dump_listener_register()` function. It takes the `timeline` which the listener is attached to, file name, and internal buffer size. Parameter `error_code` is optional (i.e. can be `NULL`), and will contain information about failure reason if the listener can't be created.
 
 ~~~.c
 HT_ErrorCode error_code;
-/* Create a listener, it'll handle all the HawkTracer events */
-HT_FileDumpListener* listener = ht_file_dump_listener_create("hello-world-out.htdump", 2048, &error_code);
+/* Create a listener and register it to a timeline, it'll handle all the HawkTracer events */
+ht_file_dump_listener_register(
+            ht_global_timeline_get(), "hello-world-out.htdump", 2048, &error_code);
+
 /* Creating listener might fail (e.g. file can't be open),
  * so we have to check the status
  */
-if (!listener)
+if (error_code != HT_ERR_OK)
 {
     printf("Unable to create listener. Error code: %d\n", error_code);
     ht_deinit();
     return -1;
 }
 ~~~
-Once we created a listener, it can finally be registered to a timeline. %HawkTracer allows you to create your own timelines, but provides a global timeline which doesn't require any extra initialization. We register the listener to the global timeline.
-~~~.c
-ht_timeline_register_listener_full(
-            ht_global_timeline_get(),
-            ht_file_dump_listener_callback, listener,
-            (HT_DestroyCallback)ht_file_dump_listener_destroy);
-~~~
-Please note we're passing `ht_file_dump_listener_destroy` callback to the function. That means, that %HawkTracer will automatically destroy the listener when it's no longer needed, so user doesn't have to worry about that.
 
 ### Code instrumentation
 After the initialization, we can instrument the code we want to profile. Pair of functions: ht_feature_callstack_start_string() and ht_feature_callstack_stop() measure the duration of execution of the code between those functions, and label the measurement with the string specified as a second argument.
