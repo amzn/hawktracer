@@ -63,7 +63,7 @@ TEST(TestBag, ShouldNotResizeIfRemoveOnlyFewItems)
     // Act
     for (intptr_t i = 0; i < 10; i++)
     {
-        ht_bag_void_ptr_remove(&bag, (void*)i);
+        ht_bag_void_ptr_remove_nth(&bag, i);
     }
 
     // Assert
@@ -88,7 +88,7 @@ TEST(TestBag, ShouldResizeIfRemoveManyItems)
     // Act
     for (intptr_t i = 0; i < 24; i++)
     {
-        ht_bag_void_ptr_remove(&bag, (void*)i);
+        ht_bag_void_ptr_remove_nth(&bag, i);
     }
 
     // Assert
