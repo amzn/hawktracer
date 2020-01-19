@@ -76,7 +76,9 @@ HT_API HT_ErrorCode ht_timeline_register_listener_full(
  *
  * @param timeline the timeline.
  *
- * @deprecated HawkTracer no longer allows unregistering listeners.
+ * @deprecated HawkTracer no longer allows unregistering listeners.  However, the common
+ * pattern is to "stop" the listener; i.e. release all the resources held by listener and
+ * start ignoring all the incoming events. See ht_file_dump_listener_stop() for the example.
  */
 HT_API void ht_timeline_unregister_all_listeners(HT_Timeline* timeline);
 

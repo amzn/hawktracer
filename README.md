@@ -103,14 +103,10 @@ int main(int argc, char** argv)
   ht_init(argc, argv); // initialize library
   HT_Timeline* timeline = ht_global_timeline_get(); // timeline, where all events are posted. You can define your own timeline, or use global timeline
   const size_t buffer_size = 4096; // size of internal listener's buffer
-  HT_FileDumpListener* listener = ht_file_dump_listener_create("file_name.htdump", buffer_size, NULL); // initialize listener
-  ht_timeline_register_listener(timeline, ht_file_dump_listener_callback, listener); // register listener to a timeline
+  ht_file_dump_listener_register(ht_global_timeline_get(), "hello-world-out.htdump", 2048, NULL); // create listener and attach it to timeline
 
   // your code goes here...
 
-  ht_timeline_flush(timeline); // flush all remaining events from timeline
-  ht_timeline_unregister_all_listeners(timeline); // unregister listeners from timeline
-  ht_file_dump_listener_destroy(listener); // deinitialize listener
   ht_deinit(); // uninitialize library
 
   return 0;

@@ -13,7 +13,13 @@ struct _HT_FileDumpListener
     HT_Mutex* mtx;
 };
 
-inline static void
+HT_INLINE static HT_Boolean
+_is_stopped(HT_FileDumpListener* listener)
+{
+    return listener->p_file == NULL;
+}
+
+HT_INLINE static void
 _ht_file_dump_listener_flush(void* listener, HT_Byte* data, size_t size)
 {
     HT_FileDumpListener* fd_listener = (HT_FileDumpListener*) listener;
@@ -74,17 +80,18 @@ done:
 void
 ht_file_dump_listener_destroy(HT_FileDumpListener* listener)
 {
-    if (listener != NULL)
+    if (listener == NULL)
     {
-        ht_mutex_lock(listener->mtx);
-        ht_listener_buffer_flush(&listener->buffer, _ht_file_dump_listener_flush, listener);
-        ht_listener_buffer_deinit(&listener->buffer);
-        fclose(listener->p_file);
-        listener->p_file = NULL;
-        ht_mutex_unlock(listener->mtx);
-        ht_mutex_destroy(listener->mtx);
-        ht_free(listener);
+        return;
     }
+
+    if (!_is_stopped(listener))
+    {
+        ht_file_dump_listener_stop(listener);
+    }
+
+    ht_mutex_destroy(listener->mtx);
+    ht_free(listener);
 }
 
 HT_ErrorCode
@@ -93,6 +100,12 @@ ht_file_dump_listener_flush(HT_FileDumpListener* listener, HT_Boolean flush_stre
     HT_ErrorCode ret = HT_ERR_OK;
 
     ht_mutex_lock(listener->mtx);
+
+    if (_is_stopped(listener))
+    {
+        ht_mutex_unlock(listener->mtx);
+        return ret;
+    }
 
     ht_listener_buffer_flush(&listener->buffer, _ht_file_dump_listener_flush, listener);
 
@@ -116,6 +129,12 @@ ht_file_dump_listener_callback(TEventPtr events, size_t size, HT_Boolean seriali
 
     ht_mutex_lock(listener->mtx);
 
+    if (_is_stopped(listener))
+    {
+        ht_mutex_unlock(listener->mtx);
+        return;
+    }
+
     if (serialized)
     {
         ht_listener_buffer_process_serialized_events(&listener->buffer, events, size, _ht_file_dump_listener_flush, listener);
@@ -126,4 +145,51 @@ ht_file_dump_listener_callback(TEventPtr events, size_t size, HT_Boolean seriali
     }
 
     ht_mutex_unlock(listener->mtx);
+}
+
+void
+ht_file_dump_listener_stop(HT_FileDumpListener* listener)
+{
+    ht_mutex_lock(listener->mtx);
+
+    if (_is_stopped(listener))
+    {
+        ht_mutex_unlock(listener->mtx);
+        return;
+    }
+
+    ht_listener_buffer_flush(&listener->buffer, _ht_file_dump_listener_flush, listener);
+    ht_listener_buffer_deinit(&listener->buffer);
+    fclose(listener->p_file);
+    listener->p_file = NULL;
+
+    ht_mutex_unlock(listener->mtx);
+}
+
+HT_FileDumpListener*
+ht_file_dump_listener_register(
+        HT_Timeline* timeline, const char* filename, size_t buffer_size, HT_ErrorCode *out_err)
+{
+    HT_ErrorCode err = HT_ERR_OK;
+    HT_FileDumpListener* listener = ht_file_dump_listener_create(filename, buffer_size, &err);
+
+    if (!listener)
+    {
+        goto register_done;
+    }
+
+    err = ht_timeline_register_listener_full(
+                timeline,
+                ht_file_dump_listener_callback,
+                listener,
+                (HT_DestroyCallback)ht_file_dump_listener_destroy);
+    if (err != HT_ERR_OK)
+    {
+        ht_file_dump_listener_destroy(listener);
+        listener = NULL;
+    }
+
+register_done:
+    HT_SET_ERROR(out_err, err);
+    return listener;
 }
