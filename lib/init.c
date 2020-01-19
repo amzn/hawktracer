@@ -47,7 +47,7 @@ ht_is_initialized(void)
 void
 ht_deinit(void)
 {
-    if (_ht_init_counter > 0 && --_ht_init_counter)
+    if (_ht_init_counter > 0 && --_ht_init_counter == 0)
     {
 #ifdef HT_USE_PTHREADS
         _ht_posix_mapped_tracepoint_deinit();
