@@ -147,6 +147,19 @@ ht_task_scheduler_tick(HT_TaskScheduler* task_scheduler)
     }
 }
 
+static void
+ht_task_scheduler_remove_task_entry(HT_BagVoidPtr* tasks, HT_Task* task) \
+{
+    size_t i;
+    for (i = 0; i < tasks->size; i++)
+    {
+        if (tasks->data[i] == task)
+        {
+            ht_bag_void_ptr_remove_nth(tasks, i);
+        }
+    }
+}
+
 HT_Boolean
 ht_task_scheduler_remove_task(HT_TaskScheduler* task_scheduler, HT_TaskId task_id)
 {
@@ -162,7 +175,7 @@ ht_task_scheduler_remove_task(HT_TaskScheduler* task_scheduler, HT_TaskId task_i
         HT_Task* task = HT_TASK(task_scheduler->tasks.data[i]);
         if (task->id == task_id)
         {
-            ht_bag_void_ptr_remove(&task_scheduler->tasks, task);
+            ht_task_scheduler_remove_task_entry(&task_scheduler->tasks, task);
             ht_free(task);
             return HT_TRUE;
         }
