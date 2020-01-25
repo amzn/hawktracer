@@ -34,6 +34,16 @@ class TestHawkTracerCore(unittest.TestCase):
 
         self.assertTrue(self._check_symbol_exists(b'foo'))
 
+    def test_return_value_should_be_passed_through_trace_decorator(self):
+        hawktracer.core.enable_tracing()
+        hawktracer.core.enable_trace_decorator()
+
+        @hawktracer.core.trace
+        def foo():
+            return 28121991
+
+        self.assertEqual(28121991, foo())
+
     def test_function_should_not_generate_tracepoints_if_decorator_disabled(self):
         hawktracer.core.enable_tracing()
         hawktracer.core.disable_trace_decorator()

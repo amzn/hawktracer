@@ -1,4 +1,4 @@
-find_package(PythonInterp 3.5)
+find_package(PythonInterp 3)
 
 if(${PYTHONINTERP_FOUND})
     set(AMALGAMATION_ARGS

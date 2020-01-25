@@ -56,14 +56,14 @@ ht_python_core_trace_function(PyObject* function, PyObject *args)
         }
     }
 
-    PyEval_CallObject(function, args);
+    PyObject* ret = PyEval_CallObject(function, args);
 
     if (address)
     {
         ht_feature_callstack_stop(ht_global_timeline_get());
     }
 
-    Py_RETURN_NONE;
+    return ret;
 }
 
 static PyObject *
