@@ -1,14 +1,13 @@
 #include "hawktracer_client_nodejs.hpp"
 
 #include <iostream>
-#include <utility>
 
 namespace HawkTracer
 {
 namespace Nodejs
 {
 
-Object Client::init_bindings(class Env env, Object exports)
+Object Client::init_bindings(const class Env& env, Object exports)
 {
     HandleScope scope(env);
 
@@ -31,96 +30,59 @@ Client::Client(const CallbackInfo &info)
     _source = info[0].As<String>();
 }
 
-Client::~Client()
-{
-    _stop();
-}
-
 Value Client::start(const CallbackInfo &info)
 {
-    _context_holder->context = ClientContext::create(
-        _source,
-        [this](std::unique_ptr<std::vector<parser::Event>> data, ClientContext::ConsumeMode consume_mode)
-        {
-            return handle_events(std::move(data), consume_mode);
-        });
-    return Boolean::New(info.Env(), static_cast<bool>(_context_holder->context));
+    _state.start(
+        ClientContext::create(
+            _source,
+            [this]()
+            {
+                notify_new_event();
+            }));
+    return Boolean::New(info.Env(), _state.is_started());
 }
 
 void Client::stop(const CallbackInfo &)
 {
-    _stop();
-}
-
-void Client::_stop()
-{
-    std::lock_guard<std::mutex> lock{_callback_mutex};
-    if (_callback) {
-        _callback->function.Abort();
-        _callback->function.Release();
-        _callback.reset();
-        _context_holder = nullptr;
-    }
-    else {
-        delete _context_holder;
-    }
+    _state.stop();
+    Reset();
 }
 
 void Client::set_on_events(const CallbackInfo &info)
 {
-    std::lock_guard<std::mutex> lock{_callback_mutex};
-    if (_callback) {
-        // existing _context_holder will be deleted by the finalizer of existing _callback.function
-        _context_holder = new ContextHolder{std::move(*_context_holder)};
-        _callback->function.Release();
-    }
-    _callback.reset(new ThreadSafeFunctionHolder{
-        ThreadSafeFunction::New(info.Env(),
-                                info[0].As<Napi::Function>(),
-                                "HawkTracerClientOnEvent",
-                                1,
-                                1,
-                                [](class Env, decltype(_context_holder) context_holder)
-                                {
-                                    delete context_holder;
-                                },
-                                _context_holder)});
+    // maxQueueSize is set to 2 so that even though the first callback is already running there's room for a new callback.
+    // If 2 slots are already filled up, the second callback will pick up the new events with take_events(),
+    // in which case we can ignore napi_queue_full.
+    _state.set_function(ThreadSafeFunction::New(info.Env(),
+                                                info[0].As<Napi::Function>(),
+                                                "HawkTracerClientOnEvent",
+                                                2,
+                                                1));
 }
 
 // This method is called from reader thread, while all other methods are called from js main thread.
-std::unique_ptr<std::vector<parser::Event>>
-Client::handle_events(std::unique_ptr<std::vector<parser::Event>> events, ClientContext::ConsumeMode consume_mode)
+void Client::notify_new_event()
 {
-    std::lock_guard<std::mutex> lock{_callback_mutex};
-    if (!_callback) {
-        return events;
-    }
+    // prevents this from garbage-collected before the callback is finished
+    Ref();
 
-    // deallocated in convert_and_callback() or below in this method
-    auto data = new CallbackDataType{this, std::move(events)};
-    napi_status status;
-    if (consume_mode == ClientContext::ConsumeMode::FORCE_CONSUME) {
-        status = _callback->function.BlockingCall(data, &Client::convert_and_callback);
-    }
-    else {
-        status = _callback->function.NonBlockingCall(data, &Client::convert_and_callback);
-    }
+    auto status = _state.use_function(
+        [this](ThreadSafeFunction f)
+        {
+            return f.NonBlockingCall(this, &Client::convert_and_callback);
+        });
 
-    decltype(events) ret{};
-    if (status == napi_queue_full) {
-        ret = std::move(data->second);
-    }
-    if (status != napi_ok && status != napi_queue_full) {
-        std::cerr << "Request for callback failed with error code: " << status << ", " << data->second->size()
-                  << " events are lost." << std::endl;
-    }
     if (status != napi_ok) {
-        delete data;
+        // Callback was not added in the queue, hence no need to increase the reference count.
+        Unref();
     }
-    return ret;
+
+    if (status != napi_ok && status != napi_queue_full) {
+        std::cerr << "Request for callback failed with error code: " << status << std::endl;
+    }
 }
 
-Value Client::convert_field_value(class Env env, const parser::Event::Value &value)
+Value Client::convert_field_value(const class Env& env, const parser::Event::Value &value)
 {
     switch (value.field->get_type_id()) {
         case parser::FieldTypeId::UINT8:
@@ -150,7 +112,7 @@ Value Client::convert_field_value(class Env env, const parser::Event::Value &val
     }
 }
 
-Object Client::convert_event(class Env env, const parser::Event &event)
+Object Client::convert_event(const class Env& env, const parser::Event &event)
 {
     auto o = Object::New(env);
     for (const auto &it: event.get_values()) {
@@ -159,15 +121,9 @@ Object Client::convert_event(class Env env, const parser::Event &event)
     return o;
 }
 
-void Client::convert_and_callback(class Env env, Function real_callback, CallbackDataType *data)
+void Client::convert_and_callback(const class Env& env, Function real_callback, Client *calling_object)
 {
-    std::unique_ptr<CallbackDataType> data_deallocation_guard{data};
-    Client *calling_object = data->first;
-    std::vector<parser::Event> *events = data->second.get();
-
-    // Prevent Client destruction, which could result in blocking call in handle_events(), which is blocked by
-    // real_callback running in js thread, forming deadlock.
-    calling_object->Ref();
+    ClientContext::EventsPtr events = calling_object->_state.take_events();
 
     Array array = Array::New(env);
     int i = 0;
@@ -179,7 +135,10 @@ void Client::convert_and_callback(class Env env, Function real_callback, Callbac
                   });
     real_callback.Call({array});
 
-    calling_object->Unref();
+    // Now calling_object can be garbage-collected, however it could have been already stopped during callback.
+    if (!calling_object->IsEmpty()) {
+        calling_object->Unref();
+    }
 }
 
 } // namespace Nodejs

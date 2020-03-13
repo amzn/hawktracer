@@ -1,19 +1,21 @@
+const {HawkTracerClient} = require('bindings')('hawk_tracer_client');   // loads build/Release/hawk_tracer_client.node
+
 describe("1. Initiating HawkTracerClient", () => {
+    let hawkTracerClient;
+    beforeEach(() => hawkTracerClient = new HawkTracerClient("some-file"));
+    afterEach(() => hawkTracerClient.stop());
+
     test("succeeds when constructor is given `source` parameter in string type", () => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');   // loads build/Release/hawk_tracer_client.node
-        const hawkTracerClient = new HawkTracerClient("some-file");
         expect(hawkTracerClient).not.toBeNull();
     });
 
     test("fails without parameter", () => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
         expect(() => {
             new HawkTracerClient();
         }).toThrow();
     });
 
     test("fails with parameter in wrong type", () => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
         expect(() => {
             new HawkTracerClient(11);
         }).toThrow();
@@ -21,22 +23,20 @@ describe("1. Initiating HawkTracerClient", () => {
 });
 
 describe("2. Set up callback", () => {
-    test("invokes callback", (done) => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
+    let hawkTracerClient;
+    beforeEach(() => {
         const source = require('path').join(__dirname, 'test.htdump');
-        const hawkTracerClient = new HawkTracerClient(source);
+        hawkTracerClient = new HawkTracerClient(source);
+    });
 
-        hawkTracerClient.onEvents(() => {
-            done();
-        });
+    afterEach(() => hawkTracerClient.stop());
+
+    test("invokes callback", (done) => {
+        hawkTracerClient.onEvents(() => done());
         hawkTracerClient.start();
     });
 
     test("receives all events when the events listener is replaced", (done) => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
-        const source = require('path').join(__dirname, 'test.htdump');
-        const hawkTracerClient = new HawkTracerClient(source);
-
         const expectedCount = 56;   // number of events in test.htdump
         let firstCount = 0;
         let secondCount = 0;
@@ -58,32 +58,51 @@ describe("2. Set up callback", () => {
         hawkTracerClient.start();
     });
 
-    test.todo("receives all events if onEvents() is called after start().");
+    test("receives all events if onEvents() is called after start()", (done) => {
+        const expectedCount = 56;   // number of events in test.htdump
+        let count = 0;
+        hawkTracerClient.start();
+        hawkTracerClient.onEvents((events: object[]) => {
+            count += events.length;
+            checkEventsCount(count, expectedCount, done);
+        });
+    });
 });
 
 describe("3. Start HawkTracerClient", () => {
+    let hawkTracerClient;
+    afterEach(() => hawkTracerClient.stop());
+
     test("succeeds with existing source file", () => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
         const source = require('path').join(__dirname, 'test.htdump');
-        const hawkTracerClient = new HawkTracerClient(source);
+        hawkTracerClient = new HawkTracerClient(source);
         expect(hawkTracerClient.start()).toBe(true);
     });
 
     test.todo("succeeds with source in 'x.x.x.x:p' format where x.x.x.x is the IP address, p is port number");
 
     test("fails with non-existing source file", () => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
-        const hawkTracerClient = new HawkTracerClient('non-existing file !@£$%^&*()');
+        hawkTracerClient = new HawkTracerClient('non-existing file !@£$%^&*()');
         expect(hawkTracerClient.start()).toBe(false);
     });
+
+    test.skip("undefined behavior when started twice", () => {
+        hawkTracerClient.onEvents(() => {});
+        hawkTracerClient.start();
+        hawkTracerClient.start();
+    })
 });
 
 describe("4. Receive events through callback", () => {
-    test("correct number of events", (done) => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
+    let hawkTracerClient;
+    beforeEach(() => {
         const source = require('path').join(__dirname, 'test.htdump');
-        const hawkTracerClient = new HawkTracerClient(source);
+        hawkTracerClient = new HawkTracerClient(source);
+    });
 
+    afterEach(() => hawkTracerClient.stop());
+
+    test("receives correct number of events", (done) => {
         const expectedCount = 56;   // number of events in test.htdump
         let count = 0;
         hawkTracerClient.onEvents((events: object[]) => {
@@ -101,11 +120,7 @@ describe("4. Receive events through callback", () => {
         } while (sleptSeconds < seconds);
     }
 
-    test("do not lose events when the callback delays too long", (done) => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
-        const source = require('path').join(__dirname, 'test.htdump');
-        const hawkTracerClient = new HawkTracerClient(source);
-
+    test("does not lose events when the callback delays too long", (done) => {
         const expectedCount = 56;   // number of events in test.htdump
         let count = 0;
         let delayed = false;
@@ -124,31 +139,63 @@ describe("4. Receive events through callback", () => {
 });
 
 describe("5. Stop HawkTracerClient", () => {
-    test("succeeds and events stop coming", (done) => {
-        const {HawkTracerClient} = require('bindings')('hawk_tracer_client');
+    let hawkTracerClient;
+    beforeEach(() => {
         const source = require('path').join(__dirname, 'test.htdump');
-        const hawkTracerClient = new HawkTracerClient(source);
+        hawkTracerClient = new HawkTracerClient(source);
+    });
 
+    test("succeeds and events stop coming", (done) => {
         let i = 0;
         let timer;
         hawkTracerClient.onEvents(() => {
-            clearTimeout(timer);
             expect(++i).toBe(1);    // fails the second time
-            // noinspection JSDeprecatedSymbols
             hawkTracerClient.stop();
+            clearTimeout(timer);
             timer = setTimeout(done, 500); // Wait for a while in case more events come in.
         });
         hawkTracerClient.start();
     });
 
-    test.todo("does not crash when not started.");
+    test("does not crash when not started", () => {
+        hawkTracerClient.stop();
+    });
+
+    test("does not crash when already stopped", () => {
+        hawkTracerClient.onEvents(() => {});
+        hawkTracerClient.start();
+        hawkTracerClient.stop();
+        hawkTracerClient.stop();
+    });
+
+    describe("does not crash when stopped in event handler", () => {
+        test("(When this test fails, it will be shown as PASSED but the process will crash at the end.)", (done) => {
+            hawkTracerClient.onEvents(() => {
+                hawkTracerClient.stop();
+                done();
+            });
+            hawkTracerClient.start();
+        });
+    });
+
+    test.skip("undefined behavior when not stopped", () => {
+        hawkTracerClient.onEvents(() => {});
+        hawkTracerClient.start();
+    })
+
+    test.skip("undefined behavior when stopped and started again", () => {
+        hawkTracerClient.onEvents(() => {});
+        hawkTracerClient.start();
+        hawkTracerClient.stop();
+        hawkTracerClient.start();
+    })
 });
 
 let countTimer;
 
 function checkEventsCount(count, expectedCount, done) {
-    clearTimeout(countTimer);
     expect(count).toBeLessThanOrEqual(expectedCount);
+    clearTimeout(countTimer);
     if (count == expectedCount) {
         countTimer = setTimeout(done, 500); // Wait for a while in case more events come in.
     }

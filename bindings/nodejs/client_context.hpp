@@ -15,26 +15,25 @@ namespace Nodejs
 class ClientContext
 {
 public:
-    enum class ConsumeMode
-    {
-        TRY_CONSUME, FORCE_CONSUME
-    };
-    using EventCallback = std::function<std::unique_ptr<std::vector<parser::Event>>(std::unique_ptr<std::vector<parser::Event>>,
-                                                                                    ConsumeMode)>;
+    using EventCallback = std::function<void()>;
     static std::unique_ptr<ClientContext> create(const std::string &source, EventCallback event_callback);
 
     ~ClientContext();
+
+    using EventsPtr = std::unique_ptr<std::vector<parser::Event>>;
+    EventsPtr take_events();
 
 private:
     ClientContext(std::unique_ptr<parser::ProtocolReader> reader,
                   std::unique_ptr<parser::KlassRegister> klass_register,
                   EventCallback event_callback);
 
+    const std::unique_ptr<const parser::KlassRegister> _klass_register; // needs to be destructed after _reader
     const std::unique_ptr<parser::ProtocolReader> _reader;
-    const std::unique_ptr<const parser::KlassRegister> _klass_register;
     const EventCallback _event_callback;
 
-    std::unique_ptr<std::vector<parser::Event>> _events;
+    EventsPtr _buffer {new std::vector<parser::Event>{}};
+    std::mutex _buffer_mutex {};
 };
 
 } // namespace Nodejs

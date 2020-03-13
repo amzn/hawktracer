@@ -15,40 +15,86 @@ using namespace Napi;
 class Client: public ObjectWrap<Client>
 {
 public:
-    static Object init_bindings(class Env env, Object exports);
+    static Object init_bindings(const class Env& env, Object exports);
 
     explicit Client(const CallbackInfo &info);
-    ~Client() override;
 
     class Value start(const CallbackInfo &info);
     void stop(const CallbackInfo &info);
     void set_on_events(const CallbackInfo &info);
 
 private:
-    void _stop();
-    std::unique_ptr<std::vector<parser::Event>>
-    handle_events(std::unique_ptr<std::vector<parser::Event>> events, ClientContext::ConsumeMode consume_mode);
-    static class Value convert_field_value(class Env env, const parser::Event::Value &value);
-    static Object convert_event(class Env env, const parser::Event &event);
+    void notify_new_event();
+    static class Value convert_field_value(const class Env& env, const parser::Event::Value &value);
+    static Object convert_event(const class Env& env, const parser::Event &event);
+    static void convert_and_callback(const class Env& env, Function real_callback, Client *client);
 
-    using CallbackDataType = std::pair<Client*, std::unique_ptr<std::vector<parser::Event>>>;
-    static void convert_and_callback(class Env env, Function real_callback, CallbackDataType *data);
+    std::string _source{};
 
-    std::string _source {};
-
-    struct ContextHolder
+    class State
     {
-        std::unique_ptr<ClientContext> context{};
-    };
-    // deallocated in the finalizer of _callback.function set up in set_on_events(), or _stop()
-    ContextHolder *_context_holder {new ContextHolder {}};
+        struct FunctionHolder
+        {
+            ThreadSafeFunction function;
+            ~FunctionHolder()
+            {
+                function.Release();
+            }
+        };
+        // _client_context states
+        // * started: non-null value
+        // * stopped: null value
+        std::unique_ptr<ClientContext> _client_context{};
+        // _function_holder states
+        // * has_callback: non-null value
+        // * no_callback: null value
+        std::unique_ptr<FunctionHolder> _function_holder{};
+        mutable std::mutex _function_holder_mutex{};
+    public:
+        bool is_started() const
+        {
+            return static_cast<bool>(_client_context);
+        }
+        // ?         X ?            => started   X ?
+        void start(std::unique_ptr<ClientContext> cc)
+        {
+            _client_context = std::move(cc);
+        }
+        // ?         X ?            => stopped   X no_callback
+        void stop()
+        {
+            {
+                std::lock_guard<std::mutex> lock{_function_holder_mutex};
+                if (_function_holder) {
+                    _function_holder->function.Abort(); // cancels callbacks already in queue
+                    _function_holder.reset();
+                }
+            }
+            _client_context.reset();
+        }
+        // ?         X ?            => ?         X has_callback
+        void set_function(ThreadSafeFunction threadSafeFunction)
+        {
+            std::lock_guard<std::mutex> lock{_function_holder_mutex};
+            _function_holder.reset(new FunctionHolder{threadSafeFunction});
+        }
+        // This method is called from reader thread, while all other methods are called from js main thread.
+        napi_status use_function(const std::function<napi_status(ThreadSafeFunction)> &use) const
+        {
+            std::lock_guard<std::mutex> lock{_function_holder_mutex};
+            if (!_function_holder)
+                return napi_queue_full;
 
-    struct ThreadSafeFunctionHolder
-    {
-        ThreadSafeFunction function;
+            return use(_function_holder->function);
+        }
+        ClientContext::EventsPtr take_events() const
+        {
+            return _client_context ?
+                   _client_context->take_events() :
+                   ClientContext::EventsPtr{new std::vector<parser::Event>{}};
+        }
     };
-    std::unique_ptr<ThreadSafeFunctionHolder> _callback {};
-    std::mutex _callback_mutex {};
+    State _state;
 };
 
 } // namespace Nodejs
