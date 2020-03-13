@@ -10,6 +10,7 @@ add_executable(hawktracer-converter main.cpp)
 
 target_link_libraries(hawktracer_client hawktracer_parser hawktracer_client_utils)
 target_include_directories(hawktracer_client PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
+target_include_directories(hawktracer_client INTERFACE .)
 
 target_link_libraries(hawktracer-converter hawktracer_client)
 

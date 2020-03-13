@@ -20,11 +20,13 @@ class ProtocolReader
 {
 public:
     using OnNewEventCallback = std::function<void(const Event&)>;
+    using OnCompleteEventCallback = std::function<void()>;
 
     ProtocolReader(KlassRegister* klass_register, std::unique_ptr<Stream> stream, bool flat_events);
     ~ProtocolReader();
 
     void register_events_listener(OnNewEventCallback callback);
+    void register_complete_listener(OnCompleteEventCallback callback);
 
     bool start();
     void stop();
@@ -40,9 +42,11 @@ private:
     bool _read_struct(FieldType& value, const EventKlassField& field, Event* event, Event* base_event);
 
     void _call_callbacks(const Event& event);
+    void _call_complete_callbacks();
 
     KlassRegister* _klass_register;
     std::vector<OnNewEventCallback> _on_new_event_callbacks;
+    std::vector<OnCompleteEventCallback> _on_complete_event_callbacks;
     std::unique_ptr<Stream> _stream;
     std::thread _thread;
     std::atomic_bool _is_running;

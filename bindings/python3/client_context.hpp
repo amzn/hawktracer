@@ -3,6 +3,7 @@
 
 #include <Python.h>
 
+#include "hawktracer/parser/event.hpp"
 #include "hawktracer/parser/klass_register.hpp"
 #include "hawktracer/parser/protocol_reader.hpp"
 

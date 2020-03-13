@@ -32,6 +32,11 @@ void ProtocolReader::register_events_listener(OnNewEventCallback callback)
     _on_new_event_callbacks.push_back(std::move(callback));
 }
 
+void ProtocolReader::register_complete_listener(OnCompleteEventCallback callback)
+{
+    _on_complete_event_callbacks.push_back(std::move(callback));
+}
+
 bool ProtocolReader::start()
 {
     if (_stream->start())
@@ -107,6 +112,7 @@ void ProtocolReader::_read_events()
 
     _is_running = false;
     _cv.notify_one();
+    _call_complete_callbacks();
 }
 
 void ProtocolReader::_read_event(bool& is_error, Event& event, Event* base_event)
@@ -244,6 +250,14 @@ void ProtocolReader::_call_callbacks(const Event& event)
     for (const auto& callback : _on_new_event_callbacks)
     {
         callback(event);
+    }
+}
+
+void ProtocolReader::_call_complete_callbacks()
+{
+    for (const auto& callback : _on_complete_event_callbacks)
+    {
+        callback();
     }
 }
 
