@@ -3,8 +3,6 @@
 
 #include <hawktracer/timeline.h>
 
-#include <pthread.h>
-
 HT_DECLS_BEGIN
 
 HT_API void ht_pthread_mapped_tracepoint_enter(HT_Timeline* timeline, const char* label);
