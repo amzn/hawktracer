@@ -1,3 +1,7 @@
+#include "hawktracer/ht_config.h"
+
+#ifdef HT_ENABLE_TCP_LISTENER
+
 #include "internal/listeners/tcp_server.h"
 #include "internal/bag.h"
 #include "internal/mutex.h"
@@ -301,3 +305,5 @@ _ht_tcp_server_run(void* user_data)
     }
     return NULL;
 }
+
+#endif /* HT_ENABLE_TCP_LISTENER */

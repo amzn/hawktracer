@@ -1,4 +1,7 @@
 #include "hawktracer/listeners/tcp_listener.h"
+
+#ifdef HT_ENABLE_TCP_LISTENER
+
 #include "hawktracer/alloc.h"
 #include "hawktracer/timeline_listener.h"
 
@@ -202,3 +205,5 @@ ht_tcp_listener_stop(HT_TCPListener* listener)
 
     ht_mutex_unlock(listener->_push_action_mutex);
 }
+
+#endif /* HT_ENABLE_TCP_LISTENER */

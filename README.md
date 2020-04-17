@@ -36,7 +36,7 @@ The tutorial step by step explains how to build and instrument the code like tha
 ```cpp
 static void hello_world()
 {
-    HT_TP_G_FUNCTION()
+    HT_G_TRACE_FUNCTION()
 
     for (int i = 0; i < 100; i++)
     {

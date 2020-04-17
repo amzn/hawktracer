@@ -1,6 +1,5 @@
 set(LIB_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/listeners/test_file_dump_listener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/listeners/test_tcp_listener.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_alloc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_allocator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_bag.cpp
@@ -20,6 +19,10 @@ set(LIB_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_test_events.c
     ${CMAKE_CURRENT_SOURCE_DIR}/test_thread.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_timeline.cpp)
+
+if (ENABLE_TCP_LISTENER)
+    list(APPEND LIB_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/listeners/test_tcp_listener.cpp)
+endif()
 
 macro(SETUP_FEATURE_TEST FEATURE_NAME TEST_FILE_NAME)
     if (HT_PLATFORM_FEATURE_${FEATURE_NAME}_ENABLED)

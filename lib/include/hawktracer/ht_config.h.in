@@ -8,10 +8,22 @@
 #cmakedefine HT_USE_PTHREADS
 #cmakedefine HT_COMPILE_STATIC
 
+#cmakedefine HT_ENABLE_TCP_LISTENER
+
 #define HT_VERSION "@PROJECT_VERSION@"
 #define HT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
 #define HT_VERSION_MINOR @PROJECT_VERSION_MINOR@
 #define HT_VERSION_PATCH @PROJECT_VERSION_PATCH@
+
+/******* Clock provider *******/
+/**
+ * Define HT_MONOTONIC_CLOCK_IMPL_CUSTOM to specify custom implementation of the clock.
+ * The implementation must. The provided code must implement interface defined in
+ * hawktracer/monotonic_clock.h
+ * If the implementation is not provided, compiler attempts to choose clock available
+ * in the environment.
+ */
+/* #define HT_MONOTONIC_CLOCK_IMPL_CUSTOM */
 
 /******* Mutex implementation *******/
 /**

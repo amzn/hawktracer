@@ -1,6 +1,10 @@
 #ifndef HAWKTRACER_LISTENERS_TCP_LISTENER_H
 #define HAWKTRACER_LISTENERS_TCP_LISTENER_H
 
+#include <hawktracer/ht_config.h>
+
+#ifdef HT_ENABLE_TCP_LISTENER
+
 #include <hawktracer/timeline.h>
 
 #include <stddef.h>
@@ -57,5 +61,7 @@ HT_API void ht_tcp_listener_callback(TEventPtr events, size_t size, HT_Boolean s
 HT_API void ht_tcp_listener_stop(HT_TCPListener* listener);
 
 HT_DECLS_END
+
+#endif /* HT_ENABLE_TCP_LISTENER */
 
 #endif /* HAWKTRACER_LISTENERS_TCP_LISTENER_H */
