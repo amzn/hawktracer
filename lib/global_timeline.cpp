@@ -25,7 +25,26 @@ static HT_Timeline* _ht_global_timeline_create(void)
     return c_timeline;
 }
 
-#ifdef HT_CPP11
+#ifndef HT_ENABLE_THREADS
+/**
+ * If the threading support is disabled at compilation time,
+ * we assume the HawkTracer is being used in a single-threaded
+ * environment, therefore no need for per-thread timeline.
+ */
+HT_Timeline* ht_global_timeline_get(void)
+{
+    static HT_Timeline* timeline = NULL;
+
+    if (!timeline)
+    {
+        // TODO memory leak
+        timeline = _ht_global_timeline_create();
+    }
+
+    return timeline;
+}
+
+#elif defined(HT_CPP11)
 struct GlobalTimeline
 {
     GlobalTimeline()
