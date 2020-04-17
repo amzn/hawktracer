@@ -1,3 +1,8 @@
+if (NOT ENABLE_CLIENT)
+    # Currently, we only support client bindings.
+    return()
+endif()
+
 # https://www.npmjs.com/package/cmake-js#general
 if (CMAKE_JS_SRC)
     add_library(cmake_js STATIC ${CMAKE_JS_SRC})
@@ -27,17 +32,15 @@ target_link_libraries(node_addon_api INTERFACE cmake_js)
 # Supports Node version >= 12.11.0 https://nodejs.org/api/n-api.html#n_api_n_api_version_matrix
 target_compile_definitions(node_addon_api INTERFACE NAPI_VERSION=5)
 
-if (ENABLE_CLIENT)
-    add_library(nodejs_bindings_client SHARED
-            hawktracer_client_nodejs.cpp
-            hawktracer_client_nodejs.hpp
-            client_context.cpp
-            client_context.hpp)
-    set_target_properties(nodejs_bindings_client PROPERTIES PREFIX "" OUTPUT_NAME hawk_tracer_client SUFFIX .node)
-    target_link_libraries(nodejs_bindings_client PUBLIC node_addon_api hawktracer_parser hawktracer_client_utils)
+add_library(nodejs_bindings_client SHARED
+        hawktracer_client_nodejs.cpp
+        hawktracer_client_nodejs.hpp
+        client_context.cpp
+        client_context.hpp)
+set_target_properties(nodejs_bindings_client PROPERTIES PREFIX "" OUTPUT_NAME hawk_tracer_client SUFFIX .node)
+target_link_libraries(nodejs_bindings_client PUBLIC node_addon_api hawktracer_parser hawktracer_client_utils)
 
-    # cmake-js specifies CMAKE_LIBRARY_OUTPUT_DIRECTORY.
-    add_custom_target(make_directory_for_nodejs_bindings_client
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-    add_dependencies(nodejs_bindings_client make_directory_for_nodejs_bindings_client)
-endif ()
+# cmake-js specifies CMAKE_LIBRARY_OUTPUT_DIRECTORY.
+add_custom_target(make_directory_for_nodejs_bindings_client
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+add_dependencies(nodejs_bindings_client make_directory_for_nodejs_bindings_client)

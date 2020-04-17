@@ -16,12 +16,11 @@ class ClientContext
 {
 public:
     using EventCallback = std::function<void()>;
-    static std::unique_ptr<ClientContext> create(const std::string &source, EventCallback event_callback);
+    static std::unique_ptr<ClientContext> create(const std::string& source, EventCallback event_callback);
 
     ~ClientContext();
 
-    using EventsPtr = std::unique_ptr<std::vector<parser::Event>>;
-    EventsPtr take_events();
+    std::vector<parser::Event> take_events();
 
 private:
     ClientContext(std::unique_ptr<parser::ProtocolReader> reader,
@@ -32,8 +31,8 @@ private:
     const std::unique_ptr<parser::ProtocolReader> _reader;
     const EventCallback _event_callback;
 
-    EventsPtr _buffer {new std::vector<parser::Event>{}};
-    std::mutex _buffer_mutex {};
+    std::vector<parser::Event> _buffer;
+    std::mutex _buffer_mutex;
 };
 
 } // namespace Nodejs
