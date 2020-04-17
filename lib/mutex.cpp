@@ -19,8 +19,52 @@
 #  endif
 #endif
 
-#if defined(HT_MUTEX_IMPL_CUSTOM)
+#ifndef HT_ENABLE_THREADS
+/* MultiThread support disabled, no need for mutexes */
+#include "internal/mutex.h"
+#include <assert.h>
+
+struct _HT_Mutex
+{
+    void* dummy;
+};
+
+static HT_Mutex ht_magic_mutex;
+
+
+HT_Mutex*
+ht_mutex_create(void)
+{
+    return &ht_magic_mutex;
+}
+
+HT_ErrorCode
+ht_mutex_destroy(HT_Mutex* mtx)
+{
+    HT_UNUSED(mtx);
+    assert(mtx == &ht_magic_mutex);
+    return HT_ERR_OK;
+}
+
+HT_ErrorCode
+ht_mutex_lock(HT_Mutex* mtx)
+{
+    HT_UNUSED(mtx);
+    assert(mtx == &ht_magic_mutex);
+    return HT_ERR_OK;
+}
+
+HT_ErrorCode
+ht_mutex_unlock(HT_Mutex* mtx)
+{
+    HT_UNUSED(mtx);
+    assert(mtx == &ht_magic_mutex);
+    return HT_ERR_OK;
+}
+
+#elif defined(HT_MUTEX_IMPL_CUSTOM)
 /* Custom implementation provided */
+
 #elif defined(HT_MUTEX_IMPL_CPP11) || defined(HT_MUTEX_IMPL_POSIX) || defined(HT_MUTEX_IMPL_WIN32)
 
 #include "internal/mutex.h"

@@ -5,9 +5,7 @@
 #include "internal/feature.h"
 #include "internal/command_line_parser.h"
 
-#ifdef HT_USE_PTHREADS
-#  include "hawktracer/posix_mapped_tracepoint.h"
-#endif
+#include "hawktracer/posix_mapped_tracepoint.h"
 
 
 static int _ht_init_counter = 0;

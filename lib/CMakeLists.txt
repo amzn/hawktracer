@@ -84,20 +84,30 @@ INCLUDE_FEATURE(CPU_USAGE include/hawktracer/cpu_usage.h)
 INCLUDE_FEATURE(MEMORY_USAGE include/hawktracer/memory_usage.h)
 INCLUDE_FEATURE(ALLOC_HOOKS include/hawktracer/alloc_hooks.h)
 
-if (CMAKE_USE_PTHREADS_INIT)
-    set(HT_USE_PTHREADS ON)
-    list(APPEND HAWKTRACER_LIB_HEADERS include/hawktracer/posix_mapped_tracepoint.h)
-    list(APPEND HAWKTRACER_LIB_SOURCES posix_mapped_tracepoint.c)
-endif()
-
 if (BUILD_STATIC_LIB)
     set(HT_COMPILE_STATIC ON)
 endif (BUILD_STATIC_LIB)
 
 if (ENABLE_TCP_LISTENER)
+    if (NOT ENABLE_THREADS)
+        message(FATAL_ERROR "Threads must be enabled for TCP listener")
+    endif()
     set(HT_ENABLE_TCP_LISTENER ON)
     list(APPEND HAWKTRACER_LIB_SOURCES listeners/tcp_listener.c tcp_server.cpp)
     list(APPEND HAWKTRACER_LIB_HEADERS include/hawktracer/listeners/tcp_listener.h)
+endif()
+
+if (ENABLE_THREADS)
+    set(HT_ENABLE_THREADS ON)
+
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+
+    if (CMAKE_USE_PTHREADS_INIT)
+        set(HT_USE_PTHREADS ON)
+        list(APPEND HAWKTRACER_LIB_HEADERS include/hawktracer/posix_mapped_tracepoint.h)
+        list(APPEND HAWKTRACER_LIB_SOURCES posix_mapped_tracepoint.c)
+    endif()
 endif()
 
 configure_file(include/hawktracer/ht_config.h.in include/hawktracer/ht_config.h)

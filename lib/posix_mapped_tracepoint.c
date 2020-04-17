@@ -1,4 +1,7 @@
 #include "hawktracer/posix_mapped_tracepoint.h"
+
+#ifdef HT_USE_PTHREADS
+
 #include "hawktracer/feature_cached_string.h"
 
 #include "internal/mutex.h"
@@ -43,3 +46,5 @@ ht_pthread_mapped_tracepoint_add_mapping(void)
 {
     ht_feature_cached_string_add_mapping(_mapped_timeline, _mapped_ptr);
 }
+
+#endif /* HT_USE_PTHREADS */

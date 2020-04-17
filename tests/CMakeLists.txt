@@ -50,8 +50,10 @@ if(ENABLE_CLIENT)
     add_subdirectory(integration)
 endif(ENABLE_CLIENT)
 
+find_package(Threads REQUIRED)
+
 add_executable(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_SOURCES})
-target_link_libraries(hawktracer_gtest_tests ${HAWKTRACER_GTEST_TEST_LIBS})
+target_link_libraries(hawktracer_gtest_tests hawktracer Threads::Threads ${HAWKTRACER_GTEST_TEST_LIBS})
 target_include_directories(hawktracer_gtest_tests PRIVATE ${GTEST_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" VALGRIND_CHECK_ENABLED)

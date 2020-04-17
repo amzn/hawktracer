@@ -23,7 +23,7 @@ typedef struct
 
 typedef struct
 {
-    HT_HashBucket buckets[1024];
+    HT_HashBucket buckets[512];
 } HT_HashMap;
 
 HT_ErrorCode ht_hash_map_init(HT_HashMap* hash_map);

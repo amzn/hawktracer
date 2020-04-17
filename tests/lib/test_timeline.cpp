@@ -113,6 +113,8 @@ TEST_F(TestTimeline, InitEventShouldSetMonotonicTimestamp)
     ASSERT_LE(ts, event.timestamp);
 }
 
+#ifdef HT_ENABLE_THREADS
+
 TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
 {
     // Arrange
@@ -157,6 +159,8 @@ TEST_F(TestTimeline, ThreadSafeMessageShouldWorkWithMultipleThreads)
 
     ht_timeline_destroy(timeline);
 }
+
+#endif
 
 TEST_F(TestTimeline, SharedListener)
 {

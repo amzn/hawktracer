@@ -1,7 +1,7 @@
 #include "hawktracer/event_id_provider.h"
 #include "hawktracer/alloc.h"
 
-#ifdef HT_CPP11
+#if defined(HT_ENABLE_THREADS) && defined(HT_CPP11)
 #include <atomic>
 typedef std::atomic<HT_EventId> HT_AtomicEventId;
 #else
@@ -38,7 +38,7 @@ ht_event_id_provider_destroy(HT_EventIdProvider* provider)
 HT_EventId
 ht_event_id_provider_next(HT_EventIdProvider* provider)
 {
-#ifdef HT_CPP11
+#if defined(HT_CPP11) || !defined(HT_ENABLE_THREADS)
     return provider->current_identifier++;
 #elif defined(__GNUC__)
 #  if !defined(__GNUC_PREREQ) && defined(__GNUC_MINOR__)
@@ -50,6 +50,6 @@ ht_event_id_provider_next(HT_EventIdProvider* provider)
     return __sync_fetch_and_add(&provider->current_identifier, 1);
 #  endif
 #else
-#  error "Atomic Fetch&Add is not supported"; // TODO: Allow to not have atomic operations at all.
+#  error "Atomic Fetch&Add is not supported"
 #endif
 }

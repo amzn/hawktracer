@@ -88,7 +88,9 @@
  * @def HT_THREAD_LOCAL
  * A thread storage duration.
  */
-#ifdef HT_CPP11
+#ifndef HT_ENABLE_THREADS
+#  define HT_THREAD_LOCAL
+#elif defined(HT_CPP11)
 #  define HT_THREAD_LOCAL thread_local
 #elif __STDC_VERSION__ >= 201112 && !defined __STDC_NO_THREADS__
 #  define HT_THREAD_LOCAL _Thread_local
