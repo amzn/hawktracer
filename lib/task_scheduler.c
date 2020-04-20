@@ -4,6 +4,7 @@
 #include "internal/bag.h"
 #include "internal/error.h"
 
+#include <stdint.h>
 #include <string.h>
 
 #define DEFAULT_INIT_TASK_COUNT_ 16
