@@ -17,11 +17,14 @@ set(LIB_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_stack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_task_scheduler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_test_events.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_thread.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_timeline.cpp)
 
 if (ENABLE_TCP_LISTENER)
     list(APPEND LIB_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/listeners/test_tcp_listener.cpp)
+endif()
+
+if (ENABLE_THREADS)
+    list(APPEND LIB_TEST_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/test_thread.cpp)
 endif()
 
 macro(SETUP_FEATURE_TEST FEATURE_NAME TEST_FILE_NAME)

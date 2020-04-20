@@ -97,6 +97,7 @@ TEST_F(TestFeatureCallstack, EnableShouldFailIfThereIsOnlyEnoughMemoryForFeature
     ASSERT_EQ(HT_ERR_OUT_OF_MEMORY, err);
 }
 
+#ifdef HT_ENABLE_THREADS
 TEST_F(TestFeatureCallstack, CallstackTimelinesRunOnDifferentThreadsShouldGenerateDifferentThreadID)
 {
     // Assert
@@ -124,6 +125,7 @@ TEST_F(TestFeatureCallstack, CallstackTimelinesRunOnDifferentThreadsShouldGenera
     HT_CallstackIntEvent& event2 = info2.values.front();
     ASSERT_NE(event1.base.thread_id, event2.base.thread_id);
 }
+#endif
 
 TEST_F(TestFeatureCallstack, MixedCallstackEventTypes)
 {
