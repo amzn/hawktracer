@@ -1,16 +1,14 @@
 #ifndef HAWKTRACER_CLIENT_CONVERTER_CPP
 #define HAWKTRACER_CLIENT_CONVERTER_CPP
 
-#include "converter.hpp"
+#include "hawktracer/client_utils/converter.hpp"
 
 #include <hawktracer/parser/klass_register.hpp>
 #include <hawktracer/parser/make_unique.hpp>
-#include <fstream>
-#include <stack>
 
 namespace HawkTracer
 {
-namespace client
+namespace ClientUtils
 {
 
 Converter::Converter() :
@@ -79,7 +77,7 @@ std::string Converter::_get_label(const parser::Event& event)
     return label;
 }
 
-} // namespace client
+} // namespace ClientUtils
 } // namespace HawkTracer
 
 #endif // HAWKTRACER_CLIENT_CONVERTER_CPP

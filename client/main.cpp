@@ -23,7 +23,7 @@ std::string create_output_path(const char* path)
     return file_name_buffer;
 }
 
-std::string supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
+std::string supported_formats(std::map<std::string, std::unique_ptr<ClientUtils::Converter>>& formats)
 {
     std::string supported_formats;
     for (auto& format : formats)
@@ -33,7 +33,7 @@ std::string supported_formats(std::map<std::string, std::unique_ptr<client::Conv
     return supported_formats;
 }
 
-void init_supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
+void init_supported_formats(std::map<std::string, std::unique_ptr<ClientUtils::Converter>>& formats)
 {
     formats["chrome-tracing"] = parser::make_unique<client::ChromeTraceConverter>();
     formats["callgrind"] = parser::make_unique<client::CallgrindConverter>();
@@ -41,7 +41,7 @@ void init_supported_formats(std::map<std::string, std::unique_ptr<client::Conver
 
 int main(int argc, char** argv)
 {
-    std::map<std::string, std::unique_ptr<client::Converter>> formats;
+    std::map<std::string, std::unique_ptr<ClientUtils::Converter>> formats;
 
     init_supported_formats(formats);
 

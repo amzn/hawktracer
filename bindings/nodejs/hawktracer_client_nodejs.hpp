@@ -26,10 +26,11 @@ public:
 private:
     void _notify_new_event();
     static class Value _convert_field_value(const class Env& env, const parser::Event::Value& value);
-    static Object _convert_event(const class Env& env, const parser::Event& event);
+    static Object _convert_event(const class Env& env, const LabeledEvent& event);
     static void _convert_and_callback(const class Env& env, Function real_callback, Client* client);
 
     std::string _source;
+    std::string _maps;
 
     class State
     {
@@ -87,9 +88,9 @@ private:
 
             return use(_function_holder->function);
         }
-        std::vector<parser::Event> take_events() const
+        std::vector<LabeledEvent> take_events() const
         {
-            return _client_context ? _client_context->take_events() : std::vector<parser::Event>{};
+            return _client_context ? _client_context->take_events() : std::vector<LabeledEvent>{};
         }
     };
     State _state;

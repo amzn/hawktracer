@@ -28,6 +28,7 @@ Client::Client(const CallbackInfo& info)
     : ObjectWrap<Client>(info)
 {
     _source = info[0].As<String>();
+    _maps = info.Length() >= 2 && !info[1].IsUndefined() ? info[1].As<String>() : std::string{};
 }
 
 Value Client::start(const CallbackInfo& info)
@@ -35,10 +36,14 @@ Value Client::start(const CallbackInfo& info)
     _state.start(
         ClientContext::create(
             _source,
+            _maps,
             [this]()
             {
                 _notify_new_event();
             }));
+    if (!_state.is_started()) {
+        throw Error::New(info.Env(), "Failed to start");
+    }
     return Boolean::New(info.Env(), _state.is_started());
 }
 
@@ -105,37 +110,40 @@ Value Client::_convert_field_value(const class Env& env, const parser::Event::Va
             return String::New(env, value.value.f_STRING);
         case parser::FieldTypeId::POINTER:
             return String::New(env, "(pointer)");
-        case parser::FieldTypeId::STRUCT:
-            return _convert_event(env, *value.value.f_EVENT);
         default:
             assert(0);
     }
 }
 
-Object Client::_convert_event(const class Env& env, const parser::Event& event)
+Object Client::_convert_event(const class Env& env, const LabeledEvent& event)
 {
     auto o = Object::New(env);
     for (const auto& it: event.get_values()) {
         o.Set(it.first, _convert_field_value(env, it.second));
+    }
+    if (!event.get_label_string().empty()) {
+        o.Set("label", String::New(env, event.get_label_string()));
     }
     return o;
 }
 
 void Client::_convert_and_callback(const class Env& env, Function real_callback, Client* calling_object)
 {
-    std::vector<parser::Event> events = calling_object->_state.take_events();
+    std::vector<LabeledEvent> events = calling_object->_state.take_events();
 
-    Array array = Array::New(env);
-    int i = 0;
-    std::for_each(events.cbegin(),
-                  events.cend(),
-                  [env, &array, &i](const parser::Event& e)
-                  {
-                      array[i++] = _convert_event(env, e);
-                  });
-    real_callback.Call({array});
+    if (!events.empty()) {
+        Array array = Array::New(env);
+        int i = 0;
+        std::for_each(events.cbegin(),
+                      events.cend(),
+                      [env, &array, &i](const LabeledEvent& e)
+                      {
+                          array[i++] = _convert_event(env, e);
+                      });
+        real_callback.Call({array});
+    }
 
-    // Now calling_object can be garbage-collected, however it could have been already stopped during callback.
+    // Now calling_object can be garbage-collected, however stop() could have been already called from inside real_callback.
     if (!calling_object->IsEmpty()) {
         calling_object->Unref();
     }

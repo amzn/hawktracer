@@ -6,7 +6,7 @@
 
 namespace HawkTracer
 {
-namespace client
+namespace ClientUtils
 {
 
 class TracepointMap
@@ -37,7 +37,7 @@ private:
     static std::string category_to_string(Category category);
 };
 
-} // client
+} // ClientUtils
 } // HawkTracer
 
 #endif // HAWKTRACER_CLIENT_TRACEPOINT_MAP_HPP
