@@ -104,4 +104,10 @@
 #  define HT_HAVE_UNISTD_H
 #endif
 
+/* Integer constants */
+/* int32_t max value */
+#define HT_INT32_MAX (2147483647)
+/* size_t max value */
+#define HT_SIZE_MAX ((size_t)-1)
+
 #endif /* HAWKTRACER_MACROS_H */
