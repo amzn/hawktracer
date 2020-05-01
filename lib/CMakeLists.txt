@@ -1,3 +1,5 @@
+include(CheckCXXCompilerFlag)
+
 set(HAWKTRACER_LIB_HEADERS
     include/hawktracer/alloc.h
     include/hawktracer/base_types.h
@@ -30,22 +32,34 @@ set(HAWKTRACER_LIB_HEADERS
     # listeners
     include/hawktracer/listeners/file_dump_listener.h)
 
+set(HAWKTRACER_CPP_LIB_SOURCES
+    event_id_provider.cpp
+    global_timeline.cpp
+    monotonic_clock.cpp
+    mutex.cpp)
+
+if(FORCE_C_COMPILATION)
+    # setting LANGUAGE property for gcc doesn't seem to be enough as it
+    # only sets -std=gnu99, but that doesn't actually force compiler to
+    # use C. So we set the language explicitly in the compiler.
+    check_cxx_compiler_flag("-x c" COMPILER_SUPPORTS_LANGUAGE_SELECTION)
+    if(COMPILER_SUPPORTS_LANGUAGE_SELECTION)
+        set_source_files_properties(${HAWKTRACER_CPP_LIB_SOURCES} PROPERTIES COMPILE_FLAGS "-x c")
+    endif()
+    set_source_files_properties(${HAWKTRACER_CPP_LIB_SOURCES} PROPERTIES LANGUAGE C)
+endif()
 
 set(HAWKTRACER_LIB_SOURCES
     alloc.c
     bag.c
     command_line_parser.c
-    event_id_provider.cpp
     event_utils.c
     events.c
     feature_cached_string.c
     feature_callstack.c
-    global_timeline.cpp
     hash_map.c
     init.c
     listener_buffer.c
-    monotonic_clock.cpp
-    mutex.cpp
     registry.c
     scoped_tracepoint.c
     stack.c
@@ -54,6 +68,7 @@ set(HAWKTRACER_LIB_SOURCES
     thread.c
     timeline.c
     timeline_listener.c
+    ${HAWKTRACER_CPP_LIB_SOURCES}
 
     # listeners
     listeners/file_dump_listener.c)
