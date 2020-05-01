@@ -89,7 +89,7 @@ ht_task_scheduler_schedule_task(HT_TaskScheduler* task_scheduler,
 {
     HT_Task* task;
 
-    if (task_scheduler->next_task_id == INT32_MAX || callback == NULL)
+    if (task_scheduler->next_task_id == HT_INT32_MAX || callback == NULL)
     {
         return HT_TASK_SCHEDULER_INVALID_TASK_ID;
     }

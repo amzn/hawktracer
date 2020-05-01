@@ -47,7 +47,7 @@ set_global_timeline_buffer_size(int argc, char** argv, int pos)
     unsigned long value = strtoul(s, &end, 10);
 
     if (errno == ERANGE ||
-        (sizeof(size_t) < sizeof(unsigned long) && (unsigned long)SIZE_MAX < value))
+        (sizeof(size_t) < sizeof(unsigned long) && (unsigned long)HT_SIZE_MAX < value))
     {
         return HT_ERR_OUT_OF_RANGE;
     }
