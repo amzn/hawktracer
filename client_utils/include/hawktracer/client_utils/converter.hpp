@@ -1,15 +1,12 @@
 #ifndef HAWKTRACER_CLIENT_CONVERTER_HPP
 #define HAWKTRACER_CLIENT_CONVERTER_HPP
 
+#include <hawktracer/client_utils/tracepoint_map.hpp>
 #include <hawktracer/parser/event.hpp>
-#include "tracepoint_map.hpp"
-
-#include <fstream>
-#include <stack>
 
 namespace HawkTracer
 {
-namespace client
+namespace ClientUtils
 {
 
 class Converter
@@ -18,10 +15,12 @@ public:
     Converter();
 
     virtual ~Converter() {}
-    virtual bool init(const std::string& file_name) = 0;
-    virtual void process_event(const parser::Event& event) = 0;
+    virtual bool init(const std::string& /*file_name*/) { return true; }
+    virtual void process_event(const parser::Event& /*event*/) {}
     bool set_tracepoint_map(const std::string& map_files);
-    virtual void stop() = 0;
+    virtual void stop() {}
+
+    std::string get_label(const parser::Event& event) { return _get_label(event); }
 
 protected:
     std::string _get_label(const parser::Event& event);
@@ -34,7 +33,7 @@ private:
     HT_EventKlassId _mapping_klass_id = 0;
 };
 
-} // namespace client
+} // namespace ClientUtils
 } // namespace HawkTracer
 
 #endif // HAWKTRACER_CLIENT_CONVERTER_HPP

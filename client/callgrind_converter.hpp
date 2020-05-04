@@ -1,10 +1,9 @@
 #ifndef HAWKTRACER_CLIENT_CALLGRIND_CONVERTER_HPP
 #define HAWKTRACER_CLIENT_CALLGRIND_CONVERTER_HPP
 
+#include <hawktracer/client_utils/converter.hpp>
 #include <hawktracer/parser/event.hpp>
-#include "converter.hpp"
 #include "call_graph.hpp"
-#include "tracepoint_map.hpp"
 
 #include <fstream>
 
@@ -13,7 +12,7 @@ namespace HawkTracer
 namespace client
 {
 
-class CallgrindConverter : public Converter
+class CallgrindConverter : public ClientUtils::Converter
 {
 public:
     ~CallgrindConverter() override;

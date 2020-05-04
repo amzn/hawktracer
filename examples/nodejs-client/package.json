@@ -1,0 +1,9 @@
+{
+  "name": "hawk-tracer-client-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@hawktracer/client": "https://github.com/amzn/hawktracer.git"
+  }
+}

@@ -13,6 +13,7 @@ option(ENABLE_EXAMPLES "Enable examples" OFF)
 option(ENABLE_DOC "Build documentation" ON)
 option(ENABLE_CLIENT "Enable client application for parsing HawkTracer stream" ON)
 option(ENABLE_PYTHON_BINDINGS "Enable Python bindings (requires ENABLE_CLIENT=ON)" OFF)
+option(ENABLE_NODEJS_BINDINGS "Enable Node.js bindings (requires ENABLE_CLIENT=ON)" OFF)
 option(ENABLE_TCP_LISTENER "Enable TCP listener in a core library" ON)
 option(FORCE_C_COMPILATION "Forces to build HawkTracer core library with C compiler" OFF)
 

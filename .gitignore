@@ -2,3 +2,5 @@
 .idea/
 build
 .vscode
+node_modules
+dist

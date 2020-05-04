@@ -2,7 +2,6 @@
 #define HAWKTRACER_CLIENT_CALL_GRAPH_HPP
 
 #include <hawktracer/parser/event.hpp>
-#include "tracepoint_map.hpp"
 
 namespace HawkTracer
 {

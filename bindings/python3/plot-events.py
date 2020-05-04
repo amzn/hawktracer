@@ -48,4 +48,5 @@ while True:
     length = len(data)
     plt.xlim(length - 10, length)
     plt.plot(list(range(1, length+1)), data)
+    plt.show(block=False)
     plt.pause(0.05)

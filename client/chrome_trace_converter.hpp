@@ -1,9 +1,8 @@
 #ifndef HAWKTRACER_CLIENT_CHROME_TRACE_CONVERTER_HPP
 #define HAWKTRACER_CLIENT_CHROME_TRACE_CONVERTER_HPP
 
+#include <hawktracer/client_utils/converter.hpp>
 #include <hawktracer/parser/event.hpp>
-#include "converter.hpp" 
-#include "tracepoint_map.hpp"
 
 #include <fstream>
 
@@ -12,7 +11,7 @@ namespace HawkTracer
 namespace client
 {
 
-class ChromeTraceConverter : public Converter
+class ChromeTraceConverter : public ClientUtils::Converter
 {
 public:
     ~ChromeTraceConverter() override;

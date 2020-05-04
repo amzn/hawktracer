@@ -2,7 +2,9 @@ add_library(hawktracer_client_utils
     ${HAWKTRACER_LIB_TYPE}
     command_line_parser.cpp
     stream_factory.cpp
-    tcp_client_stream.cpp)
+    tcp_client_stream.cpp
+    converter.cpp
+    tracepoint_map.cpp)
 
 set_target_properties(hawktracer_client_utils
     PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON
