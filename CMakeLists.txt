@@ -15,6 +15,7 @@ option(ENABLE_CLIENT "Enable client application for parsing HawkTracer stream" O
 option(ENABLE_PYTHON_BINDINGS "Enable Python bindings (requires ENABLE_CLIENT=ON)" OFF)
 option(ENABLE_TCP_LISTENER "Enable TCP listener in a core library" ON)
 option(FORCE_C_COMPILATION "Forces to build HawkTracer core library with C compiler" OFF)
+option(ENABLE_AMALGAMATION "Enable generation of library amalgamated files" ON)
 
 option(ENABLE_POSITION_INDEPENDENT_CODE "Enable position independent code of
     the HawkTracer library. For most of the casses, it adds -fPIC flag to a compiler." OFF)
@@ -65,7 +66,10 @@ if(ENABLE_RELEASE_MODE)
 endif(ENABLE_RELEASE_MODE)
 
 include(warnings)
+
+if(ENABLE_AMALGAMATION)
 include(test_amalgamation)
+endif(ENABLE_AMALGAMATION)
 
 if(ENABLE_ASAN)
     include(asan)
