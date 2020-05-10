@@ -31,7 +31,7 @@ bool ChromeTraceConverter::init(const std::string& file_name)
 
 void ChromeTraceConverter::process_event(const parser::Event& event)
 {
-    std::string label = _get_label(event);
+    std::string label = _label_mapping->process_event(event);
 
     if (label == "")
     {

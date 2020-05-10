@@ -11,6 +11,9 @@
 
 using namespace HawkTracer;
 
+using ConverterFactory = std::function<std::unique_ptr<client::Converter>(std::vector<std::string>)>;
+using FormatMap = std::map<std::string, ConverterFactory>;
+
 std::string create_output_path(const char* path)
 {
     time_t rawtime;
@@ -22,7 +25,7 @@ std::string create_output_path(const char* path)
     return file_name_buffer;
 }
 
-std::string supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
+std::string supported_formats(FormatMap& formats)
 {
     std::string supported_formats;
     for (auto& format : formats)
@@ -32,15 +35,15 @@ std::string supported_formats(std::map<std::string, std::unique_ptr<client::Conv
     return supported_formats;
 }
 
-void init_supported_formats(std::map<std::string, std::unique_ptr<client::Converter>>& formats)
+void init_supported_formats(FormatMap& formats)
 {
-    formats["chrome-tracing"] = parser::make_unique<client::ChromeTraceConverter>();
-    formats["callgrind"] = parser::make_unique<client::CallgrindConverter>();
+    formats["chrome-tracing"] = [] (std::vector<std::string> map_files) { return parser::make_unique<client::ChromeTraceConverter>(std::move(map_files)); };
+    formats["callgrind"] = [](std::vector<std::string> map_files) { return parser::make_unique<client::CallgrindConverter>(std::move(map_files)); };
 }
 
 int main(int argc, char** argv)
 {
-    std::map<std::string, std::unique_ptr<client::Converter>> formats;
+    FormatMap formats;
 
     init_supported_formats(formats);
 
@@ -84,19 +87,10 @@ int main(int argc, char** argv)
     parser::ProtocolReader reader(&klass_register, std::move(stream), true);
     std::string out_file = create_output_path(output_path.c_str());
 
-    auto converter = formats.find(format);
-    if (converter == formats.end())
+    auto converter_factory = formats.find(format);
+    if (converter_factory == formats.end())
     {
         std::cerr << "Unknown format: " << format << ". Supported formats are: " << supported_formats(formats) << std::endl;
-        return 1;
-    }
-    if (converter->second->init(out_file))
-    {
-        reader.register_events_listener([&converter] (const parser::Event& event) { converter->second->process_event(event); });
-    }
-    else
-    {
-        std::cerr << "Can't open output file" << std::endl;
         return 1;
     }
 
@@ -104,13 +98,16 @@ int main(int argc, char** argv)
     {
         std::cerr << "map not specified... profiler will use numbers instead of human-readable names" << std::endl;
     }
+    auto converter = converter_factory->second(map_files);
+
+    if (converter->init(out_file))
+    {
+        reader.register_events_listener([&converter] (const parser::Event& event) { converter->process_event(event); });
+    }
     else
     {
-        bool map_set = formats[format]->set_tracepoint_map(map_files);
-        if (!map_set)
-        {
-            std::cerr << "Map could not be set" << std::endl;
-        }
+        std::cerr << "Can't open output file" << std::endl;
+        return 1;
     }
 
     std::cout << "Output will be written to a file: " << out_file << std::endl;
@@ -134,7 +131,7 @@ int main(int argc, char** argv)
 
     reader.wait_for_complete();
     reader.stop();
-    converter->second->stop();
+    converter->stop();
 
     return 0;
 }

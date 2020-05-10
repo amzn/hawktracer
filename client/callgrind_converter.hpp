@@ -16,6 +16,7 @@ namespace client
 class CallgrindConverter : public Converter
 {
 public:
+    CallgrindConverter(std::vector<std::string> map_files) : Converter(std::move(map_files)) {}
     ~CallgrindConverter() override;
 
     bool init(const std::string& file_name) override;
