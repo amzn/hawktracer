@@ -21,6 +21,7 @@
 
 #elif defined(HT_USE_PTHREADS) && defined(HT_SCOPED_TRACEPOINT_MACRO_ENABLED)
 
+#include <pthread.h>
 #include <hawktracer/posix_mapped_tracepoint.h>
 
 #define HT_TP_STRACEPOINT(timeline, label) \
