@@ -20,7 +20,7 @@ public:
     ~CallgrindConverter() override;
 
     bool init(const std::string& file_name) override;
-    void process_event(const parser::Event& event) override;
+    void process_event(const parser::Event& event, const std::string& reader_id, int64_t offset_ns) override;
     void stop() override;
 
 private:

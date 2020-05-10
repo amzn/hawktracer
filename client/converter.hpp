@@ -19,7 +19,7 @@ public:
 
     virtual ~Converter() {}
     virtual bool init(const std::string& file_name) = 0;
-    virtual void process_event(const parser::Event& event) = 0;
+    virtual void process_event(const parser::Event& event, const std::string& reader_id, int64_t offset_ns) = 0;
     virtual void stop() = 0;
 
 protected:

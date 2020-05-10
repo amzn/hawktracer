@@ -19,7 +19,7 @@ bool CallgrindConverter::init(const std::string& file_name)
     return true;
 }
 
-void CallgrindConverter::process_event(const parser::Event& event)
+void CallgrindConverter::process_event(const parser::Event& event, const std::string& reader_id, int64_t offset_ns)
 {
     std::string label = _label_mapping->process_event(event);
 

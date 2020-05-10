@@ -29,8 +29,9 @@ bool ChromeTraceConverter::init(const std::string& file_name)
     return false;
 }
 
-void ChromeTraceConverter::process_event(const parser::Event& event)
+void ChromeTraceConverter::process_event(const parser::Event& event, const std::string& reader_id, int64_t offset_ns)
 {
+    std::lock_guard<std::mutex> l(_file_mtx);
     std::string label = _label_mapping->process_event(event);
 
     if (label == "")
@@ -50,9 +51,9 @@ void ChromeTraceConverter::process_event(const parser::Event& event)
     // Chrome expects the timestamps/durations to be microseconds
     // so we need to convert from nano to micro
     _file << "{\"name\": \"" << label
-         << "\", \"ph\": \"X\", \"ts\": " << ns_to_ms(event.get_timestamp())
+         << "\", \"ph\": \"X\", \"ts\": " << ns_to_ms(event.get_timestamp() + offset_ns)
          << ", \"dur\": " << ns_to_ms(event.get_value_or_default<HT_DurationNs>("duration", 0u))
-         << ", \"pid\": 0, \"tid\": " << event.get_value_or_default<HT_ThreadId>("thread_id", 0u)
+         << ", \"pid\": \"" << reader_id << "\", \"tid\": " << event.get_value_or_default<HT_ThreadId>("thread_id", 0u)
          << ", \"args\": {" << _get_args(event) << "}"
          << "}";
 }
