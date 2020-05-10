@@ -1,5 +1,4 @@
 set(HAWKTRACER_GTEST_TEST_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_command_line_parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_stream_factory.cpp
 
     ${HAWKTRACER_GTEST_TEST_SOURCES}

@@ -1,16 +1,15 @@
 #include "callgrind_converter.hpp"
 #include "chrome_trace_converter.hpp"
+#include "cxxopts.hpp"
 
 #include <hawktracer/parser/protocol_reader.hpp>
 #include <hawktracer/parser/make_unique.hpp>
 
-#include <hawktracer/client_utils/command_line_parser.hpp>
 #include <hawktracer/client_utils/stream_factory.hpp>
 #include <iostream>
 #include <map>
 
 using namespace HawkTracer;
-using ClientUtils::CommandLineParser;
 
 std::string create_output_path(const char* path)
 {
@@ -45,23 +44,33 @@ int main(int argc, char** argv)
 
     init_supported_formats(formats);
 
-    CommandLineParser parser("--", argv[0]);
-    parser.register_option("format", CommandLineParser::OptionInfo(false, false, "Output format. Supported formats: " + supported_formats(formats)));
-    parser.register_option("output", CommandLineParser::OptionInfo(false, false, "Output file"));
-    parser.register_option("source", CommandLineParser::OptionInfo(false, true, "Data source description (either filename, or server address)"));
-    parser.register_option("map", CommandLineParser::OptionInfo(false, false, "Comma-separated list of map files"));
-    parser.register_option("help", CommandLineParser::OptionInfo(true, false, "Print this help"));
+    cxxopts::Options options("hawktracer-converter", "Converts HawkTracer stream to one of the well-known tracing formats.");
 
-    if (!parser.parse(argc, argv) || parser.has_value("help"))
+    options.add_options()
+        ("f,format", "Output format. Supported formats: " + supported_formats(formats), cxxopts::value<std::string>()->default_value("chrome-tracing"))
+        ("o,output", "Output file", cxxopts::value<std::string>()->default_value("hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace"))
+        ("s,source", "Data source description (either filename, or server address)", cxxopts::value<std::string>())
+        ("m,map", "Comma-separated list of map files", cxxopts::value<std::string>()->default_value(""))
+        ("h,help", "Print this help");
+
+    auto result = options.parse(argc, argv);
+
+    if (result.count("help"))
     {
-        parser.print_help(std::cerr);
+        std::cerr << options.help() << std::endl;
         return 1;
     }
 
-    std::string format = parser.get_value("format", "chrome-tracing");
-    std::string output_path = parser.get_value("output", "hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace");
-    std::string source = parser.get_value("source", "");
-    std::string map_files = parser.get_value("map", "");
+    if (!result.count("source"))
+    {
+        std::cerr << "source parameter not specified" << std::endl;
+        return 1;
+    }
+
+    std::string format = result["format"].as<std::string>();
+    std::string output_path = result["output"].as<std::string>();
+    std::string source = result["source"].as<std::string>();
+    std::string map_files = result["map"].as<std::string>();
 
     std::unique_ptr<parser::Stream> stream = ClientUtils::make_stream_from_string(source);
     if (!stream)
