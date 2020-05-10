@@ -3,6 +3,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 namespace HawkTracer
 {
@@ -28,7 +29,7 @@ public:
     MapInfo get_label_info(uint64_t label);
 
     bool load_map(const std::string& map_file);
-    void load_maps(const std::string& map_files);
+    void load_maps(const std::vector<std::string>& map_files);
 
     void add_map_entry(uint64_t id, std::string label);
 

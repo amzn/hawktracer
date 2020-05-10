@@ -19,7 +19,7 @@ Converter::Converter() :
 {
 }
 
-bool Converter::set_tracepoint_map(const std::string& map_files)
+bool Converter::set_tracepoint_map(const std::vector<std::string>& map_files)
 {
     if (_tracepoint_map != nullptr)
     {
@@ -67,10 +67,10 @@ std::string Converter::_get_label(const parser::Event& event)
     else if (event.get_klass()->get_id() == _mapping_klass_id)
     {
         _tracepoint_map->add_map_entry(event.get_value<uint64_t>("identifier"), event.get_value<char*>("label"));
-    } 
+    }
     else if (event.has_value("label"))
     {
-        label = _convert_value_to_string(event.get_raw_value("label")); 
+        label = _convert_value_to_string(event.get_raw_value("label"));
     }
     else if (event.has_value("name"))
     {

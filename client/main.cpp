@@ -50,7 +50,7 @@ int main(int argc, char** argv)
         ("f,format", "Output format. Supported formats: " + supported_formats(formats), cxxopts::value<std::string>()->default_value("chrome-tracing"))
         ("o,output", "Output file", cxxopts::value<std::string>()->default_value("hawktracer-trace-%d-%m-%Y-%H_%M_%S.httrace"))
         ("s,source", "Data source description (either filename, or server address)", cxxopts::value<std::string>())
-        ("m,map", "Comma-separated list of map files", cxxopts::value<std::string>()->default_value(""))
+        ("m,map", "Comma-separated list of map files", cxxopts::value<std::vector<std::string>>()->default_value(""))
         ("h,help", "Print this help");
 
     auto result = options.parse(argc, argv);
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
     std::string format = result["format"].as<std::string>();
     std::string output_path = result["output"].as<std::string>();
     std::string source = result["source"].as<std::string>();
-    std::string map_files = result["map"].as<std::string>();
+    auto map_files = result["map"].as<std::vector<std::string>>();
 
     std::unique_ptr<parser::Stream> stream = ClientUtils::make_stream_from_string(source);
     if (!stream)

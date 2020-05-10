@@ -29,22 +29,15 @@ bool TracepointMap::load_map(const std::string& map_file)
     return true;
 }
 
-void TracepointMap::load_maps(const std::string& map_files)
+void TracepointMap::load_maps(const std::vector<std::string>& map_files)
 {
-    size_t start = 0;
-    size_t len;
-    do
+    for (const auto& path : map_files)
     {
-        size_t pos = map_files.find(',', start);
-        len = pos == std::string::npos ? pos : pos - start;
-        std::string path = map_files.substr(start, len);
-        start += len + 1;
-
         if (!load_map(path))
         {
             std::cerr << "unable to load map file " << path << std::endl;
         }
-    } while (len != std::string::npos);
+    }
 }
 
 void TracepointMap::add_map_entry(uint64_t id, std::string label)

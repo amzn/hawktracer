@@ -20,7 +20,7 @@ public:
     virtual ~Converter() {}
     virtual bool init(const std::string& file_name) = 0;
     virtual void process_event(const parser::Event& event) = 0;
-    bool set_tracepoint_map(const std::string& map_files);
+    bool set_tracepoint_map(const std::vector<std::string>& map_files);
     virtual void stop() = 0;
 
 protected:
