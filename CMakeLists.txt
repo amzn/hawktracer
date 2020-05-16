@@ -65,7 +65,6 @@ if(ENABLE_RELEASE_MODE)
 endif(ENABLE_RELEASE_MODE)
 
 include(warnings)
-include(test_amalgamation)
 
 if(ENABLE_ASAN)
     include(asan)
@@ -84,6 +83,8 @@ if(BUILD_STATIC_LIB)
 else ()
     set(HAWKTRACER_LIB_TYPE SHARED)
 endif(BUILD_STATIC_LIB)
+
+include(test_amalgamation)
 
 add_subdirectory(lib)
 

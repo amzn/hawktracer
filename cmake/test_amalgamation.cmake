@@ -12,12 +12,12 @@ if(${PYTHONINTERP_FOUND})
     add_custom_command(OUTPUT hawktracer.c
         COMMAND ${PYTHON_EXECUTABLE} ARGS ${AMALGAMATION_ARGS} VERBATIM)
 
-    add_library(amalgamated_hawktracer_c SHARED
+    add_library(amalgamated_hawktracer_c ${HAWKTRACER_LIB_TYPE}
         hawktracer.c)
 
     add_custom_command(OUTPUT hawktracer.cpp
         COMMAND ${PYTHON_EXECUTABLE} ARGS ${AMALGAMATION_ARGS_CPP} VERBATIM)
 
-    add_library(amalgamated_hawktracer_cpp SHARED
+    add_library(amalgamated_hawktracer_cpp ${HAWKTRACER_LIB_TYPE}
         hawktracer.cpp)
 endif()
