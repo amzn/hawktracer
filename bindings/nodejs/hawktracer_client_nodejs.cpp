@@ -41,7 +41,10 @@ Value Client::start(const CallbackInfo& info)
             {
                 _notify_new_event();
             }));
-    if (!_state.is_started()) {
+    if (_state.is_started()) {
+        Ref();
+    }
+    else {
         throw Error::New(info.Env(), "Failed to start");
     }
     return Boolean::New(info.Env(), _state.is_started());
@@ -68,19 +71,11 @@ void Client::set_on_events(const CallbackInfo& info)
 // This method is called from reader thread, while all other methods are called from js main thread.
 void Client::_notify_new_event()
 {
-    // prevents this from garbage-collected before the callback is finished
-    Ref();
-
     auto status = _state.use_function(
         [this](ThreadSafeFunction f)
         {
             return f.NonBlockingCall(this, &Client::_convert_and_callback);
         });
-
-    if (status != napi_ok) {
-        // Callback was not added in the queue, hence no need to increase the reference count.
-        Unref();
-    }
 
     if (status != napi_ok && status != napi_queue_full) {
         std::cerr << "Request for callback failed with error code: " << status << std::endl;
@@ -141,11 +136,6 @@ void Client::_convert_and_callback(const class Env& env, Function real_callback,
                           array[i++] = _convert_event(env, e);
                       });
         real_callback.Call({array});
-    }
-
-    // Now calling_object can be garbage-collected, however stop() could have been already called from inside real_callback.
-    if (!calling_object->IsEmpty()) {
-        calling_object->Unref();
     }
 }
 
