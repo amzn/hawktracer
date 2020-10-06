@@ -14,6 +14,14 @@ HT_DECLS_BEGIN
 typedef struct _HT_TCPListener HT_TCPListener;
 
 /**
+ * Type of callback being called when a new client is connected to the listener.
+ *
+ * @param sock_fd file descriptor of the connected client.
+ * @param user_data custom user value provided as parameter in ht_tcp_listener_set_on_client_connected_callback().
+ */
+typedef void(*HT_TCPListenerOnClientConnectedCallback)(int sock_fd, void* user_data);
+
+/**
  * Creates a tcp listener and registers it to a timeline.
  *
  * This is a helper function that wrapps ht_tcp_listener_create() and
@@ -43,6 +51,18 @@ HT_API HT_TCPListener* ht_tcp_listener_register(
         HT_Timeline* timeline, int port, size_t buffer_size, HT_ErrorCode* out_err);
 
 HT_API HT_TCPListener* ht_tcp_listener_create(int port, size_t buffer_size, HT_ErrorCode* out_err);
+
+/**
+ * Sets a callback which gets called when new client is connected to TCP server.
+ *
+ * @param listener the listener.
+ * @param callback a callback.
+ * @param user_data custom user value which will be passed to the callback.
+ */
+HT_API void ht_tcp_listener_set_on_client_connected_callback(
+        HT_TCPListener* listener,
+        HT_TCPListenerOnClientConnectedCallback callback,
+        void* user_data);
 
 HT_API void ht_tcp_listener_destroy(HT_TCPListener* listener);
 
