@@ -25,9 +25,7 @@ protected:
     HT_Timeline* _timeline;
 };
 
-// TODO test different types of events
-
-TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
+TEST_F(TestTimeline, PublishHTEventsShouldNotifyListener)
 {
     // Arrange
     NotifyInfo<HT_Event> info;
@@ -44,6 +42,29 @@ TEST_F(TestTimeline, PublishEventsShouldNotifyListener)
     // Assert
     ASSERT_EQ(9 * sizeof(HT_Event), info.notified_events); // last event not sent, because buffer is not full
     ASSERT_EQ(3, info.notify_count);
+}
+
+TEST_F(TestTimeline, PublishCallstackEventsShouldNotifyListener)
+{
+    // Arrange
+    NotifyInfo<HT_CallstackBaseEvent> info;
+    HT_Timeline* timeline = ht_timeline_create(sizeof(HT_CallstackBaseEvent) * 3, HT_FALSE, HT_FALSE, nullptr, nullptr);
+
+    ht_timeline_register_listener(timeline, test_listener<HT_CallstackBaseEvent>, &info);
+
+    // Act
+    for (int i = 0; i < 10; i++)
+    {
+        HT_DECL_EVENT(HT_CallstackBaseEvent, event);
+        ht_timeline_push_event(timeline, reinterpret_cast<HT_Event*>(&event));
+    }
+
+    // Assert
+    ASSERT_EQ(9 * sizeof(HT_CallstackBaseEvent), info.notified_events); // last event not sent, because buffer is not full
+    ASSERT_EQ(3, info.notify_count);
+
+    ht_timeline_unregister_all_listeners(timeline);
+    ht_timeline_destroy(timeline);
 }
 
 TEST_F(TestTimeline, FlushEventsShouldNotifyListener)
