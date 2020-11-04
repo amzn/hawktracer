@@ -12,6 +12,8 @@ namespace HawkTracer
 namespace client
 {
 
+const std::string  ChromeTraceConverter::HEADER = "{\"traceEvents\": [";
+
 ChromeTraceConverter::~ChromeTraceConverter()
 {
     stop();
@@ -23,7 +25,7 @@ bool ChromeTraceConverter::init(const std::string& file_name)
     _file.open(file_name);
     if (_file.is_open())
     {
-        _file << "{\"traceEvents\": [";
+        _file << HEADER;
         return true;
     }
     return false;
