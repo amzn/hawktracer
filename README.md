@@ -31,7 +31,7 @@ This sample code is made available under the MIT license.
 ## Getting Started
 
 ### Hello World! tutorials
-See [the tutorial](https://www.hawktracer.org/doc/stable/tutorial_hello_world.html) to quickly onboard to HawkTracer or check the [examples](examples/) directory.
+See [the tutorial](https://hawktracer.github.io/doc/stable/tutorial_hello_world.html) to quickly onboard to HawkTracer or check the [examples](examples/) directory.
 The tutorial step by step explains how to build and instrument the code like that:
 ```cpp
 static void hello_world()
