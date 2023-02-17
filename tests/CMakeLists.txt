@@ -6,7 +6,7 @@ include(ExternalProject)
 ExternalProject_Add(
   googletest
   GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.8.1
+  GIT_TAG release-1.12.1
   UPDATE_COMMAND ""
   INSTALL_COMMAND ""
   CMAKE_ARGS
@@ -20,8 +20,8 @@ ExternalProject_Get_Property(googletest source_dir)
 set(GTEST_INCLUDE_DIRS ${source_dir}/googletest/include)
 
 ExternalProject_Get_Property(googletest binary_dir)
-set(GTEST_LIBS_DIRS ${binary_dir}/googlemock/gtest)
-
+set(GTEST_LIBS_DIRS ${binary_dir}/lib)
+message("XX ${GTEST_LIBS_DIRS}")
 if(MSVC)
     set(GTEST_LIBRARY_PATH "${GTEST_LIBS_DIRS}/$(Configuration)/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}")
 else()
