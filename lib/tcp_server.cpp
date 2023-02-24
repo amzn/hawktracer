@@ -14,6 +14,7 @@
 
 #if !defined(HT_THREAD_FORCE_SELECTED) && defined(HT_CPP11)
 #  include <thread>
+#  include <new>
 #  define HT_THREAD_IMPL_CPP11
 #elif !defined(HT_THREAD_FORCE_SELECTED) && defined(_WIN32)
 #  include <windows.h>
