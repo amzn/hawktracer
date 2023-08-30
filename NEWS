@@ -1,3 +1,13 @@
+0.11.0 (Lizard) (unstable) - 30.08.2023:
+  * allow return values from functions decorated with @trace in Python bindings
+  * allow conditional build of TCP listener
+  * enable forceful compilation using C compiler (using `0DFORCE_C_COMPILATION=ON` cmake flag)
+  * allow disable multithreading support (using `-DENABLE_THREADS=OFF` cmake flag)
+  * fix MacOS build
+  * add on-client-connected callback to TCP listener
+  * improve test suite
+  * minor fixes and improvements in documentation
+
 0.10.0 (Squirrel) (unstable) - 19.01.2020:
   * fix amalgamation process for non POSIX.utf-8 locale (#65)
   * restore Python binding tests
@@ -53,7 +63,7 @@
   * documentation improvements (tutorials, examples, missing function documentation)
   * publish documentation online (https://amzn.github.io/hawktracer/)
   * many other tiny bug fixes and minor improvements
-  
+
 0.5.0 (unstable) - 5.05.2018:
   * make parser library thread-safe
   * fix bug which was preventing from event multilevel inheritance
