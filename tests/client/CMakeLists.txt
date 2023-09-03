@@ -1,6 +1,7 @@
 set(HAWKTRACER_GTEST_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/test_call_graph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test_file_loader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test_chrome_trace_converter.cpp
 
     ${HAWKTRACER_GTEST_TEST_SOURCES}
     PARENT_SCOPE)
